@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formHistoricoAfastamento"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.historicoAfastamento}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.historicoAfastamento}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}" 
+					status="statusAguarde"
+					title="#{b.atualizarListagem}"
+					action="#{historicoAfastamentoMB.doConsultar}"
+					reRender="tableHistoricoAfastamento, scrollAfastamento, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+				<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					action="#{historicoAfastamentoMB.doExcluirLote}" 
+					reRender="tableHistoricoAfastamento, scrollAfastamento, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="historicoAfastamentoMB" />
+			<rich:extendedDataTable
+				noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+				value="#{historicoAfastamentoMB.listHistoricoAfastamento}"
+				id="tableHistoricoAfastamento"
+				var="afastamento"
+				height="203px" 
+				width="998px"
+				rows="6"
+				enableContextMenu="false"
+				selectionMode="single"
+				reRender="scrollAfastamento"
+				sortMode="single"
+				rendered="#{historicoAfastamentoMB.consultarHistoricoAfastamento}"
+				rowClasses="rowPar, rowImpar"
+				onRowMouseOver="jQuery(this).addClass('activeRow');"
+				onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkAfastamentoAll"
+							onclick="jqCheckAll(this, 'formHistoricoAfastamento:tableHistoricoAfastamento');"
+							value="#{historicoAfastamentoMB.checkAfastamentoAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox  id="checkAfastamento"
+						value="#{afastamento.selecionado}" 
+						onclick="interceptarEvento(event);" />
+				</rich:column>
+				<rich:column width="100px"
+						sortable="true"
+						sortBy="#{afastamento.entity.funcionario.codigoRegistro}"
+						filterBy="#{afastamento.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.re}" />
+					</f:facet>
+					<h:outputText value="#{afastamento.entity.funcionario.codigoRegistro}" />
+				</rich:column>
+				<rich:column width="285px"
+						sortable="true"
+						sortBy="#{afastamento.entity.funcionario.pessoa.nome}"
+						filterBy="#{afastamento.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{historicoAfastamentoMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{afastamento.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{afastamento.entity}"
+							target="#{historicoAfastamentoMB.afastamentoSelecionado}" />
+					</a4j:commandLink>
+				</rich:column>
+				<rich:column width="93px"
+						sortable="true" 
+						sortBy="#{afastamento.entity.dataUltimoDiaTrabalho}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.ultimoDia}"/>
+					</f:facet>
+           			<h:outputText value="#{afastamento.entity.dataUltimoDiaTrabalho}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+				<rich:column width="93px"
+				 		sortable="true" 
+						sortBy="#{afastamento.entity.dataAfastamento}">
+					<f:facet name="header">
+						<h:outputText value="#{b.afastamento}" />
+					</f:facet>
+					<h:outputText value="#{afastamento.entity.dataAfastamento}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="93px"
+				 		sortable="true" 
+						sortBy="#{afastamento.entity.dataRetorno}">
+					<f:facet name="header">
+						<h:outputText value="#{b.retorno}" />
+					</f:facet>
+					<h:outputText value="#{afastamento.entity.dataRetorno}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="204px"
+				 		sortable="true" 
+						sortBy="#{afastamento.entity.situacaoFuncionario.descricao}">
+					<f:facet name="header">
+						<h:outputText value="#{b.motivoAfastamento}" />
+					</f:facet>
+					<h:outputText value="#{afastamento.entity.motivo.motivo}" />
+				</rich:column>
+				<rich:column width="91px"
+				 		sortable="true" 
+						sortBy="#{afastamento.entity.afastamentoComEstabilidade}">
+					<f:facet name="header">
+						<h:outputText value="#{b.estabilidade}" />
+					</f:facet>
+					<h:outputText value="#{afastamento.entity.afastamentoComEstabilidade}" converter="BooleanConverter" />
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollAfastamento" 
+				align="center"
+				renderIfSinglePage="false" 
+				boundaryControls="auto"
+				fastControls="auto" 
+				stepControls="auto" 
+				for="tableHistoricoAfastamento"
+				maxPages="50" 
+				page="#{historicoAfastamentoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+					<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" />
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{historicoAfastamentoMB.afastamento.funcionario.codigoRegistro}" 
+									style="width:70px"
+									label="#{b.re}"
+									onkeyup="somenteNumeros(this);" 
+									disabled="#{historicoAfastamentoMB.disableEdicao}"
+									readonly="#{historicoAfastamentoMB.disableEdicao}">
+									<a4j:support action="#{historicoAfastamentoMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outputAfastamento,msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputAfastamento">
+									<h:inputText id="txtNomeFuncionario" 
+			  									value="#{historicoAfastamentoMB.afastamento.funcionario.pessoa.nome}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}"
+			  									disabled="#{historicoAfastamentoMB.disableEdicao}"
+												readonly="#{historicoAfastamentoMB.disableEdicao}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONÁRIO FOI ENCONTRADO"
+					                    suggestionAction="#{historicoAfastamentoMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{historicoAfastamentoMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{historicoAfastamentoMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.ultimoDiaTrabalho}" />
+							</td>
+							<td>
+								<rich:calendar id="calUltimoDiaTrabalho" datePattern="dd/MM/yyyy" 
+									value="#{historicoAfastamentoMB.afastamento.dataUltimoDiaTrabalho}"
+									enableManualInput="true"
+									disabled="#{historicoAfastamentoMB.disableEdicao}"
+									readonly="#{historicoAfastamentoMB.disableEdicao}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.dataAfastamento}" />
+							</td>
+							<td>
+								<rich:calendar id="calAfastamento" datePattern="dd/MM/yyyy" 
+									value="#{historicoAfastamentoMB.afastamento.dataAfastamento}"
+									enableManualInput="true"
+									disabled="#{historicoAfastamentoMB.disableEdicao}"
+									readonly="#{historicoAfastamentoMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.dataRetorno}" />
+							</td>
+							<td>
+								<rich:calendar id="calRetorno" datePattern="dd/MM/yyyy" 
+									value="#{historicoAfastamentoMB.afastamento.dataRetorno}"
+									enableManualInput="true" />
+							</td>
+							<td>
+								<h:outputText value="#{b.motivoAfastamento}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selMotivoAfastamento"
+									label="#{b.motivoAfastamento}"
+									value="#{historicoAfastamentoMB.afastamento.motivo}"
+									disabled="#{historicoAfastamentoMB.disableEdicao}"
+									readonly="#{historicoAfastamentoMB.disableEdicao}"
+									style="width: 250px;">
+									<f:selectItems id="itensMotivoAfastamento"
+										value="#{historicoAfastamentoMB.itensMotivoAfastamento}" />
+								</h:selectOneMenu>
+						</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.afastamentoComEstabilidade}" />
+							</td>
+							<td>
+								<h:selectOneRadio id="selEstabilidade" 
+										value="#{historicoAfastamentoMB.afastamento.afastamentoComEstabilidade}"
+										disabled="#{historicoAfastamentoMB.disableEdicao}"
+										readonly="#{historicoAfastamentoMB.disableEdicao}">
+									<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+									<f:selectItem itemLabel="#{b.nao}" itemValue="false"/>
+								</h:selectOneRadio>
+							</td>
+						</tr>
+					</table>
+					<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{historicoAfastamentoMB.doSalvar}"
+												reRender="formHistoricoAfastamento, formDetails, msgsErros" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.limpar}"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{historicoAfastamentoMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+				</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>	
+</html>		

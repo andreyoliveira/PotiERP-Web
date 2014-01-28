@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+ <converter>
+  <converter-id>identifiableConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.IdentifiableConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>MoedaConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.MoedaConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>CnpjConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.CnpjConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>CpfConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.CpfConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>CepConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.CepConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>HorarioConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.HorarioStringConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>BooleanConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.BooleanConverter</converter-class>
+ </converter>
+ <converter>
+  <converter-id>PercentagemConverter</converter-id>
+  <converter-class>br.com.potierp.faces.converter.PercentagemConverter</converter-class>
+ </converter>
+</faces-config>

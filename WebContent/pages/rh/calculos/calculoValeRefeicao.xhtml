@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formValeRefeicao"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.calculoDeValeRefeicao}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.calculoDeValeRefeicao}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup itemSeparator="line">
+				<a4j:commandButton value="#{b.excluir}"
+								rendered="#{valeRefeicaoMB.excluirValeRefeicao}"
+								reRender="formValeRefeicao"
+								eventsQueue="queueNoDelay"
+								onclick="if(!confirmarExclusao(this))return false;"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeRefeicaoMB.doExcluir}"/>
+				<a4j:commandButton value="#{b.recibo}"
+								rendered="#{valeRefeicaoMB.incluirValeRefeicao}"
+								reRender="formValeRefeicao"
+								eventsQueue="queueNoDelay"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeRefeicaoMB.doListaRecibo}"/>
+				<a4j:commandButton value="#{b.mapa}"
+								rendered="#{valeRefeicaoMB.incluirValeRefeicao}"
+								reRender="formValeRefeicao"
+								eventsQueue="queueNoDelay"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeRefeicaoMB.doListaMapa}"/>
+				<a4j:commandButton value="#{b.calculo}"
+								action="#{valeRefeicaoMB.doNovo}"
+								onclick="limpaForm('formDetails');"
+								rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+								status="statusAguarde"
+								eventsQueue="queueNoDelay"
+								reRender="formDetails"
+								oncomplete="Richfaces.showModalPanel('mpDetails');"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup itemSeparator="line">
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="valeRefeicaoMB"/>
+			<poti:download mbean="#{valeRefeicaoMB}" />
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+									value="#{valeRefeicaoMB.listCalculoValeRefeicao}" 
+									id="tableValeRefeicao"
+									var="calculoValeRefeicao" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollValeRefeicao"
+									selectionMode="none"
+									rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.mesAno}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.dataInicioCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.dataFimCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.quantidadeTotal}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.valorTotal}"/>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.usuario}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.situacao}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.tipoCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.acao}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="35px" rendered="#{valeRefeicaoMB.excluirValeRefeicao}" style="align: center;">
+					<h:selectBooleanCheckbox id="checkValeRefeicao" value="#{calculoValeRefeicao.selecionado}" onclick="jqCheckOnlyOne(this, 'formValeRefeicao:tableValeRefeicao');"/>
+				</rich:column>
+				<rich:column width="128px" filterMethod="#{valeRefeicaoMB.filtraMesAno}">
+					<f:facet name="header" >
+           				<h:inputText value="#{valeRefeicaoMB.filtraMesAno}" id="txtFiltroMesAno">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.referencia}" />
+           		</rich:column>
+				<rich:column width="130px" filterMethod="#{valeRefeicaoMB.filtraDataInicio}">
+					<f:facet name="header" >
+           				<h:inputText value="#{valeRefeicaoMB.filtroDataInicio}" id="txtFiltroDataInicio">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.dataInicio}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="130px" filterMethod="#{valeRefeicaoMB.filtraDataFim}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroDataFim}" id="txtFiltroDataFim">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.dataFim}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="115px" filterMethod="#{valeRefeicaoMB.filtraQuantidadeTotal}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroQuantidadeTotal}" id="txtFiltroQuantidadeTotal">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.quantidadeTotal}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeRefeicaoMB.filtraValorTotal}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroValorTotal}" id="txtFiltroValorTotal">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.valorTotal}" converter="MoedaConverter"/>
+           		</rich:column>
+           		<rich:column width="110px" filterMethod="#{valeRefeicaoMB.filtraUsername}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroUsername}" id="txtFiltroUsername">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.usuario.username}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeRefeicaoMB.filtraSituacao}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroSituacao}" id="txtFiltroSituacao">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeRefeicaoMB.filtraTipoCalculo}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeRefeicaoMB.filtroTipoCalculo}" id="txtFiltroTipoCalculo">
+           					<a4j:support event="onkeyup" reRender="tableValeRefeicao"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeRefeicao.entity.tipoCalculoEnum.tipoCalculo}" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');"
+           							status="statusAguarde" 
+           							title="#{b.alterar}"
+           							rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+           							reRender="formDetails"
+           							action="#{valeRefeicaoMB.doDetalhar}"
+           							eventsQueue="queueNoDelay" 
+           							image="/static/images/preview.png"
+           							style="cursor: pointer;cursor: hand;">
+					<f:setPropertyActionListener value="#{calculoValeRefeicao.entity}" target="#{valeRefeicaoMB.calculoValeRefeicaoSelecionado}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollValeRefeicao" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableValeRefeicao" maxPages="10" page="#{valeRefeicaoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.calculoDeValeRefeicao}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 		</f:facet>
+		 		<a4j:outputPanel id="outputDownload">
+		 			<poti:download mbean="#{valeRefeicaoMB}" />
+		 		</a4j:outputPanel>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery id="maskDate" selector=".maskDate" timing="immediate"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+					<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="immediate"
+						id="maskMoney" />
+		 			<table width="800px" cellspacing="5px">
+		 				<tr>
+		 					<td width="80px">
+        						<h:outputText value="#{b.dataInicial}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataInicioCalculo" 
+        							for="calDataInicioCalculo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataInicioCalculo"
+           							value="#{valeRefeicaoMB.dataInicio}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataInicial}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+        					<td width="80px">
+        						<h:outputText value="#{b.dataFinal}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataFimCalculo" 
+        							for="calDataFimCalculo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataFimCalculo"
+           							value="#{valeRefeicaoMB.dataFim}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataFinal}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+            				<td>
+            					<a4j:commandButton value="#{b.calcular}"
+												action="#{valeRefeicaoMB.doCalcular}" 
+												reRender="formValeRefeicao, formDetails, msgsErros"
+												process="calDataInicioCalculo, calDataFimCalculo"
+												ajaxSingle="true"
+												eventsQueue="queueNoDelay"
+												status="statusAguarde"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            			<tr>
+            				<td colspan="5">
+            					<rich:separator height="2" lineType="solid"/>
+            				</td>
+            			</tr>
+            			<tr>
+            				<td width="80px">
+        						<h:outputText value="#{b.dataRecibo}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataRecibo" 
+        							for="calDataRecibo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataRecibo"
+           							value="#{valeRefeicaoMB.calculoValeRefeicao.dataRecibo}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataRecibo}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+            			</tr>
+            		</table>
+		 			<div style="height: 10px;"/>
+ 					<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{valeRefeicaoMB.listFuncionarioValeRefeicaoHelper}"
+									id="tableValeRefeicaoResumo"
+									var="funcionarioValeRefeicaoHelper"
+									height="205px"
+									rows="6"
+									enableContextMenu="false"
+									reRender="scrollValeRefeicaoResumo"
+									selectionMode="none"
+									rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+						<rich:column width="75px" filterBy="#{funcionarioValeRefeicaoHelper.entity.funcionario.codigoRegistro}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeRefeicaoHelper.entity.funcionario.codigoRegistro}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.re}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeRefeicaoHelper.entity.funcionario.codigoRegistro}" />
+		           		</rich:column>
+						<rich:column width="350px" filterBy="#{funcionarioValeRefeicaoHelper.entity.funcionario.pessoa.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeRefeicaoHelper.entity.funcionario.pessoa.nome}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.funcionario}" />
+		           			</f:facet>
+		           			<a4j:commandLink status="statusAguarde" 
+           							reRender="tableValeRefeicaoDetalhe, scrollValeRefeicaoDetalhe, txtFuncionarioSelecionado"
+           							limitToList="true"
+           							action="#{valeRefeicaoMB.doDetalharFuncionario}"
+           							eventsQueue="queueNoDelay"
+           							value="#{funcionarioValeRefeicaoHelper.entity.funcionario.pessoa.nome}" 
+           							style="cursor: pointer;cursor: hand;"
+           							styleClass="linkAbreModal">
+								<f:setPropertyActionListener value="#{funcionarioValeRefeicaoHelper.entity}" target="#{valeRefeicaoMB.funcionarioValeRefeicaoHelperSelecionado}" />
+							</a4j:commandLink>
+		           		</rich:column>
+		           		<rich:column width="155px" filterBy="#{funcionarioValeRefeicaoHelper.entity.quantidade}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeRefeicaoHelper.entity.quantidade}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.quantidade}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeRefeicaoHelper.entity.quantidade}" />
+		           		</rich:column>
+		           		<rich:column width="172px" filterBy="#{funcionarioValeRefeicaoHelper.entity.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeRefeicaoHelper.entity.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.total}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeRefeicaoHelper.entity.valor}" styleClass="maskMoney" converter="MoedaConverter" />
+		           		</rich:column>
+		           		<rich:column width="50px">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.acao}" />
+		           			</f:facet>
+		           			<a4j:commandButton status="statusAguarde" 
+		           							rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+		           							reRender="outputDownload, calDataRecibo, tableValeRefeicaoResumo"
+		           							action="#{valeRefeicaoMB.doRecibo}"
+		           							title="#{b.recibo}"
+		           							eventsQueue="queueNoDelay" 
+		           							image="/static/images/report.png"
+		           							style="cursor: pointer;cursor: hand;">
+								<f:setPropertyActionListener value="#{funcionarioValeRefeicaoHelper.entity}" target="#{valeRefeicaoMB.funcionarioValeRefeicaoHelperSelecionado}" />
+							</a4j:commandButton>
+		           		</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollValeRefeicaoResumo" align="center" renderIfSinglePage="false" 
+						boundaryControls="auto" fastControls="auto" stepControls="auto"
+						for="tableValeRefeicaoResumo" maxPages="10" page="#{valeRefeicaoMB.scrollerPageResumo}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}"/>
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}"/>
+						</f:facet>
+					</rich:datascroller>
+					<div style="height: 5px;"/>
+					<h:outputText value="#{b.funcionarioSelecionado}" style="font-weight : bold;"/><h:outputText id="txtFuncionarioSelecionado" value="#{valeRefeicaoMB.funcionarioValeRefeicaoHelperSelecionado.funcionario.pessoa.nome}" />
+					<div style="height: 10px;"/>
+					<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{valeRefeicaoMB.listTipoValeRefeicaoHelper}" 
+									id="tableValeRefeicaoDetalhe"
+									var="tipoValeRefeicaoHelper" 
+									height="103px"
+									rows="4"
+									enableContextMenu="false"
+									reRender="scrollValeRefeicaoDetalhe"
+									selectionMode="none"
+									rendered="#{valeRefeicaoMB.consultarValeRefeicao}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+		           		<rich:column width="355px" sortable="true" sortBy="#{tipoValeRefeicaoHelper.entity.tipoValeRefeicao.nome}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.valeRefeicao}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeRefeicaoHelper.entity.tipoValeRefeicao.nome}" />
+		           		</rich:column>
+		           		<rich:column width="170px" sortable="true" sortBy="#{tipoValeRefeicaoHelper.entity.tipoValeRefeicao.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.valor}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeRefeicaoHelper.entity.tipoValeRefeicao.valor}" converter="MoedaConverter"/>
+		           		</rich:column>
+		           		<rich:column width="140px" sortable="true" sortBy="#{tipoValeRefeicaoHelper.entity.quantidade}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.quantidade}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeRefeicaoHelper.entity.quantidade}" />
+		           		</rich:column>
+		           		<rich:column width="135px" sortable="true" sortBy="#{tipoValeRefeicaoHelper.entity.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.total}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeRefeicaoHelper.entity.valor}" converter="MoedaConverter"/>
+		           		</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollValeRefeicaoDetalhe" align="center" renderIfSinglePage="false" 
+						boundaryControls="auto" fastControls="auto" stepControls="auto"
+						for="tableValeRefeicaoDetalhe" maxPages="10" page="#{valeRefeicaoMB.scrollerPageDetalhe}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}"/>
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}"/>
+						</f:facet>
+					</rich:datascroller>
+					<div style="height: 15px;"/>
+					<table width="800px">
+						<tr>
+							<td width="65px">
+								<h:outputText value="#{b.valorTotalPontos}" style="font-weight : bold;"/>
+							</td>
+							<td width="50px">
+								<h:outputText value="#{valeRefeicaoMB.calculoValeRefeicao.valorTotal}" converter="MoedaConverter"/>
+							</td>
+							<td width="100px">
+								<h:outputText value="#{b.quantidadeTotalPontos}" style="font-weight : bold;"/>
+							</td>
+							<td>
+								<h:outputText value="#{valeRefeicaoMB.calculoValeRefeicao.quantidadeTotal}"/>
+							</td>
+						</tr>
+            			<tr>
+            				<td align="center" colspan="4">
+            					<a4j:commandButton value="#{b.gravar}"
+												action="#{valeRefeicaoMB.doGravar}" 
+												reRender="formValeRefeicao, formDetails, msgsErros"
+												onclick="if(!confirmarOperacaoAjax(this))return false;"
+												status="statusAguarde"
+												eventsQueue="queueNoDelay"
+												oncomplete="windowclose('formDetails', 'mpDetails');"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.mapa}"
+									rendered="#{valeRefeicaoMB.incluirValeRefeicao}"
+									reRender="outputDownload, msgsErros"
+									eventsQueue="queueNoDelay"
+									status="statusAguarde"
+									style="width: 80px; cursor: pointer;cursor: hand;"
+									action="#{valeRefeicaoMB.doMapa}"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.fechar}"
+									eventsQueue="queueNoDelay"
+									oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0});limpaForm('formDetails');"
+									limitToList="true"
+									immediate="true"
+									ajaxSingle="true"
+									action="#{valeRefeicaoMB.limparForm}"
+									style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

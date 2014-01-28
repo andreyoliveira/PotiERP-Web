@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formCartaoPonto" />
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cartaoPonto}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cartaoPonto}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.gerar}" 
+								action="#{cartaoPontoMB.doGerar}"
+								title="#{b.gerar}"
+								reRender="executaDownload, msgsErros"
+								limitToList="true"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde"/>
+				<a4j:commandButton value="#{b.limpar}"
+								title="#{b.limpar}"
+								onclick="limpaForm('formDetails');"
+								action="#{cartaoPontoMB.doLimpar}"
+								reRender="formCartaoPonto" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<poti:download mbean="#{cartaoPontoMB}" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="cartaoPontoMB" />
+			<rich:spacer height="1px"/>
+			<rich:panel>
+				<table cellspacing="3" style="height:445px" width="100%">
+					<tr valign="top" style="height:20px">
+						<td>
+							<h:outputText value="#{b.re}" />
+						</td>
+						<td>
+							<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+							<h:inputText id="txtRE"
+								value="#{cartaoPontoMB.funcionario.codigoRegistro}"
+								style="width:75px"
+								label="#{b.re}"
+								onkeyup="somenteNumeros(this);"
+								onblur="somenteNumeros(this);">
+								<a4j:support action="#{cartaoPontoMB.buscarFuncionario}"
+	           										 event="onblur" 
+	           										 reRender="outPutFuncionario, msgsErros"
+	           										 limitToList="true"
+	           										 eventsQueue="queueNoDelay"
+	           										 status="statusAguarde"/>
+							</h:inputText>
+							<rich:spacer width="15px"/>
+	           				<a4j:outputPanel id="outPutFuncionario">
+		           				<h:inputText id="txtNomeFuncionario" 
+			  									value="#{cartaoPontoMB.funcionario.pessoa.nome}" 
+			  									style="width: 300px"
+			  									label="#{b.funcionario}" />  
+		  						 <rich:suggestionbox id="suggestionBoxId" 
+		  						 	for="txtNomeFuncionario"
+		  						 	var="funcionario"
+		  						 	width="300"
+				                    height="200"
+				                    nothingLabel="NENHUM FUNCIONARIO FOI ENCONTRADO"
+				                    suggestionAction="#{cartaoPontoMB.sugestao}">
+				                    <h:column>
+										<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+				                    </h:column>
+				                    <a4j:support event="onselect" 
+							 			 	     action="#{cartaoPontoMB.selecionarFuncionario}"
+								 			  	 reRender="txtRE, msgsErros"
+								 			  	 limitToList="true"
+								 			  	 status="statusAguarde">  
+								        <f:setPropertyActionListener value="#{funcionario}" 
+								        							 target="#{cartaoPontoMB.funcionarioSelecionado}" />  
+								  </a4j:support>
+				                </rich:suggestionbox>
+			                </a4j:outputPanel>
+						</td>
+						<td>
+							<h:outputText value="#{b.mes}" />
+						</td>
+						<td>
+							<h:selectOneMenu id="selMes" label="${b.mes}" value="#{cartaoPontoMB.mes}">
+								<f:selectItems id="itensMes" value="#{cartaoPontoMB.itensMes}" />
+							</h:selectOneMenu>
+							<rich:spacer width="15px"/>
+							<h:outputText value="#{b.ano}" />
+							<rich:spacer width="15px"/>
+							<h:inputText value="#{cartaoPontoMB.ano}"
+								id="txtAno" 
+								style="width: 110px;"
+								maxlength="4"
+								onkeyup="somenteNumeros(this);" 
+								onblur="somenteNumeros(this);"/>
+						</td>
+					</tr>
+				</table>
+			</rich:panel>
+		</ui:define>
+	</ui:decorate>
+</html>	

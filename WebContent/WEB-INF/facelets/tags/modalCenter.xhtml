@@ -1,0 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich">
+	<ui:component>
+		<rich:modalPanel id="mp" minHeight="120" minWidth="120" height="120" width="120" 
+			style="border: 0px; padding: 0px; margin: 0px; background-color: #fff" zindex="2000" resizeable="false" moveable="false">
+			<img src="#{facesContext.externalContext.request.contextPath}/static/images/loader.gif"/>
+			<ui:insert />
+		</rich:modalPanel>
+	</ui:component>
+</html>

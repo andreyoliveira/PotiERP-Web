@@ -1,0 +1,21 @@
+<ui:composition 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.prime.com.tr/ui">
+	<f:loadBundle basename="resources" var="b" />
+    <link href="#{facesContext.externalContext.request.contextPath}/static/css/styles.css" rel="stylesheet" type="text/css" />
+    
+	<body class="body">
+    <h:form id="formCad" styleClass="body" >
+   		<table cellpadding="0" cellspacing="0" border="0" width="100%" style="height: 500px;">
+   			<tr>
+				<td align="center" valign="middle">
+					<h:graphicImage value="/static/images/expireSession.gif" style="align:middle" /><br/>
+					<h:outputText value="${b['warn.session']}" styleClass="warnSession" />
+				</td>
+			</tr>
+		</table>
+	</h:form>
+	</body>
+</ui:composition>

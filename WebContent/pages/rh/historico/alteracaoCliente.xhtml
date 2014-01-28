@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formAlteracaoCliente" />
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.alteracaoCliente}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.alteracaoCliente}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}" 
+					status="statusAguarde"
+					title="#{b.atualizarListagem}"
+					action="#{alteracaoClienteMB.doConsultar}"
+					reRender="tableAlteracaoCliente, scrollAlteracaoCliente, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+				<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					action="#{alteracaoClienteMB.doExcluirLote}" 
+					reRender="tableAlteracaoCliente, scrollAlteracaoCliente, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="alteracaoClienteMB" />
+			<rich:extendedDataTable
+				noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+				value="#{alteracaoClienteMB.listAlteracaoCliente}"
+				id="tableAlteracaoCliente"
+				var="alteracaoCliente"
+				height="203px" 
+				width="998px"
+				rows="6"
+				enableContextMenu="false"
+				selectionMode="single"
+				reRender="scrollAlteracaoCliente"
+				sortMode="single"
+				rendered="#{alteracaoClienteMB.consultarAlteracaoCliente}"
+				rowClasses="rowPar, rowImpar"
+				onRowMouseOver="jQuery(this).addClass('activeRow');"
+				onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkAlteracaoClienteAll"
+							onclick="jqCheckAll(this, 'formAlteracaoCliente:tableAlteracaoCliente');"
+							value="#{alteracaoClienteMB.checkAlteracaoClienteAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox  id="checkAlteracaoCliente"
+						value="#{alteracaoCliente.selecionado}" 
+						onclick="interceptarEvento(event);" />
+				</rich:column>
+				<rich:column width="96px"
+						sortable="true" 
+						sortBy="#{alteracaoCliente.entity.funcionario.codigoRegistro}" 
+						filterBy="#{alteracaoCliente.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.re}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoCliente.entity.funcionario.codigoRegistro}" />
+           		</rich:column>
+				<rich:column width="250px"
+				 		sortable="true" 
+						sortBy="#{alteracaoCliente.entity.funcionario.pessoa.nome}"
+						filterBy="#{alteracaoCliente.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{alteracaoClienteMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{alteracaoCliente.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{alteracaoCliente.entity}"
+							target="#{alteracaoClienteMB.alteracaoClienteSelecionado}" />
+					</a4j:commandLink>
+				</rich:column>
+           		<rich:column width="253px">
+					<f:facet name="header">
+						<h:outputText value="#{b.clienteAnterior}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoCliente.entity.clienteAnterior.codigo}" />
+           			<h:outputText value=" - " />
+           			<h:outputText value="#{alteracaoCliente.entity.clienteAnterior.nomeFantasia}" />
+           		</rich:column>
+           		<rich:column width="253px">
+					<f:facet name="header">
+						<h:outputText value="#{b.clienteAtual}"/>
+					</f:facet>
+					<h:outputText value="#{alteracaoCliente.entity.clienteAtual.codigo}" />
+					<h:outputText value=" - " />
+           			<h:outputText value="#{alteracaoCliente.entity.clienteAtual.nomeFantasia}" />
+           		</rich:column>
+           		<rich:column width="107px">
+					<f:facet name="header">
+						<h:outputText value="#{b.dataTransferencia}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoCliente.entity.dataTransferencia}">
+           				<f:convertDateTime pattern="dd/MM/yyyy" />
+           			</h:outputText>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollAlteracaoCliente" 
+				align="center"
+				renderIfSinglePage="false" 
+				boundaryControls="auto"
+				fastControls="auto" 
+				stepControls="auto" 
+				for="tableAlteracaoCliente"
+				maxPages="50" 
+				page="#{alteracaoClienteMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+					timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+			<h:form id="formDetails">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+						<rich:separator height="6" lineType="solid" width="100%"/>
+						</td>
+					</tr>
+				</table>
+				<rich:panel>
+					<table width="100%">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" /> 
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{alteracaoClienteMB.alteracaoCliente.funcionario.codigoRegistro}"
+									style="width:70px"
+									label="#{b.re}"
+									readonly="#{alteracaoClienteMB.isDisableRe}"
+									disabled="#{alteracaoClienteMB.isDisableRe}"
+									onkeyup="somenteNumeros(this);"> 
+								<a4j:support action="#{alteracaoClienteMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outPutAlteracaoCliente, selClienteAnterior, msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+		           				</h:inputText>
+		           				<rich:spacer width="15px"/>
+		           				<a4j:outputPanel id="outPutAlteracaoCliente">
+			  						<h:inputText id="txtNomeFuncionario" 
+			  									readonly="#{alteracaoClienteMB.isDisableNome}"
+			  									disabled="#{alteracaoClienteMB.isDisableNome}"
+			  									value="#{alteracaoClienteMB.alteracaoCliente.funcionario.pessoa.nome}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONARIO FOI ENCONTRADO"
+					                    suggestionAction="#{alteracaoClienteMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{alteracaoClienteMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, selClienteAnterior, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{alteracaoClienteMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+				                </a4j:outputPanel>
+		           			</td>
+						</tr>
+					</table>
+					<rich:spacer height="5px"/>
+					<table width="100%">
+						<tr>
+							<td><h:outputText value="#{b.clienteAnterior}" /></td>
+								<td>
+								<rich:message id="msgsClienteAnterior"
+									for="selClienteAnterior" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selClienteAnterior"
+									style="width: 200px" 
+									disabled="#{alteracaoClienteMB.isDisableRe}"
+									label="#{b.clienteAnterior}"
+									value="#{alteracaoClienteMB.alteracaoCliente.clienteAnterior}">
+									<f:selectItems id="itensClientesAnteriores"
+										value="#{alteracaoClienteMB.itensClientesAnteriores}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu>
+							</td>
+							<td><h:outputText value="#{b.clienteAtual}" /></td>
+								<td>
+								<rich:message id="msgsClienteAtual"
+									for="selClienteAtual" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selClienteAtual" 
+									label="#{b.clienteAtual}"
+									style="width: 200px"
+									disabled="#{alteracaoClienteMB.isDisableRe}"
+									value="#{alteracaoClienteMB.alteracaoCliente.clienteAtual}">
+									<f:selectItems id="itensClientesAtuais"
+										value="#{alteracaoClienteMB.itensClientesAtuais}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu>
+							</td>
+							<td><h:outputText value="#{b.dataTransferencia}" /></td>
+							<td>
+								<rich:message id="msgsData"
+									for="calData" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calData"
+									value="#{alteracaoClienteMB.alteracaoCliente.dataTransferencia}"
+									datePattern="dd/MM/yyyy" 
+									inputStyle="width: 95px;"
+									label="#{b.data}"
+									disabled="#{alteracaoClienteMB.isDisableRe}" 
+									enableManualInput="true"
+									inputSize="10" 
+									inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar>
+							</td>
+						</tr>
+					</table>
+				</rich:panel>
+				<rich:spacer height="5px"/>
+				<table width="100%">
+					<tr>
+						<td align="center">
+						<a4j:commandButton value="#{b.salvar}"
+							action="#{alteracaoClienteMB.doSalvar}"
+							reRender="tableAlteracaoCliente, scrollAlteracaoCliente, formDetails, msgsErros"
+							limitToList="true"
+							eventsQueue="queueNoDelay"
+							style="width: 80px; cursor: pointer;cursor: hand;"
+							status="statusAguarde" />
+						<rich:spacer width="10px"/>
+						<a4j:commandButton value="#{b.novo}" status="statusAguarde"
+							eventsQueue="queueNoDelay"
+							reRender="formDetails"
+							limitToList="true"
+							oncomplete="limpaForm('formDetails');"
+							ajaxSingle="true" action="#{alteracaoClienteMB.doNovo}"
+							style="width: 80px; cursor: pointer;cursor: hand;" /></td>
+					</tr>
+				</table>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

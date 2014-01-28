@@ -1,0 +1,1953 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+<ui:decorate template="../../../templates/listagem.xhtml">
+	<ui:param name="formName" value="formFuncionario" />
+	<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeFuncionario}
+	</ui:define>
+	<ui:define name="botoesContexto">
+		<rich:toolBarGroup>
+			<h:graphicImage value="/static/images/poti.png" />
+			<h:outputText value="#{b.cadastroDeFuncionario}" />
+		</rich:toolBarGroup>
+		<rich:toolBarGroup>
+			<a4j:commandButton value="#{b.atualizar}" 
+				status="statusAguarde"
+				title="#{b.atualizarListagem}"
+				action="#{funcionarioMB.doConsultarPesquisa}"
+				rendered="#{funcionarioMB.consultarFuncionario}"
+				reRender="tableFuncionario, scrollFuncionario, formDetails"
+				limitToList="true"
+				eventsQueue="queueNoDelay"
+				style="width: 80px; cursor: pointer;cursor: hand;" />
+			<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+				onclick="if(!confirmarOperacaoAjax(this))return false;"
+				action="#{funcionarioMB.doExcluirLote}" 
+				reRender="tableFuncionario, scrollFuncionario, formDetails, msgsErros"
+				limitToList="true"
+				rendered="#{funcionarioMB.excluirFuncionario}"
+				eventsQueue="queueNoDelay"
+				style="width: 80px; cursor: pointer;cursor: hand;" />
+			<poti:download mbean="#{funcionarioMB}" />
+		</rich:toolBarGroup>
+	</ui:define>
+	<ui:define name="grid">
+		<rich:toolBar itemSeparator="grid">
+			<rich:toolBarGroup>
+				<table>
+					<tr>
+						<td><h:outputText value="#{b.cliente}" /></td>
+						<td><h:selectOneMenu id="selClientePesq" style="width:250px;"
+							label="#{b.cliente}" value="#{funcionarioMB.clientePesquisa}">
+							<f:selectItems id="itensClientes"
+								value="#{funcionarioMB.itensClientes}" />
+							<f:converter converterId="identifiableConverter" />
+							<a4j:support action="#{funcionarioMB.doConsultarPesquisa}"
+								reRender="tableFuncionario, scrollFuncionario, formDetails"
+								limitToList="true" 
+								event="onchange" 
+								eventsQueue="queueNoDelay" />
+						</h:selectOneMenu></td>
+						<td><h:outputText value="#{b.situacaoFuncionario}" /></td>
+						<td><h:selectOneMenu id="selSituacaoFuncionarioPesq"
+							label="#{b.situacaoFuncionario}"
+							value="#{funcionarioMB.situacaoFuncionarioPesquisa}"
+							style="width: 250px;">
+							<f:selectItems id="itensSituacaoFuncionario"
+								value="#{funcionarioMB.itensSituacaoFuncionario}" />
+							<f:converter converterId="identifiableConverter" />
+							<a4j:support action="#{funcionarioMB.doConsultarPesquisa}"
+								reRender="tableFuncionario, scrollFuncionario, formDetails"
+								limitToList="true" event="onchange" eventsQueue="queueNoDelay" />
+						</h:selectOneMenu></td>
+					</tr>
+				</table>
+			</rich:toolBarGroup>
+		</rich:toolBar>
+		<a4j:keepAlive beanName="funcionarioMB" />
+		<rich:extendedDataTable
+			noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+			value="#{funcionarioMB.dataModel}" 
+			id="tableFuncionario"
+			var="funcionario" 
+			height="203px"
+			rows="6" 
+			enableContextMenu="false"
+			selectionMode="single"
+			rendered="#{funcionarioMB.consultarFuncionario}" 
+			reRender="scrollFuncionario"
+			sortMode="single"
+			rowClasses="rowPar, rowImpar"
+			onRowMouseOver="jQuery(this).addClass('activeRow');"
+			onRowMouseOut="jQuery(this).removeClass('activeRow');"
+			style="text-transform: uppercase;">
+			<f:facet name="header">
+				<rich:columnGroup>
+					<rich:column>
+						<h:selectBooleanCheckbox id="checkFuncionarioAll"
+							onclick="jqCheckAll(this, 'formFuncionario:tableFuncionario');"
+							value="#{funcionarioMB.checkFuncionarioAll}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.re}" />
+					</rich:column>
+					<rich:column>
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.nome}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.ctps}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.serie}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.rg}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.cpf}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.cargo}" />
+					</rich:column>
+					<rich:column>
+						<h:outputText value="#{b.dataAdmissao}" />
+					</rich:column>
+				</rich:columnGroup>
+			</f:facet>
+			<rich:column width="35px" align="center">
+				<h:selectBooleanCheckbox id="checkFuncionario"
+					value="#{funcionario.selecionado}"
+					onclick="interceptarEvento(event);" />
+			</rich:column>
+			<rich:column width="70px" filterMethod="#{funcionarioMB.filtraCodigoRegistro}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroCodigoRegistro}" id="txtFiltroRe" style="width: 55px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.codigoRegistro}" />
+			</rich:column>
+			<rich:column width="25px" align="center">
+				<h:graphicImage value="/static/images/verde.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Verde'}" />
+				<h:graphicImage value="/static/images/amarelo.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Amarelo'}" />
+				<h:graphicImage value="/static/images/vermelho.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Vermelho'}" />
+				<h:graphicImage value="/static/images/azul.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Azul'}" />
+				<h:graphicImage value="/static/images/cinza.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Cinza'}" />
+				<h:graphicImage value="/static/images/preto.png"
+					rendered="#{funcionario.entity.situacaoFuncionario.corEnum.nome == 'Preto'}" />
+			</rich:column>
+			<rich:column width="325px" filterMethod="#{funcionarioMB.filtraNome}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroNome}" id="txtFiltroNome" style="width: 315px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<a4j:commandLink
+					status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+					action="#{funcionarioMB.doAlterar}" eventsQueue="queueNoDelay"
+					value="#{funcionario.entity.pessoa.nome}"
+					style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+					<f:setPropertyActionListener value="#{funcionario.entity}"
+						target="#{funcionarioMB.funcionarioSelecionado1}" />
+				</a4j:commandLink>
+			</rich:column>
+			<rich:column width="70px" filterMethod="#{funcionarioMB.filtraCtps}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroCtps}" id="txtFiltroCtps" style="width: 60px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.ctps.ctps}" />
+			</rich:column>
+			<rich:column width="50px" filterMethod="#{funcionarioMB.filtraSerie}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroSerie}" id="txtFiltroSerie" style="width: 40px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.ctps.serie}" />
+			</rich:column>
+			<rich:column width="95px" filterMethod="#{funcionarioMB.filtraRg}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroRg}" id="txtFiltroRg" style="width: 85px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.rg.rg}" />
+			</rich:column>
+			<rich:column width="95px" filterMethod="#{funcionarioMB.filtraCpf}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroCpf}" id="txtFiltroCpf" style="width: 85px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.cpf}" />
+			</rich:column>
+			<rich:column width="135px" filterMethod="#{funcionarioMB.filtraCargo}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroCargo}" id="txtFiltroCargo" style="width: 125px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.cargo.cargo}" />
+			</rich:column>
+			<rich:column width="100px" filterMethod="#{funcionarioMB.filtraDataAdmissao}">
+				<f:facet name="header">
+					<h:inputText value="#{funcionarioMB.filtroDataAdmissao}" id="txtFiltroDataAdmissao" style="width: 90px">
+                        <a4j:support event="onkeyup" reRender="tableFuncionario, scrollFuncionario, formDetails"
+                        	limitToList="true"
+                        	action="#{funcionarioMB.doNovo}"
+                            ignoreDupResponses="true" requestDelay="300"
+                            oncomplete="setCaretToEnd(event);"/>
+	                </h:inputText>
+				</f:facet>
+				<h:outputText value="#{funcionario.entity.dataAdmissao}" >
+					<f:convertDateTime pattern="dd/MM/yyyy" />
+				</h:outputText>
+			</rich:column>
+		</rich:extendedDataTable>
+		<rich:datascroller id="scrollFuncionario" align="center"
+			renderIfSinglePage="false" boundaryControls="auto"
+			action="#{funcionarioMB.doNovo}"
+			reRender="formDetails"
+			fastControls="auto" stepControls="auto" for="tableFuncionario"
+			maxPages="50" page="#{funcionarioMB.scrollerPage}">
+			<f:facet name="first">
+				<h:outputText value="#{b.primeiro}" />
+			</f:facet>
+			<f:facet name="last">
+				<h:outputText value="#{b.ultimo}" />
+			</f:facet>
+		</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+						<rich:separator height="6" lineType="solid" width="100%"/>
+						</td>
+					</tr>
+				</table>
+				<poti:fieldModalMessages formAtual="formDetails"
+					mbean="${funcionarioMB}" action="verificarObrigatorios"
+					process="formDetails" />
+				<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+					timing="immediate" query="mask('99/99/9999',{placeholder:' '})" />
+				<rich:jQuery
+					query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+					selector=".maskMoney" timing="onload" id="maskMoney" />
+				<h:inputHidden value="#{funcionarioMB.funcionario.id}" />
+				<rich:tabPanel id="idTabPanel" headerAlignment="left"
+					switchType="client" width="100%" activeTabClass="activeTab"
+					selectedTab="abaDadosPessoais" headerClass="tabStyle"
+					height="400px">
+					<rich:tab name="abaDadosPessoais" id="idAbaDadosPessoais">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.dadosPessoais}" />
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.empresaResponsavel}" /></td>
+								<td><rich:message id="msgsEmpresa" for="selEmpresa"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selEmpresa" style="width:735px;"
+									label="${b.empresaResponsavel}"
+									value="#{funcionarioMB.funcionario.empresa}" required="true">
+									<f:selectItems id="itensFuncionario"
+										value="#{funcionarioMB.itensEmpresa}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.re}" /></td>
+								<td><rich:message id="msgsRE" for="txtRE"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtRE"
+									value="#{funcionarioMB.funcionario.codigoRegistro}"
+									style="width: 140px" onkeyup="somenteNumeros(this);"
+									onblur="somenteNumeros(this);" label="#{b.re}" required="true" />
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.nome}" /></td>
+								<td>
+								<table>
+									<tr>
+										<td width="510px"><rich:message id="msgsNome"
+											for="txtNome" errorLabelClass="error" />
+										<div />
+										<h:inputText id="txtNome"
+											value="#{funcionarioMB.funcionario.pessoa.nome}"
+											style="width: 478px" label="#{b.nome}" required="true" /></td>
+										<td width="100px"><h:outputText
+											value="#{b.dataNascimento}" /></td>
+										<td><rich:message id="msgsDataNascimento"
+											for="calDataNascimento" errorLabelClass="error" />
+										<div />
+										<rich:calendar id="calDataNascimento"
+											value="#{funcionarioMB.funcionario.pessoa.dataNascimento}"
+											datePattern="dd/MM/yyyy" inputStyle="width: 95px;"
+											label="#{b.dataNascimento}" enableManualInput="true"
+											inputSize="10" inputClass="maskDatePrincipal">
+											<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+										</rich:calendar></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.sexo}" /></td>
+								<td>
+								<table>
+									<tr>
+										<td width="160px"><rich:message id="msgsSexo"
+											for="selSexo" errorLabelClass="error" />
+										<div />
+										<h:selectOneRadio id="selSexo" label="#{b.sexo}"
+											value="#{funcionarioMB.funcionario.pessoa.sexo}"
+											style="width: 150px;">
+											<f:selectItem itemLabel="#{b.masculino}"
+												itemValue="MASCULINO" />
+											<f:selectItem itemLabel="#{b.feminino}" itemValue="FEMININO" />
+										</h:selectOneRadio></td>
+										<td width="83x"><h:outputText value="#{b.estadoCivil}" />
+										</td>
+										<td width="170px"><rich:message id="msgsEstadoCivil"
+											for="selEstadoCivil" errorLabelClass="error" />
+										<div />
+										<h:selectOneMenu id="selEstadoCivil" style="width:150px;"
+											label="#{b.estadoCivil}"
+											value="#{funcionarioMB.funcionario.estadoCivil}">
+											<f:selectItems id="itensEstadosCivis"
+												value="#{funcionarioMB.itensEstadosCivis}" />
+										</h:selectOneMenu></td>
+										<td width="90px"><h:outputText value="#{b.escolaridade}" />
+										</td>
+										<td><rich:message id="msgsEscolaridade"
+											for="selEscolaridade" errorLabelClass="error" />
+										<div />
+										<h:selectOneMenu id="selEscolaridade" style="width:220px;"
+											label="#{b.escolaridade}"
+											value="#{funcionarioMB.funcionario.escolaridade}">
+											<f:selectItems id="itensEscolaridade"
+												value="#{funcionarioMB.itensEscolaridade}" />
+										</h:selectOneMenu></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.deficienteFisico}" /></td>
+								<td>
+								<table>
+									<tr>
+										<td width="160px"><rich:message id="msgsDeficienteFisico"
+											for="selDeficienteFisico" errorLabelClass="error" />
+										<div />
+										<h:selectOneRadio id="selDeficienteFisico"
+											label="#{b.deficienteFisico}"
+											value="#{funcionarioMB.funcionario.deficienteFisico}"
+											style="width: 160px;">
+											<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+											<f:selectItem itemLabel="#{b.nao}" itemValue="false" />
+										</h:selectOneRadio></td>
+										<td width="83px"><h:outputText value="#{b.racaCor}" /></td>
+										<td><rich:message id="msgsRaca" for="selRaca"
+											errorLabelClass="error" />
+										<div />
+										<h:selectOneMenu id="selRaca" style="width:150px;"
+											label="#{b.racaCor}"
+											value="#{funcionarioMB.funcionario.raca}">
+											<f:selectItems id="itensRaca"
+												value="#{funcionarioMB.itensRaca}" />
+										</h:selectOneMenu></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.naturalidade}" /></td>
+								<td>
+								<table>
+									<tr>
+										<td width="160px"><rich:message id="msgsNaturalidade"
+											for="txtNaturalidade" errorLabelClass="error" />
+										<div />
+										<h:inputText id="txtNaturalidade"
+											value="#{funcionarioMB.funcionario.naturalidade}"
+											style="width: 140px" label="#{b.naturalidade}" /></td>
+										<td width="83px"><h:outputText value="#{b.uf}" /></td>
+										<td width="170px"><rich:message id="msgsUfNaturalidade"
+											for="txtUfNaturalidade" errorLabelClass="error" />
+										<div />
+										<h:inputText id="txtUfNaturalidade"
+											value="#{funcionarioMB.funcionario.ufNaturalidade}"
+											style="width: 150px" maxlength="2" label="#{b.uf}" /></td>
+										<td width="90px"><h:outputText
+											value="#{b.nascionalidade}" /></td>
+										<td><rich:message id="msgsNascionalidade"
+											for="txtNascionalidade" errorLabelClass="error" />
+										<div />
+										<h:inputText id="txtNascionalidade"
+											value="#{funcionarioMB.funcionario.nascionalidade}"
+											style="width: 213px" label="#{b.nascionalidade}" /></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.nomeDoConjuge}" /></td>
+								<td>
+								<table>
+									<tr>
+										<td width="510px"><rich:message id="msgsNomeConjuge"
+											for="txtNomeConjuge" errorLabelClass="error" />
+										<div />
+										<h:inputText id="txtNomeConjuge"
+											value="#{funcionarioMB.funcionario.nomeConjuge}"
+											style="width: 478px" label="#{b.nomeDoConjuge}" /></td>
+										<td width="100px"><h:outputText
+											value="#{b.dataNascimentoConjuge}" /></td>
+										<td><rich:message id="msgsDataNascimentoConjuge"
+											for="calDataNascimentoConjuge" errorLabelClass="error" />
+										<div />
+										<rich:calendar id="calDataNascimentoConjuge"
+											value="#{funcionarioMB.funcionario.dataNascimentoConjuge}"
+											datePattern="dd/MM/yyyy" inputStyle="width: 95px;"
+											label="#{b.dataNascimento}" enableManualInput="true"
+											inputSize="10" inputClass="maskDatePrincipal">
+											<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+										</rich:calendar></td>
+									</tr>
+								</table>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.nomeDoPai}" /></td>
+								<td width="510px"><rich:message id="msgsNomePai"
+									for="txtNomePai" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtNomePai"
+									value="#{funcionarioMB.funcionario.nomePai}"
+									style="width: 478px" label="#{b.nomeDoPai}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.nomeDaMae}" /></td>
+								<td width="510"><rich:message id="msgsNomeMae"
+									for="txtNomeMae" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtNomeMae"
+									value="#{funcionarioMB.funcionario.nomeMae}"
+									style="width: 478px" label="#{b.nomeDaMae}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.observacao}" /></td>
+								<td width="510"><h:inputTextarea id="txtObservacao"
+									value="#{funcionarioMB.funcionario.observacao}"
+									label="#{b.observacao}" style="width: 478px" rows="3" /></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaContato">
+						<f:facet name="label">
+							<h:panelGroup>
+								<div style="height: 28px;"><h:outputText
+									value="#{b.contato}" /></div>
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="8px">
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneResidencial}" /></td>
+								<td><h:inputText id="txtNumeroTelefoneResidencial"
+									value="#{funcionarioMB.funcionario.telefoneResidencial.numero}"
+									style="width: 150px;" label="#{b.telefoneResidencial}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneCelular}" /></td>
+								<td><h:inputText id="txtNumeroTelefoneCelular"
+									value="#{funcionarioMB.funcionario.telefoneCelular.numero}"
+									style="width: 150px;" label="#{b.telefoneCelular}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneRecado1}" /></td>
+								<td><h:inputText id="txtNumeroTelefoneRecado1"
+									value="#{funcionarioMB.funcionario.telefoneRecado1.numero}"
+									style="width: 150px;" label="#{b.telefoneRecado1}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneCelularRecado1}" />
+								</td>
+								<td><h:inputText id="txtNumeroTelefoneCelularRecado1"
+									value="#{funcionarioMB.funcionario.telefoneCelularRecado1.numero}"
+									style="width: 150px;" label="#{b.telefoneCelularRecado1}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneRecado2}" /></td>
+								<td><h:inputText id="txtNumeroTelefoneRecado2"
+									value="#{funcionarioMB.funcionario.telefoneRecado2.numero}"
+									style="width: 150px;" label="#{b.telefoneRecado2}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{b.telefoneCelularRecado2}" />
+								</td>
+								<td><h:inputText id="txtNumeroTelefoneCelularRecado2"
+									value="#{funcionarioMB.funcionario.telefoneCelularRecado2.numero}"
+									style="width: 150px;" label="#{b.telefoneCelularRecado2}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.email}" /></td>
+								<td><rich:message id="msgsEmail" for="txtEmail"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtEmail"
+									value="#{funcionarioMB.funcionario.pessoa.email}"
+									style="width: 150px" validator="EmailValidator"
+									label="#{b.email}" /></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaDocumentos">
+						<f:facet name="label">
+							<h:panelGroup>
+								<div style="height: 28px;"><h:outputText
+									value="#{b.documentos}" /></div>
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="8px">
+							<tr>
+								<td><h:outputText value="#{b.ctps}" /></td>
+								<td><rich:message id="msgsCtps" for="txtCtps"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCtps"
+									value="#{funcionarioMB.funcionario.ctps.ctps}"
+									onkeyup="somenteNumeros(this)" onblur="somenteNumeros(this);"
+									style="width: 100px" maxlength="8" label="#{b.ctps}"/></td>
+								<td><h:outputText value="#{b.serie}" /></td>
+								<td><rich:message id="msgsSerie" for="txtSerie"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtSerie"
+									value="#{funcionarioMB.funcionario.ctps.serie}"
+									onkeyup="somenteNumeros(this)" onblur="somenteNumeros(this);"
+									style="width: 100px" maxlength="5" label="#{b.serie}"/></td>
+								<td><h:outputText value="#{b.uf}" /></td>
+								<td><rich:message id="msgsUfCtps" for="txtUfCtps"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtUfCtps"
+									value="#{funcionarioMB.funcionario.ctps.uf}"
+									style="width: 100px" maxlength="2" label="#{b.uf}" /></td>
+								<td><h:outputText value="#{b.dataExpedicao}" /></td>
+								<td><rich:message id="msgsDataExpedicaoCtps"
+									for="calDataExpedicaoCtps" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataExpedicaoCtps"
+									value="#{funcionarioMB.funcionario.ctps.dataEmissao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataExpedicao}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.pis}" /></td>
+								<td><rich:message id="msgsPis" for="txtPis"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtPis"
+									value="#{funcionarioMB.funcionario.pis.pis}" maxlength="11"
+									onkeyup="somenteNumeros(this)" onblur="somenteNumeros(this);"
+									style="width: 100px" label="#{b.pis}" /></td>
+								<td><h:outputText value="#{b.dataCadastro}" /></td>
+								<td><rich:message id="msgsDataCadastroPis"
+									for="calDataCadastroPis" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataCadastroPis"
+									value="#{funcionarioMB.funcionario.pis.dataEmissao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataCadastroPis}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.CPF}" /></td>
+								<td><rich:message id="msgsCpf" for="txtCpf"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCpf"
+									value="#{funcionarioMB.funcionario.cpf}" style="width: 100px"
+									maxlength="14" onkeyup="somenteNumeros(this)"
+									onblur="somenteNumeros(this);" label="#{b.cpf}" />
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.rg}" /></td>
+								<td><rich:message id="msgsRg" for="txtRg"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtRg"
+									value="#{funcionarioMB.funcionario.rg.rg}" style="width: 100px"
+									label="#{b.rg}" maxlength="13" /></td>
+								<td><h:outputText value="#{b.orgaoExpedidor}" /></td>
+								<td><rich:message id="msgsOrgaoExpedidor"
+									for="txtOrgaoExpedidor" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtOrgaoExpedidor"
+									value="#{funcionarioMB.funcionario.rg.orgaoEmissor}"
+									style="width: 100px" label="#{b.orgaoExpedidor}" /></td>
+								<td><h:outputText value="#{b.uf}" /></td>
+								<td><rich:message id="msgsUf" for="txtUf"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtUf"
+									value="#{funcionarioMB.funcionario.rg.uf}" style="width: 100px"
+									maxlength="2" label="#{b.uf}" /></td>
+								<td><h:outputText value="#{b.dataEmissao}" /></td>
+								<td><rich:message id="msgsDataEmissaoRg"
+									for="calDataEmissaoRg" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataEmissaoRg"
+									value="#{funcionarioMB.funcionario.rg.dataEmissao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataEmissaoRg}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.habilitacao}" /></td>
+								<td><rich:message id="msgsHabilitacao" for="txtHabilitacao"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtHabilitacao"
+									value="#{funcionarioMB.funcionario.carteiraHabilitacao.habilitacao}"
+									style="width: 100px" maxlength="20" label="#{b.habilitacao}" />
+								</td>
+								<td><h:outputText value="#{b.categoria}" /></td>
+								<td><rich:message id="msgsCategoria" for="txtCategoria"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCategoria"
+									value="#{funcionarioMB.funcionario.carteiraHabilitacao.categoria}"
+									style="width: 100px" maxlength="5" label="#{b.categoria}" /></td>
+								<td><h:outputText value="#{b.dataVencimento}" /></td>
+								<td><rich:message id="msgsDataVencimento"
+									for="calDataVencimento" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataVencimento"
+									value="#{funcionarioMB.funcionario.carteiraHabilitacao.dataVencimento}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataVencimento}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.documentoMilitar}" /></td>
+								<td><rich:message id="msgsDocumentoMilitar"
+									for="txtDocumentoMilitar" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtDocumentoMilitar"
+									value="#{funcionarioMB.funcionario.documentoMilitar.documento}"
+									style="width: 100px" maxlength="20"
+									label="#{b.documentoMilitar}" /></td>
+								<td><h:outputText value="#{b.numeroDocumentoMilitar}" /></td>
+								<td><rich:message id="msgsNumeroDocumentoMilitar"
+									for="txtNumeroDocumentoMilitar" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtNumeroDocumentoMilitar"
+									value="#{funcionarioMB.funcionario.documentoMilitar.numero}"
+									style="width: 100px" maxlength="20"
+									onkeyup="somenteNumeros(this);" onblur="somenteNumeros(this);"
+									label="#{b.numeroDocumentoMilitar}" /></td>
+								<td><h:outputText value="#{b.categoriaDocumentoMilitar}" />
+								</td>
+								<td><rich:message id="msgsCategoriaDocumentoMilitar"
+									for="txtCategoriaDocumentoMilitar" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCategoriaDocumentoMilitar"
+									value="#{funcionarioMB.funcionario.documentoMilitar.categoria}"
+									style="width: 100px" maxlength="20"
+									label="#{b.categoriaDocumentoMilitar}" /></td>
+								<td><h:outputText value="#{b.certificadoReservista}" /></td>
+								<td><rich:message id="msgsCertificadoReservista"
+									for="selCertificadoReservista" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selCertificadoReservista"
+									label="#{b.certificadoReservista}"
+									value="#{funcionarioMB.funcionario.certificadoReservista}"
+									style="width: 120px;">
+									<f:selectItems id="itensCertificadoReservista"
+										value="#{funcionarioMB.itensCertificadoReservista}" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.tituloEleitor}" /></td>
+								<td><rich:message id="msgsTituloEleitor"
+									for="txtTituloEleitor" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtTituloEleitor"
+									value="#{funcionarioMB.funcionario.tituloEleitor.titulo}"
+									style="width: 100px" maxlength="20" label="#{b.tituloEleitor}" />
+								</td>
+								<td><h:outputText value="#{b.zona}" /></td>
+								<td><rich:message id="msgsZona" for="txtZona"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtZona"
+									value="#{funcionarioMB.funcionario.tituloEleitor.zona}"
+									style="width: 100px" maxlength="10" label="#{b.zona}" /></td>
+								<td><h:outputText value="#{b.secao}" /></td>
+								<td><rich:message id="msgsSecao" for="txtSecao"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtSecao"
+									value="#{funcionarioMB.funcionario.tituloEleitor.secao}"
+									style="width: 100px" maxlength="20" label="#{b.secao}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.optanteFgts}" /></td>
+								<td><rich:message id="msgsOptanteFgts" for="selOptanteFgts"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneRadio id="selOptanteFgts" label="#{b.optanteFgts}"
+									value="#{funcionarioMB.funcionario.situacaoFgts.optante}"
+									style="width: 100px;">
+									<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+									<f:selectItem itemLabel="#{b.nao}" itemValue="false" />
+								</h:selectOneRadio></td>
+								<td><h:outputText value="#{b.dataOpcao}" /></td>
+								<td><rich:message id="msgsDataOpcao" for="calDataOpcao"
+									errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataOpcao"
+									value="#{funcionarioMB.funcionario.situacaoFgts.dataOpcao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataOpcaoFgts}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.dataRetratacao}" /></td>
+								<td><rich:message id="msgsDataRetratacao"
+									for="calDataRetratacao" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataRetratacao"
+									value="#{funcionarioMB.funcionario.situacaoFgts.dataRetratacao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataRetratacaoFgts}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.bancoDepositante}" /></td>
+								<td><rich:message id="msgsBancoDepositante"
+									for="txtBancoDepositante" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtBancoDepositante"
+									value="#{funcionarioMB.funcionario.situacaoFgts.bancoDepositante}"
+									style="width: 100px" label="#{b.bancoDepositante}" /></td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<br />
+									<h:outputText value="#{b.documentosEstrangeiro}" style="font-weight: bold;" />
+								</td>
+							</tr>
+							<tr>
+								<td colspan="8">
+									<rich:separator height="2" lineType="solid"/>
+								</td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.ctps}" /></td>
+								<td><rich:message id="msgsCtpsEstrangeiro"
+									for="txtCtpsEstrangeiro" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCtpsEstrangeiro"
+									value="#{funcionarioMB.funcionario.ctpsEstrangeiro.ctps}"
+									style="width: 100px" label="#{b.ctps}" /></td>
+								<td><h:outputText value="#{b.dataEmissaoCtps}" /></td>
+								<td><rich:message id="msgsDataEmissaoCtpsEstrangeiro"
+									for="calDataEmissaoCtpsEstrangeiro" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataEmissaoCtpsEstrangeiro"
+									value="#{funcionarioMB.funcionario.ctpsEstrangeiro.dataEmissao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataEmissaoCtps}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.dataValidade}" /></td>
+								<td><rich:message id="msgsDataValidadeCptsEstrangeiro"
+									for="calDataValidadeCtpsEstrangeiro" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataValidadeCtpsEstrangeiro"
+									value="#{funcionarioMB.funcionario.ctpsEstrangeiro.dataValidade}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataValidade}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.rne}" /></td>
+								<td><rich:message id="msgsRne" for="txtRne"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtRne"
+									value="#{funcionarioMB.funcionario.rneEstrangeiro.rne}"
+									style="width: 100px" label="#{b.rne}" /></td>
+								<td><h:outputText value="#{b.dataValidadeRne}" /></td>
+								<td><rich:message id="msgsDataValidadeRne"
+									for="calDataValidadeRne" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataValidadeRne"
+									value="#{funcionarioMB.funcionario.rneEstrangeiro.dataValidade}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataValidadeRne}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.tipoVisto}" /></td>
+								<td><rich:message id="msgsTipoVisto" for="txtTipoVisto"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtTipoVisto"
+									value="#{funcionarioMB.funcionario.rneEstrangeiro.tipoVisto}"
+									style="width: 100px" label="#{b.tipoVisto}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.naturalizado}" /></td>
+								<td><rich:message id="msgsNaturalizado"
+									for="selNaturalizado" errorLabelClass="error" />
+								<div />
+								<h:selectOneRadio id="selNaturalizado" label="#{b.naturalizado}"
+									value="#{funcionarioMB.funcionario.naturalizado}"
+									style="width: 100px;">
+									<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+									<f:selectItem itemLabel="#{b.nao}" itemValue="false" />
+								</h:selectOneRadio></td>
+								<td><h:outputText value="#{b.dataNaturalizacao}" /></td>
+								<td><rich:message id="msgsDataNaturalizacao"
+									for="calDataNaturalizacao" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataNaturalizacao"
+									value="#{funcionarioMB.funcionario.dataNaturalizacao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataNaturalizacao}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaEndereco">
+						<f:facet name="label">
+							<h:panelGroup>
+								<div style="height: 28px;"><h:outputText
+									value="#{b.endereco}" /></div>
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.cep}" /></td>
+								<td><rich:message id="msgsCep" for="txtCep"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCep"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.cep}"
+									style="width: 88px" label="#{b.cep}" converter="CepConverter">
+									<rich:jQuery selector="#txtCep" timing="onload"
+										query="mask('99999-999')" />
+								</h:inputText></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.endereco}" /></td>
+								<td><rich:message id="msgsEndereco" for="txtEndereco"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtEndereco"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.endereco}"
+									style="width: 250px" label="#{b.endereco}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.numero}" /></td>
+								<td><rich:message id="msgsNumero" for="txtNumero"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtNumero"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.numero}"
+									style="width: 88px" label="#{b.numero}"
+									onkeyup="somenteNumeros(this);" onblur="somenteNumeros(this);"
+									maxlength="5" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.complemento}" /></td>
+								<td><rich:message id="msgsComplemento" for="txtComplemento"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtComplemento"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.complemento}"
+									style="width: 250px" label="#{b.complemento}" /></td>
+							</tr>
+
+							<tr>
+								<td><h:outputText value="#{b.bairro}" /></td>
+								<td><h:inputText id="txtBairro"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.bairro}"
+									style="width: 250px" label="#{b.bairro}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.cidade}" /></td>
+								<td><rich:message id="msgCidade" for="txtCidade"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtCidade"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.cidade}"
+									style="width: 250px" label="#{b.cidade}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.estado}" /></td>
+								<td><rich:message id="msgsEstado" for="selEstado"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selEstado" label="${b.estado}"
+									value="#{funcionarioMB.funcionario.pessoa.endereco.estado}">
+									<f:selectItems id="itensEstado"
+										value="#{funcionarioMB.itensEstado}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaDadosFuncionais">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.dadosFuncionais}" />
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="12px">
+							<tr>
+								<td><h:outputText value="#{b.salarioAdmissao}" /></td>
+								<td><rich:message id="msgsSalarioAdmissao"
+									for="txtSalarioAdmissao" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtSalarioAdmissao"
+									value="#{funcionarioMB.funcionario.salario}"
+									style="width: 100px" label="#{b.salarioAdmissao}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/></td>
+								<td><h:outputText value="#{b.cargoAdmissao}" /></td>
+								<td colspan="3"><rich:message id="msgsCargoAdmissao"
+									for="selCargoAdmissao" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selCargoAdmissao" style="width:330px;"
+									label="#{b.cargoAdmissao}"
+									value="#{funcionarioMB.funcionario.cargo}">
+									<f:selectItems id="itensCargos"
+										value="#{funcionarioMB.itensCargo}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+								<td><h:outputText value="#{b.primeiroEmprego}" /></td>
+								<td><rich:message id="msgsPrimeiroEmprego"
+									for="selPrimeiroEmprego" errorLabelClass="error" />
+								<div />
+								<h:selectOneRadio id="selPrimeiroEmprego"
+									label="#{b.primeiroEmprego}"
+									value="#{funcionarioMB.funcionario.isPrimeiroEmprego}"
+									style="width: 100px;">
+									<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+									<f:selectItem itemLabel="#{b.nao}" itemValue="false" />
+								</h:selectOneRadio></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.dataAdmissao}" /></td>
+								<td><rich:message id="msgsDataAdmissao"
+									for="calDataAdmissao" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataAdmissao"
+									value="#{funcionarioMB.funcionario.dataAdmissao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataAdmissao}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.tipoAdmissao}" /></td>
+								<td colspan="3"><rich:message id="msgsTipoAdmissao"
+									for="selTipoAdmissao" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selTipoAdmissao"
+									label="#{b.tipoDeAdmissao}"
+									value="#{funcionarioMB.funcionario.tipoAdmissao}"
+									style="width: 330px;">
+									<f:selectItems id="itensTipoAdmissao"
+										value="#{funcionarioMB.itensTipoAdmissao}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+								<td><h:outputText value="#{b.tipoDeContrato}" /></td>
+								<td><h:selectOneMenu id="selTipoContrato"
+									label="#{b.tipoDeContrato}"
+									value="#{funcionarioMB.funcionario.tipoContrato}"
+									style="width: 100px;">
+									<f:selectItems id="itensTipoContrato"
+										value="#{funcionarioMB.itensTipoContrato}" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.dataExameMedico}" /></td>
+								<td><rich:message id="msgsDataExameMedico"
+									for="calDataExameMedico" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataExameMedico"
+									value="#{funcionarioMB.funcionario.dataExameMedico}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataExameMedico}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar></td>
+								<td><h:outputText value="#{b.vinculoEmpregaticio}" /></td>
+								<td colspan="3"><h:selectOneMenu id="selVinculoEmpregaticio"
+									label="#{b.vinculoEmpregaticio}"
+									value="#{funcionarioMB.funcionario.vinculoEmpregaticio}"
+									style="width: 330px;">
+									<f:selectItems id="itensVinculoEmpregaticio"
+										value="#{funcionarioMB.itensVinculoEmpregaticio}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.formaPagamento}" /></td>
+								<td><rich:message id="msgsFormaPagamento"
+									for="selFormaPagamento" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selFormaPagamento" style="width:100px;"
+									label="#{b.formaPagamento}"
+									value="#{funcionarioMB.funcionario.formaPagamento}">
+									<f:selectItems id="itensFormaPagamento"
+										value="#{funcionarioMB.itensFormaPagamento}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+								<td><h:outputText value="#{b.situacao}" /></td>
+								<td colspan="3"><h:selectOneMenu id="selSituacaoFuncionario"
+									label="#{b.situacaoFuncionario}"
+									value="#{funcionarioMB.funcionario.situacaoFuncionario}"
+									style="width: 330px;">
+									<f:selectItems id="itensSituacaoFuncionario"
+										value="#{funcionarioMB.itensSituacaoFuncionario}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.horasSemanais}" /></td>
+								<td><rich:message id="msgsHorasSemanais"
+									for="txtHorasSemanais" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtHorasSemanais"
+									value="#{funcionarioMB.funcionario.horasSemanais}"
+									style="width: 100px" onkeyup="somenteNumeros(this);"
+									onblur="somenteNumeros(this);" label="#{b.horasSemanais}" /></td>
+								<td><h:outputText value="#{b.horasMensais}" /></td>
+								<td><rich:message id="msgsHorasMensais"
+									for="txtHorasMensais" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtHorasMensais"
+									value="#{funcionarioMB.funcionario.horasMensais}"
+									style="width: 100px" onkeyup="somenteNumeros(this);"
+									onblur="somenteNumeros(this);" label="#{b.horasMensais}" /></td>
+							</tr>
+						</table>
+						<table cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.adicionalNoturno}" /></td>
+								<td>
+									<h:selectBooleanCheckbox id="checkAdicionalNoturno" 
+										value="#{funcionarioMB.funcionario.adicionalNoturno}"/>
+								</td>
+									<td><h:outputText value="#{b.adicionalPericulosidade}" /></td>
+								<td>
+									<h:selectBooleanCheckbox id="checkAdicionalPericulosidade" 
+										value="#{funcionarioMB.funcionario.adicionalPericulosidade}"/>
+								</td>
+									<td><h:outputText value="#{b.adicionalInsalubridade}" /></td>
+								<td>
+									<h:selectBooleanCheckbox id="checkAdicionalInsalubridade" 
+										value="#{funcionarioMB.funcionario.adicionalInsalubridade}"/>
+								</td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaDadosBancarios">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.dadosBancarios}" />
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.banco}" /></td>
+								<td><rich:message id="msgsBanco" for="txtBanco"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtBanco"
+									value="#{funcionarioMB.funcionario.contaBancaria.banco}"
+									style="width: 150px" label="#{b.banco}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.agencia}" /></td>
+								<td><rich:message id="msgsAgencia" for="txtAgencia"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtAgencia"
+									value="#{funcionarioMB.funcionario.contaBancaria.agencia}"
+									style="width: 150px" label="#{b.agencia}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.conta}" /></td>
+								<td><rich:message id="msgsConta" for="txtConta"
+									errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtConta"
+									value="#{funcionarioMB.funcionario.contaBancaria.conta}"
+									style="width: 150px" label="#{b.conta}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.tipoConta}" /></td>
+								<td><rich:message id="msgsTipoConta" for="selTipoConta"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selTipoConta" style="width:150px;"
+									label="${b.tipoConta}"
+									value="#{funcionarioMB.funcionario.contaBancaria.tipoContaBancaria}">
+									<f:selectItems id="itensTipoContaBancaria"
+										value="#{funcionarioMB.itensTipoContaBancaria}" />
+								</h:selectOneMenu></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaLocalDeTrabalho">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.localDeTrabalho}" />
+							</h:panelGroup>
+						</f:facet>
+						<table cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.cliente}" /></td>
+								<td><rich:message id="msgsClientes" for="selCliente"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selCliente" style="width:400px;"
+									label="#{b.cliente}"
+									value="#{funcionarioMB.localTrabalho.cliente}">
+									<f:selectItems id="itensClientes"
+										value="#{funcionarioMB.itensClientes}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.jornadaDeTrabalho}" /></td>
+								<td><rich:message id="msgsJornadaTrabalho"
+									for="selJornadaDeTrabalho" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selJornadaDeTrabalho" style="width:400px;"
+									label="#{b.jornadaDeTrabalho}"
+									value="#{funcionarioMB.localTrabalho.jornadaTrabalho}">
+									<f:selectItems id="itensJornadaTrabalho"
+										value="#{funcionarioMB.itensJornadaTrabalho}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.setor}" /></td>
+								<td><rich:message id="msgsSetor" for="selSetor"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selSetor" style="width:400px;"
+									label="${b.setor}" value="#{funcionarioMB.localTrabalho.setor}">
+									<f:selectItems id="itensSetor"
+										value="#{funcionarioMB.itensSetor}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.dia}" /></td>
+								<td><rich:message id="msgsDia" for="selDia"
+									errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selDia" style="width:400px;"
+									label="${b.dia}"
+									value="#{funcionarioMB.localTrabalho.diaSemana}">
+									<f:selectItems id="itensDiaSemana"
+										value="#{funcionarioMB.itensDiaSemana}" />
+								</h:selectOneMenu></td>
+							</tr>
+						</table>
+						<table cellspacing="10px" align="right">
+							<tr>
+								<td><a4j:commandButton value="#{b.adicionar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAdicionarLocalTrabalho}"
+									reRender="selSetor, selDia, selJornadaDeTrabalho, selCliente, tableLocalTrabalho, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="selSetor, selDia, selJornadaDeTrabalho, selCliente, tableLocalTrabalho"
+									eventsQueue="queueNoDelay"
+									style="width: 80px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.alterar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAlterarLocalTrabalho}"
+									reRender="selSetor, selDia, selJornadaDeTrabalho, selCliente, tableLocalTrabalho, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="selSetor, selDia, selJornadaDeTrabalho, selCliente, tableLocalTrabalho, msgsErros"
+									eventsQueue="queueNoDelay"
+									style="width: 80px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.remover}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doRemoverLocalTrabalho}"
+									reRender="tableLocalTrabalho" limitToList="true"
+									ajaxSingle="true" process="tableLocalTrabalho"
+									eventsQueue="queueNoDelay"
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.limpar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doLimparSelecionadosLocalTrabalho}"
+									reRender="selSetor, selDia, selJornadaDeTrabalho, selCliente"
+									limitToList="true" ajaxSingle="true"
+									process="selSetor, selDia, selJornadaDeTrabalho, selCliente"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /></td>
+							</tr>
+						</table>
+						<rich:dataTable value="#{funcionarioMB.listLocalTrabalho}"
+							width="980px" var="localTrabalho" id="tableLocalTrabalho"
+							rowClasses="rowPar, rowImpar"
+							onRowMouseOver="jQuery(this).addClass('activeRow')"
+							onRowMouseOut="jQuery(this).removeClass('activeRow')">
+
+							<rich:column width="15px" align="center">
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="checkLocalTrabalhoAll"
+										onclick="jqCheckAll(this, 'formDetails:tableLocalTrabalho');"
+										value="#{funcionarioMB.checkLocalTrabalhoAll}" />
+								</f:facet>
+								<h:selectBooleanCheckbox id="checkLocalTrabalho"
+									value="#{localTrabalho.selecionado}"
+									onclick="interceptarEvento(event);" />
+							</rich:column>
+							<rich:column width="130px">
+								<f:facet name="header">
+									<h:outputText value="#{b.dia}" />
+								</f:facet>
+								<a4j:commandLink status="statusAguarde"
+									process="selSetor, selDia, selJornadaDeTrabalho, selCliente"
+									reRender="selSetor, selDia, selJornadaDeTrabalho, selCliente"
+									limitToList="true" ajaxSingle="true" eventsQueue="queueNoDelay"
+									action="#{funcionarioMB.doSelecionarLocalTrabalho}"
+									value="#{localTrabalho.entity.diaSemana.diaSemana}"
+									style="cursor: pointer;cursor: hand;"
+									styleClass="linkAbreModal">
+									<f:setPropertyActionListener value="#{localTrabalho.entity}"
+										target="#{funcionarioMB.localTrabalhoSelecionado}" />
+								</a4j:commandLink>
+							</rich:column>
+							<rich:column width="300px">
+								<f:facet name="header">
+									<h:outputText value="#{b.cliente}" />
+								</f:facet>
+								<h:outputText
+									value="#{localTrabalho.entity.cliente.nomeFantasia}" />
+							</rich:column>
+							<rich:column width="300px">
+								<f:facet name="header">
+									<h:outputText value="#{b.jornadaDeTrabalho}" />
+								</f:facet>
+								<h:outputText
+									value="#{localTrabalho.entity.jornadaTrabalho.nome}" />
+							</rich:column>
+							<rich:column width="155px">
+								<f:facet name="header">
+									<h:outputText value="#{b.setor}" />
+								</f:facet>
+								<h:outputText value="#{localTrabalho.entity.setor.nome}" />
+							</rich:column>
+						</rich:dataTable>
+					</rich:tab>
+					<rich:tab name="abaDependentes">
+						<f:facet name="label">
+							<h:panelGroup>
+								<div style="height: 28px;"><h:outputText
+									value="#{b.dependentes}" /></div>
+							</h:panelGroup>
+						</f:facet>
+						<a4j:outputPanel id="outPutDependentes">
+							<table cellspacing="10px">
+								<tr>
+									<td><h:outputText value="#{b.nome}" /></td>
+									<td colspan="3"><rich:message id="msgsNomeDependente"
+										for="txtNomeDependente" />
+									<div />
+									<h:inputText id="txtNomeDependente"
+										value="#{funcionarioMB.dependente.nome}" style="width: 550px"
+										label="#{b.nome}" /></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.localNascimento}" /></td>
+									<td><rich:message id="msgsLocalNascimentoDependente"
+										for="txtLocalNascimentoDependente" />
+									<div />
+									<h:inputText id="txtLocalNascimentoDependente"
+										value="#{funcionarioMB.dependente.localNascimento}"
+										style="width: 313px" label="#{b.localNascimento}" /></td>
+									<td><h:outputText value="#{b.dataNascimento}" /></td>
+									<td><rich:message id="msgsDataNascimentoDependente"
+										for="calDataNascimentoDependente" errorLabelClass="error"/>
+									<div />
+									<rich:calendar id="calDataNascimentoDependente"
+										value="#{funcionarioMB.dependente.dataNascimento}"
+										datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+										label="#{b.dataNascimento}" enableManualInput="true"
+										inputSize="10" inputClass="maskDateDependente">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+										<a4j:support action="#{funcionarioMB.doPreencheDataBaixaDependente}"
+													 event="oninputblur"
+													 reRender="calDataBaixaDependente, msgsDataNascimentoDependente, msgsErros"
+	           										 limitToList="true"
+	           										 ajaxSingle="true"
+	           										 process="calDataBaixaDependente, msgsDataNascimentoDependente"
+	           										 status="statusAguarde"	/>
+	           							<a4j:support action="#{funcionarioMB.doPreencheDataBaixaDependente}"
+													 event="onchanged"
+													 reRender="calDataBaixaDependente, msgsDataNascimentoDependente, msgsErros"
+	           										 limitToList="true"
+	           										 ajaxSingle="true"
+	           										 process="calDataBaixaDependente, msgsDataNascimentoDependente"
+	           										 status="statusAguarde"	/>
+									</rich:calendar></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.cartorio}" /></td>
+									<td><rich:message id="msgsCartorioDependente"
+										for="txtCartorioDependente" />
+									<div />
+									<h:inputText id="txtCartorioDependente"
+										value="#{funcionarioMB.dependente.cartorio}"
+										style="width: 313px" label="#{b.cartorio}" /></td>
+									<td><h:outputText value="#{b.grauParentesco}" /></td>
+									<td><rich:message id="msgsParentesco" for="selParentesco"
+										errorLabelClass="error" />
+									<div />
+									<h:selectOneMenu id="selParentesco" style="width:122px;"
+										label="#{b.grauParentesco}"
+										value="#{funcionarioMB.dependente.grauParentesco}">
+										<f:selectItems id="itensGrauParentesco"
+											value="#{funcionarioMB.itensGrauParentesco}" />
+										<f:converter converterId="identifiableConverter" />
+									</h:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.numeroRegistro}" /></td>
+									<td><rich:message id="msgsNumeroRegistroDependente"
+										for="txtNumeroRegistroDependente" />
+									<div />
+									<h:inputText id="txtNumeroRegistroDependente"
+										value="#{funcionarioMB.dependente.numeroRegistro}"
+										style="width: 150px" onkeyup="somenteNumeros(this);"
+										onblur="somenteNumeros(this);" label="#{b.numeroRegistro}" />
+									</td>
+									<td><h:outputText value="#{b.dataBaixa}" /></td>
+									<td><rich:calendar id="calDataBaixaDependente"
+										value="#{funcionarioMB.dependente.dataBaixa}"
+										datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+										enableManualInput="true" inputSize="10" label="#{b.dataBaixa}"
+										inputClass="maskDateDependente"
+										readonly="true">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+									</rich:calendar></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.numeroFolha}" /></td>
+									<td><rich:message id="msgsNumeroFolhaDependente"
+										for="txtNumeroFolhaDependente" />
+									<div />
+									<h:inputText id="txtNumeroFolhaDependente"
+										value="#{funcionarioMB.dependente.numeroFolha}"
+										style="width: 150px" onkeyup="somenteNumeros(this);"
+										onblur="somenteNumeros(this);" label="#{b.numeroFolha}" /></td>
+									<td><h:outputText value="#{b.dataInclusao}" /></td>
+									<td><rich:message id="msgsDataInclusaoDependente"
+										for="calDataInclusaoDependente" errorLabelClass="error"/>
+									<div />
+									<rich:calendar id="calDataInclusaoDependente"
+										value="#{funcionarioMB.dependente.dataInclusao}"
+										datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+										enableManualInput="true" inputSize="10"
+										label="#{b.dataInclusao}" inputClass="maskDateDependente">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+									</rich:calendar>
+									<rich:jQuery id="maskDateDependente"
+										selector=".maskDateDependente" timing="immediate"
+										query="mask('99/99/9999',{placeholder:' '})" />
+									</td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.dependente24anos}" /></td>
+									<td>
+										<h:selectBooleanCheckbox id="checkDependente24anos" 
+											value="#{funcionarioMB.dependente.continuaDependente}"/>
+									</td>
+								</tr>
+						</table>
+						</a4j:outputPanel>
+						<table cellspacing="10px" align="right">
+							<tr>
+								<td><a4j:commandButton value="#{b.adicionar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAdicionarDependente}"
+									reRender="outPutDependentes, tableDependentes, scrollDependentes, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutDependentes" eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.alterar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAlterarDependente}"
+									reRender="outPutDependentes, tableDependentes, scrollDependentes, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutDependentes" eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.remover}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doRemoverDependente}"
+									reRender="tableDependentes, scrollDependentes"
+									limitToList="true" ajaxSingle="true" process="tableDependentes"
+									eventsQueue="queueNoDelay"
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.limpar}"
+									action="#{funcionarioMB.doLimparDependente}"
+									reRender="outPutDependentes" limitToList="true"
+									ajaxSingle="true" process="outPutDependentes"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /></td>
+							</tr>
+						</table>
+						<table>
+							<tr>
+								<td><rich:extendedDataTable
+									value="#{funcionarioMB.listDependente}" width="980px"
+									selectionMode="multi" enableContextMenu="false"
+									noDataLabel="#{b.cadastrosDatatableSemRegistros}" rows="4"
+									height="129px" reRender="scrollDependentes" var="dependente"
+									id="tableDependentes" rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+									<rich:column width="30px" align="center">
+										<f:facet name="header">
+											<h:selectBooleanCheckbox id="checkDependenteAll"
+												onclick="jqCheckAll(this, 'formDetails:tableDependentes');"
+												value="#{funcionarioMB.checkDependenteAll}" />
+										</f:facet>
+										<h:selectBooleanCheckbox id="checkDependente"
+											value="#{dependente.selecionado}"
+											onclick="interceptarEvento(event);" />
+									</rich:column>
+									<rich:column width="216px">
+										<f:facet name="header">
+											<h:outputText value="#{b.nome}" />
+										</f:facet>
+										<a4j:commandLink status="statusAguarde"
+											process="outPutDependentes" reRender="outPutDependentes"
+											limitToList="true" ajaxSingle="true"
+											eventsQueue="queueNoDelay" value="#{dependente.entity.nome}"
+											action="#{funcionarioMB.doSelecionarDependente}"
+											style="cursor: pointer;cursor: hand;"
+											styleClass="linkAbreModal">
+											<f:setPropertyActionListener value="#{dependente.entity}"
+												target="#{funcionarioMB.dependenteSelecionado}" />
+										</a4j:commandLink>
+									</rich:column>
+									<rich:column width="115px">
+										<f:facet name="header">
+											<h:outputText value="#{b.dataNascimento}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.dataNascimento}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</rich:column>
+									<rich:column width="140px">
+										<f:facet name="header">
+											<h:outputText value="#{b.localNascimento}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.localNascimento}" />
+									</rich:column>
+									<rich:column width="105px">
+										<f:facet name="header">
+											<h:outputText value="#{b.cartorio}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.cartorio}" />
+									</rich:column>
+									<rich:column width="75px">
+										<f:facet name="header">
+											<h:outputText value="#{b.parentesco}" />
+										</f:facet>
+										<h:outputText
+											value="#{dependente.entity.grauParentesco.descricao}" />
+									</rich:column>
+									<rich:column width="75px">
+										<f:facet name="header">
+											<h:outputText value="#{b.numeroRegistro}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.numeroRegistro}" />
+									</rich:column>
+									<rich:column width="65px">
+										<f:facet name="header">
+											<h:outputText value="#{b.numeroFolha}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.numeroFolha}" />
+									</rich:column>
+									<rich:column width="65px">
+										<f:facet name="header">
+											<h:outputText value="#{b.dataBaixa}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.dataBaixa}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</rich:column>
+									<rich:column width="95px">
+										<f:facet name="header">
+											<h:outputText value="#{b.dataInclusao}" />
+										</f:facet>
+										<h:outputText value="#{dependente.entity.dataInclusao}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</rich:column>
+								</rich:extendedDataTable> <rich:datascroller id="scrollDependentes" align="center"
+									renderIfSinglePage="false" boundaryControls="auto"
+									fastControls="auto" stepControls="auto" for="tableDependentes"
+									maxPages="10" page="#{funcionarioMB.scrollerPageDependentes}">
+									<f:facet name="first">
+										<h:outputText value="#{b.primeiro}" />
+									</f:facet>
+									<f:facet name="last">
+										<h:outputText value="#{b.ultimo}" />
+									</f:facet>
+								</rich:datascroller></td>
+							</tr>
+						</table>
+					</rich:tab>
+					<rich:tab name="abaValeTransporte">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.valeTransporte}" />
+							</h:panelGroup>
+						</f:facet>
+						<a4j:outputPanel id="outPutValeTransporte">
+							<table cellspacing="10px">
+								<tr>
+									<td><h:outputText value="#{b.meio}" /></td>
+									<td><rich:message id="msgsMeioTransporte"
+										for="selMeioTransporte" />
+									<div />
+									<h:selectOneMenu id="selMeioTransporte" style="width:340px;"
+										label="${b.meio}"
+										value="#{funcionarioMB.valeTransporte.tipoValeTransporte}">
+										<f:selectItems id="itensTipoValeTransporte"
+											value="#{funcionarioMB.itensTipoTransporte}" />
+										<f:converter converterId="identifiableConverter" />
+									</h:selectOneMenu></td>
+									<td><h:outputText value="#{b.rumo}" /></td>
+									<td><rich:message id="msgsRumo" for="selRumo"
+										errorLabelClass="error" />
+									<div />
+									<h:selectOneMenu id="selRumo" style="width:80px;"
+										label="${b.rumo}"
+										value="#{funcionarioMB.valeTransporte.rumoTransporte}">
+										<f:selectItems id="itensRumoTransporte"
+											value="#{funcionarioMB.itensRumoTransporte}" />
+									</h:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.cliente}" /></td>
+									<td><rich:message id="msgsClienteVT" for="selClienteVT" />
+									<div />
+									<h:selectOneMenu id="selClienteVT" style="width:340px;"
+										label="${b.cliente}"
+										value="#{funcionarioMB.valeTransporte.cliente}">
+										<f:selectItems id="itensClientesVT"
+											value="#{funcionarioMB.itensClientesVT}" />
+										<f:converter converterId="identifiableConverter" />
+									</h:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.dataInclusao}" /></td>
+									<td><rich:message id="msgsDataInclusao"
+										for="calDataInclusao" errorLabelClass="error" />
+									<div />
+									<rich:calendar id="calDataInclusao"
+										value="#{funcionarioMB.valeTransporte.dataAtribuicao}"
+										datePattern="dd/MM/yyyy" inputStyle="width: 80px;"
+										label="#{b.dataInclusao}" enableManualInput="true"
+										inputSize="10" inputClass="maskDateValeTransporte">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+									</rich:calendar> 
+									<rich:jQuery id="maskDateValeTransporte"
+										selector=".maskDateValeTransporte" timing="immediate"
+										query="mask('99/99/9999',{placeholder:' '})" />
+										</td>
+								</tr>
+							</table>
+						</a4j:outputPanel>
+						<table cellspacing="10px" align="right">
+							<tr>
+								<td><a4j:commandButton value="#{b.adicionar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAdicionarValeTransporte}"
+									reRender="outPutValeTransporte, tableValeTransporte, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutValeTransporte, tableValeTransporte"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.alterar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAlterarValeTransporte}"
+									reRender="outPutValeTransporte, tableValeTransporte, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutValeTransporte" eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.remover}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doRemoverValeTransporte}"
+									reRender="tableValeTransporte" limitToList="true"
+									ajaxSingle="true" process="tableValeTransporte"
+									eventsQueue="queueNoDelay"
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.limpar}"
+									action="#{funcionarioMB.doLimparValeTransporte}"
+									reRender="outPutValeTransporte" limitToList="true"
+									ajaxSingle="true" process="outPutValeTransporte"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /></td>
+							</tr>
+						</table>
+						<rich:dataTable value="#{funcionarioMB.listValeTransporte}"
+							width="980px" var="valeTransporte" id="tableValeTransporte"
+							rowClasses="rowPar, rowImpar"
+							onRowMouseOver="jQuery(this).addClass('activeRow')"
+							onRowMouseOut="jQuery(this).removeClass('activeRow')">
+							<rich:column width="15px" align="center">
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="checkValeTransporteAll"
+										onclick="jqCheckAll(this, 'formDetails:tableValeTransporte');"
+										value="#{funcionarioMB.checkValeTransporteAll}" />
+								</f:facet>
+								<h:selectBooleanCheckbox id="checkValeTransporte"
+									value="#{valeTransporte.selecionado}"
+									onclick="interceptarEvento(event);" />
+							</rich:column>
+							<rich:column width="70px">
+								<f:facet name="header">
+									<h:outputText value="#{b.codigo}" />
+								</f:facet>
+								<h:outputText
+									value="#{valeTransporte.entity.tipoValeTransporte.codigo}" />
+							</rich:column>
+							<rich:column width="100px">
+								<f:facet name="header">
+									<h:outputText value="#{b.meio}" />
+								</f:facet>
+								<a4j:commandLink status="statusAguarde"
+									process="outPutValeTransporte" reRender="outPutValeTransporte"
+									limitToList="true" ajaxSingle="true" eventsQueue="queueNoDelay"
+									value="#{valeTransporte.entity.tipoValeTransporte.nome}"
+									action="#{funcionarioMB.doSelecionarValeTransporte}"
+									style="cursor: pointer;cursor: hand;"
+									styleClass="linkAbreModal">
+									<f:setPropertyActionListener value="#{valeTransporte.entity}"
+										target="#{funcionarioMB.valeTransporteSelecionado}" />
+								</a4j:commandLink>
+							</rich:column>
+							<rich:column width="100px">
+								<f:facet name="header">
+									<h:outputText value="#{b.valor}" />
+								</f:facet>
+								<h:outputText
+									value="#{valeTransporte.entity.tipoValeTransporte.valor}" />
+							</rich:column>
+							<rich:column width="70px">
+								<f:facet name="header">
+									<h:outputText value="#{b.rumo}" />
+								</f:facet>
+								<h:outputText value="#{valeTransporte.entity.rumoTransporte}" />
+							</rich:column>
+							<rich:column width="180px">
+								<f:facet name="header">
+									<h:outputText value="#{b.cliente}" />
+								</f:facet>
+								<h:outputText
+									value="#{valeTransporte.entity.cliente.nomeFantasia}" />
+							</rich:column>
+							<rich:column width="80px">
+								<f:facet name="header">
+									<h:outputText value="#{b.dataInclusao}" />
+								</f:facet>
+								<h:outputText value="#{valeTransporte.entity.dataAtribuicao}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</rich:column>
+						</rich:dataTable>
+					</rich:tab>
+					<rich:tab name="abaValeRefeicao">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.valeRefeicao}" />
+							</h:panelGroup>
+						</f:facet>
+						<a4j:outputPanel id="outPutValeRefeicao">
+							<table width="500px" cellspacing="10px">
+								<tr>
+									<td><h:outputText value="#{b.valeRefeicao}" /></td>
+									<td><rich:message id="msgsValeRefeicao"
+										for="selValeRefeicao" />
+									<div />
+									<h:selectOneMenu id="selValeRefeicao" style="width:200px;"
+										label="${b.valeRefeicao}"
+										value="#{funcionarioMB.valeRefeicao.tipoValeRefeicao}">
+										<f:selectItems id="itensTipoValeRefeicao"
+											value="#{funcionarioMB.itensTipoRefeicao}" />
+										<f:converter converterId="identifiableConverter" />
+									</h:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputText value="#{b.dataInclusao}" /></td>
+									<td><rich:message id="msgsDataInclusaoRefeicao"
+										for="calDataInclusaoRefeicao" errorLabelClass="error" />
+									<div />
+									<rich:calendar id="calDataInclusaoRefeicao"
+										value="#{funcionarioMB.valeRefeicao.dataAtribuicao}"
+										datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+										label="#{b.dataInclusao}" enableManualInput="true"
+										inputSize="10" inputClass="maskDateValeRefeicao">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+									</rich:calendar>
+									<rich:jQuery id="maskDateValeRefeicao"
+										selector=".maskDateValeRefeicao" timing="immediate"
+										query="mask('99/99/9999',{placeholder:' '})" />
+										</td>
+								</tr>
+							</table>
+						</a4j:outputPanel>
+						<table cellspacing="10px" align="right">
+							<tr>
+								<td><a4j:commandButton value="#{b.adicionar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAdicionarValeRefeicao}"
+									reRender="outPutValeRefeicao, tableValeRefeicao, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutValeRefeicao, tableValeRefeicao"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.alterar}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doAlterarValeRefeicao}"
+									reRender="outPutValeRefeicao, tableValeRefeicao, msgsErros"
+									limitToList="true" ajaxSingle="true"
+									process="outPutValeRefeicao" eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.remover}"
+									status="statusAguarde"
+									action="#{funcionarioMB.doRemoverValeRefeicao}"
+									reRender="tableValeRefeicao" limitToList="true"
+									ajaxSingle="true" process="tableValeRefeicao"
+									eventsQueue="queueNoDelay"
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> <a4j:commandButton value="#{b.limpar}"
+									action="#{funcionarioMB.doLimparValeRefeicao}"
+									reRender="outPutValeRefeicao" limitToList="true"
+									ajaxSingle="true" process="outPutValeRefeicao"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /></td>
+							</tr>
+						</table>
+						<rich:dataTable value="#{funcionarioMB.listValeRefeicao}"
+							width="980px" var="valeRefeicao" id="tableValeRefeicao"
+							rowClasses="rowPar, rowImpar"
+							onRowMouseOver="jQuery(this).addClass('activeRow')"
+							onRowMouseOut="jQuery(this).removeClass('activeRow')">
+							<rich:column width="15px" align="center">
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="checkValeRefeicaoAll"
+										onclick="jqCheckAll(this, 'formDetails:tableValeRefeicao');"
+										value="#{funcionarioMB.checkValeRefeicaoAll}" />
+								</f:facet>
+								<h:selectBooleanCheckbox id="checkValeRefeicao"
+									value="#{valeRefeicao.selecionado}"
+									onclick="interceptarEvento(event);" />
+							</rich:column>
+							<rich:column width="125px">
+								<f:facet name="header">
+									<h:outputText value="#{b.codigo}" />
+								</f:facet>
+								<h:outputText
+									value="#{valeRefeicao.entity.tipoValeRefeicao.codigo}" />
+							</rich:column>
+							<rich:column width="400px">
+								<f:facet name="header">
+									<h:outputText value="#{b.valeRefeicao}" />
+								</f:facet>
+								<a4j:commandLink status="statusAguarde"
+									process="outPutValeRefeicao" reRender="outPutValeRefeicao"
+									limitToList="true" ajaxSingle="true" eventsQueue="queueNoDelay"
+									value="#{valeRefeicao.entity.tipoValeRefeicao.nome}"
+									action="#{funcionarioMB.doSelecionarValeRefeicao}"
+									style="cursor: pointer;cursor: hand;"
+									styleClass="linkAbreModal">
+									<f:setPropertyActionListener value="#{valeRefeicao.entity}"
+										target="#{funcionarioMB.valeRefeicaoSelecionado}" />
+								</a4j:commandLink>
+							</rich:column>
+							<rich:column width="150px">
+								<f:facet name="header">
+									<h:outputText value="#{b.valor}" />
+								</f:facet>
+								<h:outputText
+									value="#{valeRefeicao.entity.tipoValeRefeicao.valor}" />
+							</rich:column>
+							<rich:column width="125px">
+								<f:facet name="header">
+									<h:outputText value="#{b.dataInclusao}" />
+								</f:facet>
+								<h:outputText value="#{valeRefeicao.entity.dataAtribuicao}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</rich:column>
+						</rich:dataTable>
+					</rich:tab>
+					<rich:tab name="abaCestaBasica">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.cestaBasica}" />
+							</h:panelGroup>
+						</f:facet>
+						<table width="500px" cellspacing="10px">
+							<tr>
+								<td><h:outputText value="#{b.cestaBasica}" /></td>
+								<td><rich:message id="msgsCestaBasica"
+									for="selCestaBasica" />
+								<div />
+								<h:selectOneMenu id="selCestaBasica" style="width:200px;"
+									label="${b.cestaBasica}"
+									value="#{funcionarioMB.cestaBasica.tipoCestaBasica}">
+									<f:selectItems id="itensTipoCestaBasica"
+										value="#{funcionarioMB.itensTipoCestaBasica}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputText value="#{b.dataInclusao}" /></td>
+								<td><rich:message id="msgsDataInclusaoCestaBasica"
+									for="calDataInclusaoCestaBasica" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calDataInclusaoCestaBasica"
+									value="#{funcionarioMB.cestaBasica.dataAtribuicao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.dataInclusao}" enableManualInput="true"
+									inputSize="10" inputClass="maskDateCestaBasica">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar>
+								<rich:jQuery id="maskDateCestaBasica"
+									selector=".maskDateCestaBasica" timing="immediate"
+									query="mask('99/99/9999',{placeholder:' '})" />
+								</td>
+							</tr>
+						</table>
+					</rich:tab>
+					<!-- rich:tab name="abaHistorico">
+						<f:facet name="label">
+							<h:panelGroup>
+								<h:outputText value="#{b.historico}" />
+							</h:panelGroup>
+						</f:facet>
+						<a4j:outputPanel id="outPutHistorico">
+							<table width="500px" cellspacing="10px">
+								<tr>
+									<td><h:outputText value="#{b.historico}" /></td>
+								</tr>
+							</table>
+						</a4j:outputPanel>
+					</rich:tab -->
+				</rich:tabPanel>
+				<div style="height: 5px;" />
+				<table width="100%">
+					<tr>
+						<td align="center">
+						<a4j:commandButton value="#{b.salvar}"
+							action="#{funcionarioMB.doSalvar}"
+							reRender="formFuncionario:tableFuncionario, formFuncionario:scrollFuncionario, formDetails, msgsErros"
+							limitToList="true"
+							rendered="#{funcionarioMB.manterFuncionario}"
+							eventsQueue="queueNoDelay"
+							style="width: 80px; cursor: pointer;cursor: hand;"
+							status="statusAguarde" />
+						<rich:spacer width="10px"/>
+						<a4j:commandButton value="#{b.novo}" status="statusAguarde"
+							eventsQueue="queueNoDelay"
+							reRender="formDetails"
+							limitToList="true"
+							oncomplete="limpaForm('formDetails');"
+							ajaxSingle="true" action="#{funcionarioMB.doNovo}"
+							style="width: 80px; cursor: pointer;cursor: hand;" /></td>
+					</tr>
+				</table>
+			</h:form>
+		</ui:define>
+</ui:decorate>
+</html>

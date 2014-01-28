@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formCargo"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeCargo}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeCargo}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{cargoMB.doConsultar}"
+								rendered="#{cargoMB.consultarCargo}"
+								reRender="formCargo"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{cargoMB.doNovo}"
+								rendered="#{cargoMB.incluirCargo}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formCargo" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{cargoMB.excluirCargo}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{cargoMB.doExcluirLote}"
+								reRender="formDetails, formCargo" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="cargoMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{cargoMB.listCargo}" 
+									id="tableCargo"
+									var="cargo" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									selectionMode="none"
+									rendered="#{cargoMB.consultarCargo}"
+									reRender="scrollCargo"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{cargoMB.excluirCargo}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkCargoAll"
+							onclick="jqCheckAll(this, 'formCargo:tableCargo');"
+							value="#{cargoMB.checkCargoAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkCargo" value="#{cargo.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="100px" filterBy="#{cargo.entity.cbo}" filterEvent="onkeyup" sortable="true" sortBy="#{cargo.entity.cbo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cbo}" />
+           			</f:facet>
+           			<h:outputText value="#{cargo.entity.cbo}" />
+           		</rich:column>
+				<rich:column width="356px" filterBy="#{cargo.entity.cargo}" filterEvent="onkeyup" sortable="true" sortBy="#{cargo.entity.cargo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cargo}" />
+           			</f:facet>
+           			<h:outputText value="#{cargo.entity.cargo}" />
+           		</rich:column>
+           		<rich:column width="439px" filterBy="#{cargo.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{cargo.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{cargo.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton onclick="limpaForm('formDetails'); Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{cargoMB.consultarCargo}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{cargo.entity}" target="#{cargoMB.cargo}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{cargoMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formCargo" 
+									rendered="#{cargoMB.excluirCargo}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{cargo.entity}" target="#{cargoMB.cargo}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollCargo" align="center" renderIfSinglePage="false"
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableCargo" maxPages="10" page="#{cargoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeCargo}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{cargoMB.cargo.id}"/>
+				 	<table width="550px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.cbo}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtCbo" 
+           									value="#{cargoMB.cargo.cbo}" 
+           									style="width: 100px" 
+           									label="#{b.cbo}"
+           									maxlength="6"
+           									onkeyup="somenteNumeros(this);"
+           									required="true"/>
+           						<rich:message id="msgsCbo" for="txtCbo"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.cargo}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtCargo" 
+           									value="#{cargoMB.cargo.cargo}" 
+           									style="width: 300px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           						<rich:message id="msgsCargo" for="txtCargo"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtDescricao" 
+           									value="#{cargoMB.cargo.descricao}" 
+           									style="width: 400px" 
+           									label="#{b.Descricao}" />
+           						<rich:message id="msgsDescricao" for="txtDescricao"/>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="550px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{cargoMB.doSalvar}" 
+												reRender="formCargo, formDetails"
+												rendered="#{cargoMB.manterCargo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{cargoMB.doSalvar}"
+												rendered="#{cargoMB.incluirCargo}"
+												reRender="formCargo, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

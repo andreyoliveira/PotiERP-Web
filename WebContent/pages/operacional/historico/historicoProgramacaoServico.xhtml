@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formProgramacaoServico"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.programacaoServico}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.programacaoServico}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}" 
+					status="statusAguarde"
+					title="#{b.atualizarListagem}"
+					action="#{programacaoServicoMB.doConsultar}"
+					reRender="tableProgramacaoServico, scrollProgramacaoServico, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+				<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					action="#{programacaoServicoMB.doExcluirLote}" 
+					reRender="tableProgramacaoServico, scrollProgramacaoServico, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="programacaoServicoMB" />
+			<rich:extendedDataTable
+				noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+				value="#{programacaoServicoMB.listProgramacaoServico}"
+				id="tableProgramacaoServico"
+				var="programacao"
+				height="203px" 
+				width="998px"
+				rows="6"
+				enableContextMenu="false"
+				selectionMode="single"
+				reRender="scrollProgramacaoServico"
+				sortMode="single"
+				rendered="#{programacaoServicoMB.consultarProgramacaoServico}"
+				rowClasses="rowPar, rowImpar"
+				onRowMouseOver="jQuery(this).addClass('activeRow');"
+				onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkProgramacaoServicoAll"
+							onclick="jqCheckAll(this, 'formProgramacaoServico:tableProgramacaoServico');"
+							value="#{programacaoServicoMB.checkProgramacaoServicoAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox  id="checkProgramacaoServico"
+						value="#{programacao.selecionado}" 
+						onclick="interceptarEvento(event);" />
+				</rich:column>
+				<rich:column width="80px"
+						sortable="true"
+						sortBy="#{programacao.entity.cliente.codigo}"
+						filterBy="#{programacao.entity.cliente.codigo}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.codigo}" />
+					</f:facet>
+					<h:outputText value="#{programacao.entity.cliente.codigo}" />
+				</rich:column>
+				<rich:column width="404px"
+						sortable="true"
+						sortBy="#{programacao.entity.cliente.nomeFantasia}"
+						filterBy="#{programacao.entity.cliente.nomeFantasia}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.nomeFantasia}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{programacaoServicoMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{programacao.entity.cliente.nomeFantasia}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{programacao.entity}"
+							target="#{programacaoServicoMB.programacaoServicoSelecionada}" />
+					</a4j:commandLink>
+				</rich:column>
+				<rich:column width="195px"
+						sortable="true"
+						sortBy="#{programacao.entity.cliente.tipoServico.descricao}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.tipoServico}"/>
+					</f:facet>
+           			<h:outputText value="#{programacao.entity.tipoServico.descricao}" />
+				</rich:column>
+				<rich:column width="140px"
+						sortable="true" 
+						sortBy="#{programacao.entity.dataPrevisao}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.dataPrevisao}"/>
+					</f:facet>
+           			<h:outputText value="#{programacao.entity.dataPrevisao}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="140px"
+						sortable="true" 
+						sortBy="#{programacao.entity.dataRealizacao}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.dataRealizacao}"/>
+					</f:facet>
+           			<h:outputText value="#{programacao.entity.dataRealizacao}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollProgramacaoServico" 
+				align="center"
+				renderIfSinglePage="false" 
+				boundaryControls="auto"
+				fastControls="auto" 
+				stepControls="auto" 
+				for="tableProgramacaoServico"
+				maxPages="50" 
+				page="#{programacaoServicoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+					<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.codigo}" />
+							</td>
+							<td>
+								<rich:message id="msgsCodigo" for="txtNomeFantasia" errorLabelClass="error" /><div />
+								<h:inputText id="txtCodigo"
+									value="#{programacaoServicoMB.programacaoServico.cliente.codigo}" 
+									style="width:70px"
+									label="#{b.codigo}"
+									onkeyup="somenteNumeros(this);" 
+									disabled="#{programacaoServicoMB.disableEdicao}"
+									readonly="#{programacaoServicoMB.disableEdicao}">
+									<a4j:support action="#{programacaoServicoMB.buscarCliente}"
+		           										 event="onblur" 
+		           										 reRender="outputProgramacaoServico,msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputProgramacaoServico">
+									<h:inputText id="txtNomeFantasia" 
+			  									value="#{programacaoServicoMB.programacaoServico.cliente.nomeFantasia}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}"
+			  									disabled="#{programacaoServicoMB.disableEdicao}"
+												readonly="#{programacaoServicoMB.disableEdicao}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFantasia"
+			  						 	var="cliente"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM CLIENTE FOI ENCONTRADO"
+					                    suggestionAction="#{programacaoServicoMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{cliente.nomeFantasia}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{programacaoServicoMB.selecionarCliente}"
+									 			  	 reRender="txtCodigo, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{cliente}" 
+									        							 target="#{programacaoServicoMB.clienteSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.dataPrevisao}" />
+							</td>
+							<td>
+								<rich:calendar id="calDataPrevisao" datePattern="dd/MM/yyyy" 
+									value="#{programacaoServicoMB.programacaoServico.dataPrevisao}"
+									enableManualInput="true"
+									inputClass="maskDatePrincipal"
+									disabled="#{programacaoServicoMB.disableEdicao}"
+									readonly="#{programacaoServicoMB.disableEdicao}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.dataRealizacao}" />
+							</td>
+							<td>
+								<rich:calendar id="calDataRealizacao" datePattern="dd/MM/yyyy" 
+									value="#{programacaoServicoMB.programacaoServico.dataRealizacao}"
+									enableManualInput="true"
+									inputClass="maskDatePrincipal"
+									disabled="#{programacaoServicoMB.disableEdicao}"
+									readonly="#{programacaoServicoMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.tipoServico}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selTipoServico"
+									label="#{b.tipoServico}"
+									value="#{programacaoServicoMB.programacaoServico.tipoServico}"
+									disabled="#{programacaoServicoMB.disableEdicao}"
+									readonly="#{programacaoServicoMB.disableEdicao}"
+									style="width: 250px;">
+									<f:selectItems id="itensTipoServico"
+										value="#{programacaoServicoMB.itensTipoServico}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu>
+							</td>
+						</tr>
+					</table>
+					<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{programacaoServicoMB.doSalvar}"
+												reRender="formProgramacaoServico, formDetails, msgsErros"
+												status="statusAguarde" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.limpar}"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{programacaoServicoMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+				</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>	
+</html>		

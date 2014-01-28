@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formTipoCestaBasica"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeTipoCestaBasica}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeTipoCestaBasica}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{tipoCestaBasicaMB.doConsultar}"
+								rendered="#{tipoCestaBasicaMB.consultarTipoCestaBasica}"
+								reRender="formTipoCestaBasica"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{tipoCestaBasicaMB.doNovo}"
+								rendered="#{tipoCestaBasicaMB.incluirTipoCestaBasica}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formTipoCestaBasica" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{tipoCestaBasicaMB.excluirTipoCestaBasica}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{tipoCestaBasicaMB.doExcluirLote}"
+								reRender="formDetails, formTipoCestaBasica" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="tipoCestaBasicaMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{tipoCestaBasicaMB.listTipoCestaBasica}" 
+									id="tableTipoCestaBasica"
+									var="tipoCestaBasica" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollTipoCestaBasica"
+									selectionMode="none"
+									rendered="#{tipoCestaBasicaMB.consultarTipoCestaBasica}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{tipoCestaBasicaMB.excluirTipoCestaBasica}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkTipoCestaBasicaAll"
+							onclick="jqCheckAll(this, 'formTipoCestaBasica:tableTipoCestaBasica');"
+							value="#{tipoCestaBasicaMB.checkTipoCestaBasicaAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkTipoCestaBasica" value="#{tipoCestaBasica.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="100px" filterBy="#{tipoCestaBasica.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoCestaBasica.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.codigo}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoCestaBasica.entity.codigo}" />
+           		</rich:column>
+				<rich:column width="290px" filterBy="#{tipoCestaBasica.entity.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoCestaBasica.entity.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nome}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoCestaBasica.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="140px" filterBy="#{tipoCestaBasica.entity.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoCestaBasica.entity.valor}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.valor}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoCestaBasica.entity.valor}" />
+           		</rich:column>
+           		<rich:column width="300px" filterBy="#{tipoCestaBasica.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoCestaBasica.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoCestaBasica.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="65px" filterBy="#{tipoCestaBasica.entity.situacao}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoCestaBasica.entity.situacao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.situacao}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoCestaBasica.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{tipoCestaBasicaMB.consultarTipoCestaBasica}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoCestaBasica.entity}" target="#{tipoCestaBasicaMB.tipoCestaBasica}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{tipoCestaBasicaMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formTipoCestaBasica" 
+									rendered="#{tipoCestaBasicaMB.excluirTipoCestaBasica}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoCestaBasica.entity}" target="#{tipoCestaBasicaMB.tipoCestaBasica}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollTipoCestaBasica" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableTipoCestaBasica" maxPages="10" page="#{tipoCestaBasicaMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeTipoCestaBasica}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="onload"
+						id="maskMoney" />
+		 			<h:inputHidden value="#{tipoCestaBasicaMB.tipoCestaBasica.id}"/>
+				 	<table width="600px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.codigo}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsCodigo" for="txtCodigo" errorLabelClass="error"/><div />
+           						<h:inputText id="txtCodigo" 
+           									value="#{tipoCestaBasicaMB.tipoCestaBasica.codigo}" 
+           									style="width: 100px" 
+           									label="#{b.codigo}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.nome}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsNome" for="txtNome" errorLabelClass="error"/><div />
+           						<h:inputText id="txtNome" 
+           									value="#{tipoCestaBasicaMB.tipoCestaBasica.nome}" 
+           									style="width: 350px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.valor}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsValor" for="txtValor" errorLabelClass="error"/> <div />
+           						<h:inputText id="txtValor" 
+           									value="#{tipoCestaBasicaMB.tipoCestaBasica.valor}" 
+           									style="width: 100px" 
+           									maxlength="18"
+           									label="#{b.valor}"
+           									onkeyup="somenteNumerosPontosVirgulas(this);"
+	           								onblur="somenteNumerosPontosVirgulas(this);"
+               								styleClass="maskMoney"
+           									converter="MoedaConverter"
+           									required="true" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td>
+           						<rich:message id="msgsDescricao" for="txtDescricao"/> <div />
+           						<h:inputText id="txtDescricao" 
+           									value="#{tipoCestaBasicaMB.tipoCestaBasica.descricao}" 
+           									style="width: 350px" 
+           									label="#{b.Descricao}" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.situacao}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsSituacao" for="selSituacao"/> <div />
+	           					<h:selectOneRadio id="selSituacao" label="#{b.situacao}"
+									value="#{tipoCestaBasicaMB.tipoCestaBasica.situacao}" style="width: 100px;"
+									required="true">
+									<f:selectItem itemLabel="#{b.ativo}" itemValue="ATIVO" />
+							    	<f:selectItem itemLabel="#{b.inativo}" itemValue="INATIVO" />
+								</h:selectOneRadio>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{tipoCestaBasicaMB.doSalvar}" 
+												reRender="formTipoCestaBasica, formDetails"
+												rendered="#{tipoCestaBasicaMB.manterTipoCestaBasica}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{tipoCestaBasicaMB.doSalvar}"
+												rendered="#{tipoCestaBasicaMB.incluirTipoCestaBasica}"
+												reRender="formTipoCestaBasica, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formTipoServico"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeTipoServico}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeTipoServico}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{tipoServicoMB.doConsultar}"
+								rendered="#{tipoServicoMB.consultarTipoServico}"
+								reRender="formTipoServico"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{tipoServicoMB.doNovo}"
+								rendered="#{tipoServicoMB.incluirTipoServico}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formTipoServico" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{tipoServicoMB.excluirTipoServico}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{tipoServicoMB.doExcluirLote}"
+								reRender="formDetails, formTipoServico" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="tipoServicoMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{tipoServicoMB.listTipoServico}" 
+									id="tableTipoServico"
+									var="tipoServico" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollTipoServico"
+									selectionMode="none"
+									rendered="#{tipoServicoMB.consultarTipoServico}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{tipoServicoMB.excluirTipoServico}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkTipoServicoAll"
+							onclick="jqCheckAll(this, 'formTipoServico:tableTipoServico');"
+							value="#{tipoServicoMB.checkTipoServicoAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkTipoServico" value="#{tipoServico.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="85px" filterBy="#{tipoServico.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoServico.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.codigo}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoServico.entity.codigo}" />
+           		</rich:column>
+           		<rich:column width="830px" filterBy="#{tipoServico.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoServico.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoServico.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{tipoServicoMB.consultarTipoServico}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoServico.entity}" target="#{tipoServicoMB.tipoServico}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{tipoServicoMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formTipoServico" 
+									rendered="#{tipoServicoMB.excluirTipoServico}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoServico.entity}" target="#{tipoServicoMB.tipoServico}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollTipoServico" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableTipoServico" maxPages="10" page="#{tipoServicoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeTipoServico}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="onload"
+						id="maskMoney" />
+		 			<h:inputHidden value="#{tipoServicoMB.tipoServico.id}"/>
+				 	<table width="600px" cellspacing="10px">
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.codigo}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsCodigo" for="txtCodigo"/> <div />
+	           					<h:inputText id="txtCodigo" 
+           									value="#{tipoServicoMB.tipoServico.codigo}" 
+           									style="width: 100px" 
+           									label="#{b.codigo}" 
+           									required="true"/>
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td>
+           						<rich:message id="msgsDescricao" for="txtDescricao"/> <div />
+           						<h:inputText id="txtDescricao" 
+           									value="#{tipoServicoMB.tipoServico.descricao}" 
+           									style="width: 350px" 
+           									label="#{b.Descricao}" 
+           									required="true"/>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{tipoServicoMB.doSalvar}" 
+												reRender="formTipoServico, formDetails"
+												rendered="#{tipoServicoMB.manterTipoServico}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{tipoServicoMB.doSalvar}"
+												rendered="#{tipoServicoMB.incluirTipoServico}"
+												reRender="formTipoServico, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

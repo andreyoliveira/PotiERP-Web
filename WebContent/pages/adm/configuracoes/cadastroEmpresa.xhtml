@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formEmpresa"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeEmpresa}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeEmpresa}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+					title="#{b.atualizarListagem}" 
+					action="#{empresaMB.doConsultar}"
+					reRender="formEmpresa"
+					rendered="#{empresaMB.consultarEmpresa}"
+					style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+					action="#{empresaMB.doNovo}"
+					title="#{b.incluirNovoRegistro}"
+					onclick="limpaForm('formDetails');"
+					oncomplete="Richfaces.showModalPanel('mpDetails');" 
+					rendered="#{empresaMB.incluirEmpresa}"
+					reRender="formDetails, formEmpresa" 
+					style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}" 
+					action="#{empresaMB.doExcluirLote}"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					title="#{b.excluirRegistrosSelecionados}"
+					reRender="formDetails, formEmpresa"
+					rendered="#{empresaMB.excluirEmpresa}"
+					style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="empresaMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{empresaMB.listEmpresa}" 
+									id="tableEmpresa"
+									var="empresa" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									selectionMode="none"
+									rendered="#{empresaMB.consultarEmpresa}"
+									reRender="scrollEmpresa"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{empresaMB.excluirEmpresa}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkEmpresaAll"
+							onclick="jqCheckAll(this, 'formEmpresa:tableEmpresa');"
+							value="#{empresaMB.checkEmpresaAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkEmpresa" value="#{empresa.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="290px" filterBy="#{empresa.entity.razaoSocial}" filterEvent="onkeyup" sortable="true" sortBy="#{empresa.entity.razaoSocial}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.razaoSocial}" />
+           			</f:facet>
+           			<h:outputText value="#{empresa.entity.razaoSocial}" />
+           		</rich:column>
+           		<rich:column width="150px" filterBy="#{empresa.entity.nomeFantasia}" filterEvent="onkeyup" sortable="true" sortBy="#{empresa.entity.nomeFantasia}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nomeFantasia}" />
+           			</f:facet>
+           			<h:outputText value="#{empresa.entity.nomeFantasia}" />
+           		</rich:column>
+           		<rich:column width="145px" filterBy="#{empresa.entity.cnpj}" filterEvent="onkeyup" sortable="true" sortBy="#{empresa.entity.cnpj}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cnpj}" />
+           			</f:facet>
+           			<h:outputText value="#{empresa.entity.cnpj}" />
+           		</rich:column>
+           		<rich:column width="160px" filterBy="#{empresa.entity.endereco.cidade}" filterEvent="onkeyup" sortable="true" sortBy="#{empresa.entity.endereco.cidade}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cidade}" />
+           			</f:facet>
+           			<h:outputText value="#{empresa.entity.endereco.cidade}" />
+           		</rich:column>
+           		<rich:column width="150px" filterBy="#{empresa.entity.endereco.estado.sigla}" filterEvent="onkeyup" sortable="true" sortBy="#{empresa.entity.endereco.estado.sigla}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.estado}" />
+           			</f:facet>
+           			<h:outputText value="#{empresa.entity.endereco.estado.sigla}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton onclick="limpaForm('formDetails'); Richfaces.showModalPanel('mpDetails');"
+						title="#{b.alterar}"
+						reRender="formDetails"
+						image="/static/images/edit.png"
+						rendered="#{empresaMB.consultarEmpresa}"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{empresa.entity}" target="#{empresaMB.empresa}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{empresaMB.doExcluir}" 
+						title="#{b.excluir}" 
+						reRender="formEmpresa" 
+						onclick="if(!confirmarOperacaoAjax(this))return false;"
+						image="/static/images/delete.png"
+						style="cursor: pointer;cursor: hand;"
+						rendered="#{empresaMB.excluirEmpresa}">
+						<f:setPropertyActionListener value="#{empresa.entity}" target="#{empresaMB.empresa}" />
+					</a4j:commandButton>
+					<a4j:commandButton onclick="limpaForm('formFilial'); Richfaces.showModalPanel('mpFilial');"
+						title="#{b.filiais}" 
+						reRender="formFilial" 
+						image="/static/images/filial.png"
+						style="cursor: pointer;cursor: hand;"
+						rendered="#{empresaMB.alterarEmpresa or empresaMB.incluirEmpresa}">
+						<f:setPropertyActionListener value="#{empresa.entity}" target="#{empresaMB.empresa}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollEmpresa" align="center" binding="#{empresaMB.datascroller}" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableEmpresa" maxPages="10" page="#{empresaMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeEmpresa}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{empresaMB.empresa.id}"/>
+				 	<table width="974px" cellspacing="10px">
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.razaoSocial}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtRazaoSocial" 
+  									value="#{empresaMB.empresa.razaoSocial}" 
+  									style="width: 650px" 
+  									label="#{b.razaoSocial}"
+  									required="true"/>
+           						<rich:message id="msgsRazaoSocial" for="txtRazaoSocial"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.nomeFantasia}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtNomeFantasia" 
+   									value="#{empresaMB.empresa.nomeFantasia}" 
+   									style="width: 350px" 
+   									label="#{b.nomeFantasia}"/>
+           						<rich:message id="msgsNomeFantasia" for="txtNomeFantasia"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.cnpj}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtCnpj" 
+   									value="#{empresaMB.empresa.cnpj}" 
+   									style="width: 175px"
+   									converter="CnpjConverter"
+									validator="CnpjValidator" 
+   									label="#{b.cnpj}"
+   									required="true">
+           							<rich:jQuery selector="#txtCnpj"
+												timing="onload"
+												query="mask('99.999.999/9999-99')" />
+           						</h:inputText>
+           						<rich:message id="msgsCnpj" for="txtCnpj"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.tipoAtividade}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtTipoAtividade" 
+  									value="#{empresaMB.empresa.tipoAtividade}" 
+  									style="width: 350px" 
+  									label="#{b.codigoAtividade}"/>
+           						<rich:message id="msgsTipoAtividade" for="txtTipoAtividade"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.cep}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtCep" 
+  									value="#{empresaMB.empresa.endereco.cep}" 
+  									style="width: 175px" 
+  									label="#{b.cep}"
+  									converter="CepConverter"
+  									required="true">
+           							<rich:jQuery selector="#txtCep" 
+												timing="onload"
+												query="mask('99999-999')" />
+           						</h:inputText>
+           						<rich:message id="msgsCep" for="txtCep"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.endereco}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtEndereco" 
+									value="#{empresaMB.empresa.endereco.endereco}" 
+   									style="width: 650px" 
+   									label="#{b.endereco}"
+   									required="true"/>
+           						<rich:message id="msgsEndereco" for="txtEndereco"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.numero}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtNumero" 
+   									value="#{empresaMB.empresa.endereco.numero}" 
+   									style="width: 175px" 
+   									label="#{b.numero}"
+   									onkeyup="somenteNumeros(this);"
+       								maxlength="5" 
+   									required="true">
+           							<rich:jQuery selector="#txtNumero" timing="onload" query="numeric()"/>
+           						</h:inputText>
+           						<rich:message id="msgsNumero" for="txtNumero"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.complemento}"/>
+           					</td>
+           					<td>           					
+           						<h:inputText id="txtComplemento" 
+   									value="#{empresaMB.empresa.endereco.complemento}" 
+   									style="width: 175px" 
+   									label="#{b.complemento}"/>
+           						<rich:message id="msgsComplemento" for="txtComplemento"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>	
+           						<h:outputText value="#{b.bairro}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtBairro" 
+   									value="#{empresaMB.empresa.endereco.bairro}" 
+   									style="width: 350px" 
+   									label="#{b.bairro}" />
+           						<rich:message id="msgsBairro" for="txtBairro"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.cidade}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtCidade" 
+   									value="#{empresaMB.empresa.endereco.cidade}" 
+   									style="width: 350px" 
+   									label="#{b.cidade}"
+   									required="true"/>
+           						<rich:message id="msgCidade" for="txtCidade"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.estado}"/>
+           					</td>
+           					<td>
+           						<h:selectOneMenu id="selEstado" 
+         								label="${b.estado}" 
+										value="#{empresaMB.empresa.endereco.estado}"
+										required="true">
+									<f:selectItems id="itensEstado" value="#{empresaMB.itensEstado}"/>
+									<f:converter converterId="identifiableConverter"/>
+								</h:selectOneMenu>
+								<rich:message id="msgEstado" for="selEstado"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.responsavel}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtResponsavel" 
+   									value="#{empresaMB.empresa.responsavel}" 
+   									style="width: 350px" 
+   									label="#{b.responsavel}"/>
+           						<rich:message id="msgsResponsavel" for="txtResponsavel"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.email}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtEmail" 
+   									value="#{empresaMB.empresa.email}" 
+   									style="width: 350px" 
+   									validator="EmailValidator"
+   									label="#{b.email}"/>
+           						<rich:message id="msgsEmail" for="txtEmail"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputLabel value="#{b.telefone1}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtNumero1" value="#{empresaMB.empresa.telefone1.numero}" />
+           						<rich:spacer width="40px;"/>
+           						<h:outputText value="#{b.ramal}"/>
+           						<rich:spacer width="30px;"/>
+           						<h:inputText id="txtRamal1" 
+           							value="#{empresaMB.empresa.telefone1.ramal}"
+           							onkeyup="somenteNumeros(this);" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputLabel value="#{b.telefone2}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtNumero2" 
+           							value="#{empresaMB.empresa.telefone2.numero}" />
+           						<rich:spacer width="40px;"/>
+           						<h:outputText value="#{b.ramal}"/>
+           						<rich:spacer width="30px;"/>
+           						<h:inputText id="txtRamal2" 
+           							value="#{empresaMB.empresa.telefone2.ramal}"
+           							onkeyup="somenteNumeros(this);" />
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="974px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+									action="#{empresaMB.doSalvar}" 
+									reRender="formEmpresa, formDetails" 
+									style="width: 80px; cursor: pointer;cursor: hand;"
+									oncomplete="windowclose('formDetails', 'mpDetails');"
+									rendered="#{empresaMB.incluirEmpresa}"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+									action="#{empresaMB.doSalvar}" 
+									reRender="formEmpresa, formDetails"
+									style="width: 140px; cursor: pointer;cursor: hand;"
+									rendered="#{empresaMB.incluirEmpresa}"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+									immediate="true"
+									oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+									style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:modalPanel id="mpFilial" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeFilial}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpFilial', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formFilial">
+				 	<table width="974px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						Desenvolvimento em andamento...
+           					</td>
+           				</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formApontamentosFolha"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.apontamentosFolha}
+		</ui:define>
+		<ui:define name="script">
+			<style type="text/css">
+				.calendarMonth tr[id], .calendarButton{  
+				    display:none;  
+				}
+			</style>
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.apontamentosFolha}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								rendered="#{apontamentosFolhaMB.consultarApontamentosFolha}"
+								reRender="formApontamentosFolha"
+								eventsQueue="queueNoDelay" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{apontamentosFolhaMB.excluirApontamentosFolha}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								eventsQueue="queueNoDelay" 
+								reRender="formApontamentosFolha" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="apontamentosFolhaMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{apontamentosFolhaMB.listApontamentosFolha}" 
+									id="tableApontamentosFolha"
+									var="apontamentosFolha" 
+									height="203px"
+									rows="6" 
+									enableContextMenu="false"
+									reRender="scrollApontamentosFolha"
+									selectionMode="none"
+									rendered="#{apontamentosFolhaMB.consultarApontamentosFolha}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{apontamentosFolhaMB.excluirApontamentosFolha}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkApontamentosFolhaAll"
+							onclick="jqCheckAll(this, 'formApontamentosFolha:tableApontamentosFolha');"
+							value="#{apontamentosFolhaMB.checkApontamentosFolhaAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkApontamentosFolha" value="#{apontamentosFolha.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="130px" filterBy="#{apontamentosFolha.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{apontamentosFolha.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.periodo}" />
+           			</f:facet>
+           			<h:outputText value="#{apontamentosFolha.entity.codigo}" />
+           		</rich:column>
+				<rich:column width="349px" filterBy="#{apontamentosFolha.entity.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{apontamentosFolha.entity.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.funcionario}" />
+           			</f:facet>
+           			<h:outputText value="#{apontamentosFolha.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="160px" filterBy="#{apontamentosFolha.entity.quantidade}" filterEvent="onkeyup" sortable="true" sortBy="#{apontamentosFolha.entity.quantidade}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.verba}" />
+           			</f:facet>
+           			<h:outputText value="#{apontamentosFolha.entity.quantidade}" />
+           		</rich:column>
+           		<rich:column width="160px" filterBy="#{apontamentosFolha.entity.percentual}" filterEvent="onkeyup" sortable="true" sortBy="#{apontamentosFolha.entity.percentual}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.quantidade}" />
+           			</f:facet>
+           			<h:outputText value="#{apontamentosFolha.entity.percentual}">
+           				<f:convertNumber type="percentage" maxFractionDigits="4" />
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="165px" filterBy="#{apontamentosFolha.entity.situacao}" filterEvent="onkeyup" sortable="true" sortBy="#{apontamentosFolha.entity.situacao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.valor}" />
+           			</f:facet>
+           			<h:outputText value="#{apontamentosFolha.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="59px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.debitoCredito}" />
+           			</f:facet>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollApontamentosFolha" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableApontamentosFolha" maxPages="10" page="#{apontamentosFolhaMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+		 			<rich:jQuery id="maskDateReferencia" selector=".maskDateReferencia"
+						timing="onload" query="mask('99/9999',{placeholder:' '})" />
+					<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+		 			<h:inputHidden value="#{apontamentosFolhaMB.apontamentosFolha.id}"/>
+				 	<table width="100%" cellspacing="5px">
+				 		<tr>
+							<td><h:outputText value="#{b.re}" /></td>
+							<td colspan="5">
+								<rich:message id="msgsRE" for="txtRE" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtRE"
+									value="#{apontamentosFolhaMB.apontamentosFolha.funcionario.codigoRegistro}"
+									style="width: 100px" onkeyup="somenteNumeros(this);"
+									label="#{b.re}" >
+									<a4j:support action="#{apontamentosFolhaMB.buscarFuncionario}"
+										 event="onchange" 
+										 reRender="txtNomeFuncionario, msgsErros"
+										 limitToList="true"
+										 ajaxSingle="true"
+										 process="txtNomeFuncionario"
+										 status="statusAguarde"/>
+		           				</h:inputText>
+		           				<rich:spacer width="10px"/>
+	       						<h:inputText id="txtNomeFuncionario" 
+	       									value="#{apontamentosFolhaMB.apontamentosFolha.funcionario.pessoa.nome}" 
+	       									style="width: 350px" 
+	       									label="#{b.funcionario}"
+	       									readonly="true"/>
+	          					</td>
+	          				</tr>
+	          				<tr>
+	          					<td>
+	          						<h:outputText value="#{b.periodoDaFolha}" />
+	          					</td>
+	          					<td>
+	          						<rich:message id="msgsPeriodoFolha" for="txtPeriodoFolha" errorLabelClass="error"/><div />
+								<rich:calendar id="calPeriodoFolha"
+									showWeekDaysBar="false"
+									buttonClass="calendarButton"
+									showFooter="false"
+									oncurrentdateselected="event.rich.component.selectDate(event.rich.date)"
+									value="#{apontamentosFolhaMB.apontamentosFolha.dataPeriodoFolha}"
+									datePattern="MM/yyyy" 
+									inputStyle="width: 100px;"
+									label="#{b.periodoFolha}" 
+									enableManualInput="true"
+									inputSize="7" 
+									styleClass="calendarMonth"
+									inputClass="maskDateReferencia">
+									<f:convertDateTime type="date" pattern="MM/yyyy" />
+								</rich:calendar>
+							</td>
+	          				</tr>
+	          				<tr>
+							<td><h:outputText value="#{b.verba}" /></td>
+							<td><rich:message id="msgsVerba" for="selVerba"
+								errorLabelClass="error" />
+							<div />
+							<h:selectOneMenu id="selVerba" label="${b.verba}" 
+								value="#{apontamentosFolhaMB.apontamentosFolha.verba}">
+								<f:selectItems id="itensVerba"
+									value="#{apontamentosFolhaMB.itensVerba}" />
+								<f:converter converterId="identifiableConverter" />
+							</h:selectOneMenu></td>
+							<td><h:outputText value="#{b.quantidade}" /></td>
+							<td>
+	          						<rich:message id="msgsQuantidade" for="txtQuantidade" errorLabelClass="error"/><div />
+	          						<h:inputText id="txtQuantidade" 
+	          									value="#{apontamentosFolhaMB.apontamentosFolha.quantidadeVerba}" 
+	          									style="width: 100px"
+	          									onkeyup="somenteNumeros(this);"
+											onblur="somenteNumeros(this);" 
+	          									label="#{b.quantidade}"/>
+	          					</td>
+							<td><h:outputText value="#{b.data}" /></td>
+							<td>
+								<rich:calendar id="calData"
+									value="#{apontamentosFolhaMB.apontamentosFolha.dataInclusao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 100px;"
+									label="#{b.data}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar>
+							</td>
+						</tr>
+	           		</table>
+	           		<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												rendered="#{apontamentosFolhaMB.incluirApontamentosFolha}"
+												reRender="formApontamentosFolha" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.limpar}"
+												immediate="true"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+				</rich:panel>
+			</h:form>
+		 </ui:define>
+	</ui:decorate>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formResponsavel" />
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.operacionalProgramacaoVisitas}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.operacionalProgramacaoVisitas}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="programacaoVisitasMB" />
+			<rich:extendedDataTable
+					noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+					value="#{programacaoVisitasMB.listResponsavel}"
+					id="tableResponsavel"
+					var="responsavel"
+					height="203px" 
+					width="998px"
+					rows="6"
+					enableContextMenu="false"
+					selectionMode="single"
+					reRender="scrollResponsavel"
+					sortMode="single"
+					rowClasses="rowPar, rowImpar"
+					onRowMouseOver="jQuery(this).addClass('activeRow');"
+					onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="225px"
+						sortable="true" 
+						sortBy="#{responsavel.entity.funcionario.codigoRegistro}" 
+						filterBy="#{responsavel.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.re}"/>
+					</f:facet>
+           			<h:outputText value="#{responsavel.entity.funcionario.codigoRegistro}" />
+           		</rich:column>
+				<rich:column width="773px"
+				 		sortable="true" 
+						sortBy="#{responsavel.entity.funcionario.pessoa.nome}"
+						filterBy="#{responsavel.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+							status="statusAguarde" title="#{b.cliqueExibirClientes}" reRender="formDetails"
+							action="#{programacaoVisitasMB.doExibirClientes}" eventsQueue="queueNoDelay"
+							value="#{responsavel.entity.funcionario.pessoa.nome}"
+							style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{responsavel.entity}"
+							target="#{programacaoVisitasMB.responsavelSelecionado}" />
+					</a4j:commandLink>	
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollResponsavel" 
+					align="center"
+					renderIfSinglePage="false" 
+					boundaryControls="auto"
+					fastControls="auto" 
+					stepControls="auto" 
+					for="tableResponsavel"
+					maxPages="50" 
+					page="#{programacaoVisistasMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+							<rich:separator height="6" lineType="solid" width="100%"/>
+						</td>
+					</tr>
+				</table>
+				<rich:panel>
+					<table width="80%">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}: " />
+								<h:outputText value="#{programacaoVisitasMB.responsavel.funcionario.codigoRegistro}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.nome}: " />
+								<h:outputText value="#{programacaoVisitasMB.responsavel.funcionario.pessoa.nome}" />
+							</td>
+						</tr>
+					</table>
+					<rich:spacer height="5px"/>					
+					<rich:extendedDataTable value="#{programacaoVisitasMB.listCliente}"
+						noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+						width="980px"
+						height="180px" 
+						var="cliente" 
+						id="tableCliente"
+						rows="6"
+						enableContextMenu="false"
+						selectionMode="single"
+						reRender="scrollCliente"
+						sortMode="single"
+						rowClasses="rowPar, rowImpar"
+						onRowMouseOver="jQuery(this).addClass('activeRow');"
+						onRowMouseOut="jQuery(this).removeClass('activeRow');"
+						style="text-transform: uppercase;">
+						<rich:column width="100%"
+								sortable="true" 
+								sortBy="#{cliente.entity.nomeFantasia}" >
+							<f:facet name="header">
+								<h:outputText value="#{b.cliente}" />
+							</f:facet>
+							<a4j:commandLink
+									status="statusAguarde" title="#{b.cliqueExibirData}" reRender="formDetails, panelDatas"
+									action="#{programacaoVisitasMB.doExibirDatas}" eventsQueue="queueNoDelay"
+									style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+								<h:outputText value="#{cliente.entity.codigo}" />
+								<h:outputText value=" - " />
+								<h:outputText value="#{cliente.entity.nomeFantasia}" />
+								<f:setPropertyActionListener value="#{cliente.entity}"
+									target="#{programacaoVisitasMB.clienteSelecionado}" />
+							</a4j:commandLink>
+						</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollCliente" 
+							align="center"
+							renderIfSinglePage="false" 
+							boundaryControls="auto"
+							fastControls="auto" 
+							stepControls="auto" for="tableCliente"
+							maxPages="50" 
+							page="#{programacaoVisitasMB.scrollerPageCliente}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}" />
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}" />
+						</f:facet>
+					</rich:datascroller>
+					
+					<rich:separator height="6" lineType="solid" width="100%"/>
+					
+					<rich:panel id="panelDatas">
+						<table width="80%">
+							<tr valign="top">
+								<td>
+									<h:outputText value="#{b.cliente}: " />
+									<h:panelGroup id="groupCliente" rendered="#{programacaoVisitasMB.exibeDatas}">
+										<h:outputText value="#{programacaoVisitasMB.cliente.codigo}" />
+										<h:outputText value=" - " />
+										<h:outputText value="#{programacaoVisitasMB.cliente.nomeFantasia}" />
+									</h:panelGroup>
+								</td>
+								<td align="right">
+									<h:outputText value="#{b.exibirDatasMes}" />
+									<h:selectOneMenu id="selMes" value="#{programacaoVisitasMB.mesSelecionado}"
+												label="#{b.exibirDatasMes}" disabled="#{!programacaoVisitasMB.exibeDatas}">
+										<f:selectItems id="itensMeses" value="#{programacaoVisitasMB.itensMeses}"/>
+										<a4j:support event="onchange" reRender="panelDatas" ajaxSingle="true" action="#{programacaoVisitasMB.atualizaDataScrollerMesSelecionado}"/>
+									</h:selectOneMenu>
+								</td>
+							</tr>
+						</table>
+						
+						<rich:spacer height="5px"/>
+						
+						<rich:extendedDataTable value="#{programacaoVisitasMB.listaProgramacaoVisitaHelper}"
+								noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+								width="950px"
+								height="180px" 
+								var="helper" 
+								id="tableDatas"
+								rows="6"
+								enableContextMenu="false"
+								selectionMode="single"
+								reRender="tableDatas"
+								sortMode="single"
+								rowClasses="rowPar, rowImpar"
+								onRowMouseOver="jQuery(this).addClass('activeRow');"
+								onRowMouseOut="jQuery(this).removeClass('activeRow');"
+								style="text-transform: uppercase;">
+						<rich:column width="4%" style="text-align: center">
+							<f:facet name="header">
+								<h:selectBooleanCheckbox id="checkClienteAll"
+									onclick="jqCheckAll(this, 'formDetails:tableDatas');" />
+							</f:facet>
+							<h:selectBooleanCheckbox id="checkData" value="#{helper.selecionado}" onclick="interceptarEvento(event);" />
+						</rich:column>
+						<rich:column width="70%" style="text-align: center">
+							<f:facet name="header">
+								<h:outputText value="#{b.datasProgramadas}" />
+							</f:facet>
+							<h:outputText value="#{helper.dataFormatada}" />
+						</rich:column>
+						<rich:column width="26%" style="text-align: center">
+							<f:facet name="header">
+								<h:outputText value="#{b.visitado}" />
+							</f:facet>
+							<h:outputText value="#{helper.visitado}" />
+						</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollDatas" 
+							align="center"
+							renderIfSinglePage="false" 
+							boundaryControls="auto"
+							fastControls="auto" 
+							stepControls="auto" for="tableDatas"
+							maxPages="50" 
+							page="#{programacaoVisitasMB.scrollerPageData}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}" />
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}" />
+						</f:facet>
+					</rich:datascroller>
+					</rich:panel>
+				</rich:panel>
+				<rich:spacer height="5px"/>
+				<table width="100%">
+					<tr>
+						<td align="center">
+							<a4j:commandButton value="#{b.salvar}"
+								action="#{programacaoVisitasMB.doSalvar}"
+								reRender="tableResponsavel, scrollResponsavel, formDetails, msgsErros"
+								limitToList="true"
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								disabled="#{!programacaoVisitasMB.exibeDatas}"
+								status="statusAguarde" />
+							<a4j:commandButton value="#{b.cancelar}"
+								action="#{programacaoVisitasMB.doCancelar}"
+								reRender="tableResponsavel, scrollResponsavel, formDetails, msgsErros"
+								limitToList="true"
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde" />
+						</td>
+					</tr>
+				</table>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

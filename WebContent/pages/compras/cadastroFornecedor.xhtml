@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formFornecedor"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeFornecedor}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeFornecedor}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}"
+								eventsQueue="queueNoDelay"
+								action="#{fornecedorMB.doConsultar}"
+								reRender="formFornecedor"
+								rendered="#{fornecedorMB.consultarFornecedor}"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}"
+								action="#{fornecedorMB.doNovo}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');"
+								reRender="formDetails, formFornecedor"
+								rendered="#{fornecedorMB.incluirFornecedor}"
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								action="#{fornecedorMB.doExcluirLote}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								title="#{b.excluirRegistrosSelecionados}"
+								reRender="formDetails, formFornecedor"
+								rendered="#{fornecedorMB.excluirFornecedor}"
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+								
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="fornecedorMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{fornecedorMB.listFornecedor}" 
+									id="tableFornecedor"
+									var="fornecedor"
+									height="455px"
+									rows="16"
+									enableContextMenu="false"
+									selectionMode="none"
+									reRender="scrollFornecedor"
+									rendered="#{fornecedorMB.consultarFornecedor}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{fornecedorMB.excluirFornecedor}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkFornecedorAll"
+							onclick="jqCheckAll(this, 'formFornecedor:tableFornecedor');"
+							value="#{fornecedorMB.checkFornecedorAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkFornecedor" value="#{fornecedor.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="70px" filterBy="#{fornecedor.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.codigo}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.codigo}" />
+           		</rich:column>
+				<rich:column width="285px" filterBy="#{fornecedor.entity.razaoSocial}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.razaoSocial}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.razaoSocial}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.razaoSocial}" />
+           		</rich:column>
+           		<rich:column width="235px" filterBy="#{fornecedor.entity.nomeFantasia}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.nomeFantasia}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nomeFantasia}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.nomeFantasia}" />
+           		</rich:column>
+           		<rich:column width="105px" filterBy="#{fornecedor.entity.cpfCnpj}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.cpfCnpj}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cpfCnpj}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.cpfCnpj}" />
+           		</rich:column>
+           		<rich:column width="150px" filterBy="#{fornecedor.entity.endereco.cidade}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.endereco.cidade}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.cidade}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.endereco.cidade}" />
+           		</rich:column>
+           		<rich:column width="70px" filterBy="#{fornecedor.entity.endereco.estado.sigla}" filterEvent="onkeyup" sortable="true" sortBy="#{fornecedor.entity.endereco.estado.sigla}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.estado}" />
+           			</f:facet>
+           			<h:outputText value="#{fornecedor.entity.endereco.estado.sigla}" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							eventsQueue="queueNoDelay"
+           							rendered="#{fornecedorMB.consultarFornecedor}"
+           							action="#{fornecedorMB.doAlterar}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{fornecedor.entity}" target="#{fornecedorMB.fornecedorSelecionado}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{fornecedorMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formFornecedor" 
+									image="/static/images/delete.png"
+									eventsQueue="queueNoDelay"
+									rendered="#{fornecedorMB.excluirFornecedor}"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{fornecedor.entity}" target="#{fornecedorMB.fornecedor}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollFornecedor" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableFornecedor" maxPages="10" page="#{fornecedorMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeFornecedor}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<poti:fieldModalMessages formAtual="formDetails"
+		 				mbean="${fornecedorMB}"
+		 				action="verificarObrigatorios"
+		 				process="formDetails"/>
+		 			<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal" timing="immediate"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+					<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="onload"
+						id="maskMoney" />
+		 			<h:inputHidden value="#{fornecedorMB.fornecedor.id}"/>
+		 			<rich:tabPanel id="idTabPanel"
+		 				headerAlignment="left"
+		 				switchType="client"
+		 				width="700px"
+		 				activeTabClass="activeTab"
+		 				height="300px">
+		 				<rich:tab name="abaPrincipal" id="abaPrincipal">
+		 					<f:facet name="label">
+		 						<h:panelGroup>
+		 							<h:outputText value="#{b.principal}"/>
+		 						</h:panelGroup>
+		 					</f:facet>
+						 	<table cellspacing="10px">
+						 		<tr>
+		           					<td>
+		           						<h:outputText value="#{b.empresaResponsavel}" />
+		           					</td>
+		           					<td width="350px;">
+		           						<rich:message id="msgsEmpresa" for="selEmpresa" errorLabelClass="error"/><div />
+		           						<h:selectOneMenu id="selEmpresa" 
+		           										style="width:350px;" label="${b.empresaResponsavel}" 
+														value="#{fornecedorMB.fornecedor.empresa}"
+														required="true">
+											<f:selectItems id="itensFornecedor" value="#{fornecedorMB.itensEmpresa}"/>
+											<f:converter converterId="identifiableConverter"/>  
+										</h:selectOneMenu>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.razaoSocial}" />
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsRazaoSocial" for="txtRazaoSocial" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtRazaoSocial" 
+		           									value="#{fornecedorMB.fornecedor.razaoSocial}" 
+		           									style="width: 350px" 
+		           									label="#{b.razaoSocial}"
+		           									required="true"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.codigo}" />
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsCodigoFornecedor" for="txtCodigoFornecedor" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtCodigoFornecedor" 
+		           									value="#{fornecedorMB.fornecedor.codigo}" 
+		           									style="width: 88px" 
+		           									label="#{b.codigo}"
+		           									required="true"/>
+		           						<rich:spacer width="10px;"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.nomeFantasia}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsNomeFantasia" for="txtNomeFantasia" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtNomeFantasia" 
+		           									value="#{fornecedorMB.fornecedor.nomeFantasia}" 
+		           									style="width: 350px" 
+		           									label="#{b.nomeFantasia}"
+		           									required="true"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.tipoDocumento}" />
+		           					</td>
+		           					<td>
+			           					<h:selectOneRadio id="selTipoDocumento" label="#{b.tipoDocumento}"
+											value="#{fornecedorMB.fornecedor.tipoDocumento}" style="width: 100px;" required="true">
+											<f:selectItem itemLabel="#{b.cnpj}" itemValue="CNPJ" />
+									    	<f:selectItem itemLabel="#{b.cpf}" itemValue="CPF" />
+									    	<a4j:support event="onclick" 
+									    				ajaxSingle="true"
+									    				reRender="inputGroup, labelGroup"
+									    				eventsQueue="queueNoDelay" 
+									    				action="#{fornecedorMB.doDesabilitarCampoCnpjCpf}"/>
+										</h:selectOneRadio> 
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:panelGroup id="labelGroup">
+			           						<h:outputText id="labelCpf" value="#{b.cpf}" rendered="#{fornecedorMB.mostrarCpf == true}"/>
+			           						<h:outputText id="labelCnpj" value="#{b.cnpj}" rendered="#{fornecedorMB.mostrarCnpj == true}"/>
+		           						</h:panelGroup>
+		           					</td>
+		           					<td>
+		           						<h:panelGroup id="inputGroup">
+		           							<rich:message id="msgsCnpj" for="txtCnpj" errorLabelClass="error"/><div />
+			           						<h:inputText id="txtCnpj" 
+			           									rendered="#{fornecedorMB.mostrarCnpj == true}"
+			           									value="#{fornecedorMB.fornecedor.cpfCnpj}" 
+			           									style="width: 175px"
+														onkeyup="somenteNumeros(this)"
+														required="#{fornecedorMB.mostrarCnpj == true}"
+			           									label="#{b.cnpj}" />
+			           						<rich:message id="msgsCpf" for="txtCpf" errorLabelClass="error"/><div />
+			           						<h:inputText id="txtCpf" 
+			           									rendered="#{fornecedorMB.mostrarCpf == true}"
+			           									value="#{fornecedorMB.fornecedor.cpfCnpj}"
+			           									onkeyup="somenteNumeros(this)" 
+			           									style="width: 175px"
+														required="#{fornecedorMB.mostrarCpf == true}" 
+			           									label="#{b.cpf}" />
+			           					</h:panelGroup>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.tipoAtividade}"/>
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtTipoAtividade" 
+		           									value="#{fornecedorMB.fornecedor.tipoAtividade}" 
+		           									style="width: 350px" 
+		           									label="#{b.tipoAtividade}"/>           						
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.diaPagamento}"/>
+		           					</td>
+		           					<td>
+		           						 <rich:message id="msgsDiaPagamento" for="txtDiaPagamento" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtDiaPagamento"
+		           									value="#{fornecedorMB.fornecedor.diaPagamento}"
+		           									style="width: 88px"
+		           									label="#{b.diaPagamento}"
+		           									validator="DiaDoMesValidator"
+		           									onkeyup="somenteNumeros(this);"
+		               								maxlength="2">
+		               						<rich:jQuery selector="#txtDiaPagamento" timing="onload" query="numeric()"/>
+		               					</h:inputText>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.dataInicioContrato}"/>
+		           					</td>
+		           					<td>
+		           						<rich:calendar id="calDataInicioContrato"
+		           							value="#{fornecedorMB.fornecedor.dataInicioContrato}" 
+		           							datePattern="dd/MM/yyyy"
+		           							inputStyle="width: 88px;"
+											label="#{b.dataInicioContrato}"
+											enableManualInput="true"
+											inputSize="10"
+											inputClass="maskDatePrincipal"/>
+										<rich:spacer width="20px;"/>
+		           						<h:outputText value="#{b.dataFimContrato}"/>
+		           						<rich:spacer width="12px;"/>
+		           						<rich:calendar id="calDataFimContrato"
+		           							value="#{fornecedorMB.fornecedor.dataFinalContrato}"
+		           							datePattern="dd/MM/yyyy"
+		           							inputStyle="width: 88px;"
+											label="#{b.dataFimContrato}"
+											enableManualInput="true"
+											inputSize="10"
+											inputClass="maskDatePrincipal"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.observacao}"/>
+		           					</td>
+		           					<td>
+		           						<h:inputTextarea id="txtObservacao"
+		           							value="#{fornecedorMB.fornecedor.observacao}"
+		           							label="#{b.observacao}"
+		           							style="width: 350px"
+		           							rows="3"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.situacao}" />
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsSituacao" for="selSituacao" errorLabelClass="error"/><div />
+			           					<h:selectOneRadio id="selSituacao" label="#{b.situacao}" required="true"
+											value="#{fornecedorMB.fornecedor.situacao}" style="width: 200px;">
+											<f:selectItem itemLabel="#{b.ativo}" itemValue="ATIVO" />
+									    	<f:selectItem itemLabel="#{b.inativo}" itemValue="INATIVO" />
+										</h:selectOneRadio>
+		           					</td>
+		           				</tr>
+		           			</table>
+		           		</rich:tab>
+	           			<rich:tab name="abaContato" id="abaContato">
+		 					<f:facet name="label">
+		 						<h:panelGroup>
+		 							<h:outputText value="#{b.contato}"/>
+		 						</h:panelGroup>
+		 					</f:facet>
+		           			<table cellspacing="10px">
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.contato1}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsContato1" for="txtContato1" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtContato1" 
+		   									value="#{fornecedorMB.fornecedor.contato1.nome}" 
+		   									style="width: 350px" 
+		   									label="#{b.contato1}"
+		   									required="true"/>
+		           					</td>
+		           					<td>
+		           						<h:outputText value="#{b.email}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsEmailContato1" for="txtEmailContato1" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtEmailContato1" 
+		   									value="#{fornecedorMB.fornecedor.contato1.email}"
+		   									style="width: 200px"
+		   									validator="EmailValidator"
+		   									label="#{b.email}"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.contato2}"/>
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtContato2" 
+		   									value="#{fornecedorMB.fornecedor.contato2.nome}" 
+		   									style="width: 350px" 
+		   									label="#{b.contato1}"/>
+		           					</td>
+		           					<td>
+		           						<h:outputText value="#{b.email}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsEmailContato2" for="txtEmailContato2" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtEmailContato2" 
+		   									value="#{fornecedorMB.fornecedor.contato2.email}" 
+		   									style="width: 200px" 
+		   									validator="EmailValidator"
+		   									label="#{b.email}"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputLabel value="#{b.telefone1}" />
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtNumero1" 
+		           							value="#{fornecedorMB.fornecedor.telefone1.numero}" 
+		           							style="width: 88px;"/>
+		           						<rich:spacer width="40px;"/>
+		           						<h:outputText value="#{b.ramal}"/>
+		           						<rich:spacer width="83px;"/>
+		           						<h:inputText id="txtRamal1" 
+		           							style="width: 108px;"
+		           							value="#{fornecedorMB.fornecedor.telefone1.ramal}"
+		           							onkeyup="somenteNumeros(this);" />
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputLabel value="#{b.telefone2}" />
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtNumero2" 
+		           							value="#{fornecedorMB.fornecedor.telefone2.numero}" 
+		           							style="width: 88px;"/>
+		           						<rich:spacer width="40px;"/>
+		           						<h:outputText value="#{b.ramal}"/>
+		           						<rich:spacer width="83px;"/>
+		           						<h:inputText id="txtRamal2" 
+		           							value="#{fornecedorMB.fornecedor.telefone2.ramal}"
+		           							style="width: 108px;"
+		           							onkeyup="somenteNumeros(this);" />
+		           					</td>
+		           				</tr>
+		           			</table>
+		           		</rich:tab>
+		           		<rich:tab name="abaEndereco" id="abaEndereco">
+		 					<f:facet name="label">
+		 						<h:panelGroup>
+		 							<h:outputText value="#{b.endereco}"/>
+		 						</h:panelGroup>
+		 					</f:facet>
+		           			<table cellspacing="10px">
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.cep}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsCep" for="txtCep" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtCep" 
+		           									value="#{fornecedorMB.fornecedor.endereco.cep}" 
+		           									style="width: 88px" 
+		           									label="#{b.cep}"
+		           									converter="CepConverter"
+		           									required="true">
+		           							<rich:jQuery selector="#txtCep" 
+														timing="onload"
+														query="mask('99999-999')" />
+		           						</h:inputText>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.endereco}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsEndereco" for="txtEndereco" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtEndereco" 
+		           									value="#{fornecedorMB.fornecedor.endereco.endereco}" 
+		           									style="width: 350px" 
+		           									label="#{b.endereco}"
+		           									required="true"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.numero}"/>
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtNumero" 
+		           									value="#{fornecedorMB.fornecedor.endereco.numero}" 
+		           									style="width: 88px" 
+		           									label="#{b.numero}"
+		           									onkeyup="somenteNumeros(this);"
+		               								maxlength="5">
+		           							<rich:jQuery selector="#txtNumero" timing="onload" query="numeric()"/>
+		           						</h:inputText>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.complemento}"/>
+		           					</td>
+		           					<td>           					
+		           						<h:inputText id="txtComplemento" 
+		           									value="#{fornecedorMB.fornecedor.endereco.complemento}" 
+		           									style="width: 175px" 
+		           									label="#{b.complemento}"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>	
+		           						<h:outputText value="#{b.bairro}"/>
+		           					</td>
+		           					<td>
+		           						<h:inputText id="txtBairro" 
+		           									value="#{fornecedorMB.fornecedor.endereco.bairro}" 
+		           									style="width: 350px" 
+		           									label="#{b.bairro}" />
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.cidade}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgCidade" for="txtCidade" errorLabelClass="error"/><div />
+		           						<h:inputText id="txtCidade" 
+		           									value="#{fornecedorMB.fornecedor.endereco.cidade}" 
+		           									style="width: 350px" 
+		           									label="#{b.cidade}"
+		           									required="true"/>
+		           					</td>
+		           				</tr>
+		           				<tr>
+		           					<td>
+		           						<h:outputText value="#{b.estado}"/>
+		           					</td>
+		           					<td>
+		           						<rich:message id="msgsEstado" for="selEstado" errorLabelClass="error"/><div />
+		           						<h:selectOneMenu id="selEstado" 
+		           										label="${b.estado}" 
+														value="#{fornecedorMB.fornecedor.endereco.estado}"
+														required="true">
+											<f:selectItems id="itensEstado" value="#{fornecedorMB.itensEstado}"/>
+											<f:converter converterId="identifiableConverter"/>
+										</h:selectOneMenu>
+		           					</td>
+		           				</tr>
+		            		</table>
+	            		</rich:tab>
+	            	</rich:tabPanel>
+            		<div style="height: 15px;"/>
+            		<table width="700px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{fornecedorMB.doSalvar}" 
+												reRender="formFornecedor, formDetails" 
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												rendered="#{fornecedorMB.manterFornecedor}"
+												eventsQueue="queueNoDelay"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{fornecedorMB.doSalvar}" 
+												reRender="formFornecedor, formDetails" 
+												rendered="#{fornecedorMB.incluirFornecedor}"
+												eventsQueue="queueNoDelay"
+												style="width: 140px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												eventsQueue="queueNoDelay"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

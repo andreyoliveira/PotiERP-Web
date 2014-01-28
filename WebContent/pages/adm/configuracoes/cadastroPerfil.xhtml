@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formCadastroPerfil"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - #{b.cadastroDePerfil}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDePerfil}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.novo}" 
+					action="#{perfilMB.doNovo}"
+					title="#{b.incluirNovoRegistro}"
+					onclick="limpaForm('formDetails');"
+					rendered="#{perfilMB.consultarPerfil}"
+					oncomplete="Richfaces.showModalPanel('mpDetails');"
+					reRender="formDetails, formCadastroPerfil" 
+					style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}" 
+					rendered="#{perfilMB.excluirPerfil}"
+					action="#{perfilMB.doExcluirLote}"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					reRender="formDetails, formCadastroPerfil" 
+					style="width: 80px; cursor: pointer;cursor: hand;"
+					title="#{b.excluirRegistrosSelecionados}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="perfilMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{perfilMB.listPerfil}"
+									var="perfil" 
+									height="455px"
+									enableContextMenu="false"
+									selectionMode="none"
+									id="tablePerfil"
+									rows="16"
+									reRender="scrollPerfil"
+									rendered="#{perfilMB.consultarPerfil}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{perfilMB.excluirPerfil}">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkPerfilAll"
+								onclick="jqCheckAll(this, 'formCadastroPerfil:tablePerfil');"
+								value="#{perfilMB.checkPerfilAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkPerfil" value="#{perfil.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column filterBy="#{perfil.entity.sigla}" width="100px" filterEvent="onkeyup" sortable="true" sortBy="#{perfil.entity.sigla}">
+					<f:facet name="header">
+						<h:outputText value="#{b.perfilSigla}" title="#{b.perfilSigla}"/>
+					</f:facet>
+           			<h:outputText value="#{perfil.entity.sigla}"/>
+           		</rich:column>
+           		<rich:column width="450px" filterBy="#{perfil.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{perfil.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.perfilDescricao}" title="#{b.perfilDescricao}"/>
+           			</f:facet>
+           			<h:outputText value="#{perfil.entity.descricao}"/>
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton onclick="limpaForm('formDetails'); Richfaces.showModalPanel('mpDetails');"
+               			rendered="#{perfilMB.consultarPerfil}"
+						title="#{b.alterar}"
+						reRender="formDetails" 
+						image="/static/images/edit.png"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{perfil.entity}" target="#{perfilMB.perfil}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{perfilMB.doExcluir}"
+						rendered="#{perfilMB.excluirPerfil}"
+						title="#{b.excluir}" 
+						reRender="formCadastroPerfil" 
+						onclick="if(!confirmarOperacaoAjax(this))return false;"
+						image="/static/images/delete.png"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{perfil.entity}" target="#{perfilMB.perfil}"/>
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollPerfil" align="center" renderIfSinglePage="false"
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tablePerfil" maxPages="10" page="#{perfilMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0, afterFinish: function(){document.getElementById('formDetails:txtUsername').focus();}})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDePerfil}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif" style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{perfilMB.perfil.id}"/>
+		         	<h:panelGrid columns="6" id="grid">
+						<h:outputLabel value="#{b.perfilSigla}:" title="#{b.perfilSigla}" for="txtSigla"/>
+						<h:inputText id="txtSigla" value="#{perfilMB.perfil.sigla}" required="true" label="#{b.perfilSigla}"/>
+						<rich:message for="txtSigla"/>
+						<h:outputLabel value="#{b.perfilDescricao}:" title="#{b.perfilDescricao}" for="txtDescricao"/>
+						<h:inputText id="txtDescricao" value="#{perfilMB.perfil.descricao}" required="true" label="#{b.perfilDescricao}"/>
+						<rich:message for="txtDescricao"/>
+					</h:panelGrid>
+					<h:outputLabel value="#{b.perfilSelecioneFuncionalidades}:" title="#{b.perfilSelecioneFuncionalidades}"/>
+					<rich:dataGrid columns="4" value="#{perfilMB.listaFuncionalidade}" var="funcionalidade" width="900">
+						<h:selectBooleanCheckbox value="#{funcionalidade.selecionado}" onclick="interceptarEvento(event);" style="margin-right: 5px;"/>
+						<h:outputText value="#{funcionalidade.entity.descricao}" />
+					</rich:dataGrid>
+					<table width="100%">
+            			<tr>
+            				<td align="center">
+								<h:panelGrid style="text-align:center;" columns="5">
+									<a4j:commandButton action="#{perfilMB.doSalvar}" value="#{b.salvar}" 
+													reRender="formCadastroPerfil, formDetails" oncomplete="windowclose('formDetails', 'mpDetails');"
+													rendered="#{perfilMB.manterPerfil}"
+													style="width: 80px;cursor: pointer;cursor: hand;"/>
+									<rich:spacer width="15px"/>
+									<a4j:commandButton action="#{perfilMB.doSalvar}" value="#{b.salvarEIncluirOutro}" 
+													reRender="formCadastroPerfil, formDetails" oncomplete="document.getElementById('formDetails:txtSigla').focus();"
+													rendered="#{perfilMB.incluirPerfil}"/>
+									<rich:spacer width="15px"/>
+									<a4j:commandButton value="#{b.cancelar}"
+													immediate="true"
+													oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+													style="width: 80px;cursor: pointer;cursor: hand;"/>
+								</h:panelGrid>
+							</td>
+						</tr>
+					</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

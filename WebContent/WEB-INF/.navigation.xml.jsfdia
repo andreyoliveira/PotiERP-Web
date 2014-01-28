@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROCESS model-entity="JSFProcess">
+ <PROCESS-ITEM NAME="rules:" SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::0" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="index::#index.xhtml" NAME="output"
+    PATH="/index.xhtml" TARGET="rules:#index.xhtml" TITLE="index" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::1" SHAPE="32,129,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::1" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="login::#login.xhtml" NAME="output"
+    PATH="/login.xhtml" TARGET="rules:#login.xhtml" TITLE="login" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::2" SHAPE="32,241,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::2" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeEmpresa::#pages#adm#configuracoes#cadastroEmpresa.xhtml"
+    NAME="output" PATH="/pages/adm/configuracoes/cadastroEmpresa.xhtml"
+    TARGET="rules:#pages#adm#configuracoes#cadastroEmpresa.xhtml"
+    TITLE="cadastroDeEmpresa" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::3" SHAPE="32,353,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::3" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeCliente::#pages#comercial#cadastroCliente.xhtml"
+    NAME="output" PATH="/pages/comercial/cadastroCliente.xhtml"
+    TARGET="rules:#pages#comercial#cadastroCliente.xhtml"
+    TITLE="cadastroDeCliente" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::4" SHAPE="32,465,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::4" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeFornecedor::#pages#compras#cadastroFornecedor.xhtml"
+    NAME="output" PATH="/pages/compras/cadastroFornecedor.xhtml"
+    TARGET="rules:#pages#compras#cadastroFornecedor.xhtml"
+    TITLE="cadastroDeFornecedor" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::5" SHAPE="32,577,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::5" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroJornadaTrabalho::#pages#rh#cadastro#cadastroJornadaTrabalho.xhtml"
+    NAME="output"
+    PATH="/pages/rh/cadastro/cadastroJornadaTrabalho.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroJornadaTrabalho.xhtml"
+    TITLE="cadastroJornadaTrabalho" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::6" SHAPE="32,689,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::6" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeTipoDemissao::#pages#rh#cadastro#cadastroTipoDemissao.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroTipoDemissao.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroTipoDemissao.xhtml"
+    TITLE="cadastroDeTipoDemissao" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::7" SHAPE="32,801,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::7" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeTipoAdicional::#pages#rh#cadastro#cadastroAdicional.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroAdicional.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroAdicional.xhtml"
+    TITLE="cadastroDeTipoAdicional" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::8" SHAPE="32,913,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::8" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeTipoDesconto::#pages#rh#cadastro#cadastroDesconto.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroDesconto.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroDesconto.xhtml"
+    TITLE="cadastroDeTipoDesconto" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::9" SHAPE="32,1025,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::9" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeTipoBeneficio::#pages#rh#cadastro#cadastroBeneficio.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroBeneficio.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroBeneficio.xhtml"
+    TITLE="cadastroDeTipoBeneficio" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::10" SHAPE="32,1137,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::10" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeTipoEncargo::#pages#rh#cadastro#cadastroEncargo.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroEncargo.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroEncargo.xhtml"
+    TITLE="cadastroDeTipoEncargo" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::11" SHAPE="32,1249,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::11" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeUsuario::#pages#adm#configuracoes#cadastroUsuario.xhtml"
+    NAME="output" PATH="/pages/adm/configuracoes/cadastroUsuario.xhtml"
+    TARGET="rules:#pages#adm#configuracoes#cadastroUsuario.xhtml"
+    TITLE="cadastroDeUsuario" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::12" SHAPE="32,1361,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::12" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroPerfil::#pages#adm#configuracoes#cadastroPerfil.xhtml"
+    NAME="output" PATH="/pages/adm/configuracoes/cadastroPerfil.xhtml"
+    TARGET="rules:#pages#adm#configuracoes#cadastroPerfil.xhtml"
+    TITLE="cadastroPerfil" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::13" SHAPE="32,1473,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::13" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroFuncionario::#pages#rh#cadastro#cadastroFuncionario.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroFuncionario.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroFuncionario.xhtml"
+    TITLE="cadastroFuncionario" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::14" SHAPE="32,1585,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::14" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroCargo::#pages#rh#cadastro#cadastroCargo.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroCargo.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroCargo.xhtml"
+    TITLE="cadastroCargo" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::15" SHAPE="32,1697,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::15" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroSetor::#pages#rh#cadastro#cadastroSetor.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroSetor.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroSetor.xhtml"
+    TITLE="cadastroSetor" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::16" SHAPE="32,1809,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::16" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroFormaPagamento::#pages#rh#cadastro#cadastroFormaPagamento.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroFormaPagamento.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroFormaPagamento.xhtml"
+    TITLE="cadastroFormaPagamento" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::17" SHAPE="32,1921,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::17" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroTipoAdmissao::#pages#rh#cadastro#cadastroTipoAdmissao.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroTipoAdmissao.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroTipoAdmissao.xhtml"
+    TITLE="cadastroTipoAdmissao" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::18" SHAPE="32,2033,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::18" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroSituacaoFuncionario::#pages#rh#cadastro#cadastroSituacaoFuncionario.xhtml"
+    NAME="output"
+    PATH="/pages/rh/cadastro/cadastroSituacaoFuncionario.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroSituacaoFuncionario.xhtml"
+    TITLE="cadastroSituacaoFuncionario" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::19" SHAPE="32,2145,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::19" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroVinculoEmpregaticio::#pages#rh#cadastro#cadastroVinculoEmpregaticio.xhtml"
+    NAME="output"
+    PATH="/pages/rh/cadastro/cadastroVinculoEmpregaticio.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroVinculoEmpregaticio.xhtml"
+    TITLE="cadastroVinculoEmpregaticio" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::20" SHAPE="32,2257,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::20" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroDeDependentes::#pages#rh#cadastro#cadastroDependente.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroDependente.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroDependente.xhtml"
+    TITLE="cadastroDeDependentes" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::21" SHAPE="32,2369,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::21" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroTipoValeTransporte::#pages#rh#parametros#tipoValeTransporte.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/tipoValeTransporte.xhtml"
+    TARGET="rules:#pages#rh#parametros#tipoValeTransporte.xhtml"
+    TITLE="cadastroTipoValeTransporte" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::22" SHAPE="32,2481,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::22" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroTipoValeRefeicao::#pages#rh#parametros#tipoValeRefeicao.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/tipoValeRefeicao.xhtml"
+    TARGET="rules:#pages#rh#parametros#tipoValeRefeicao.xhtml"
+    TITLE="cadastroTipoValeRefeicao" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::23" SHAPE="32,2593,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::23" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroTipoCestaBasica::#pages#rh#parametros#tipoCestaBasica.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/tipoCestaBasica.xhtml"
+    TARGET="rules:#pages#rh#parametros#tipoCestaBasica.xhtml"
+    TITLE="cadastroTipoCestaBasica" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::24" SHAPE="32,2705,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::24" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroVerba::#pages#rh#parametros#verba.xhtml" NAME="output"
+    PATH="/pages/rh/parametros/verba.xhtml"
+    TARGET="rules:#pages#rh#parametros#verba.xhtml"
+    TITLE="cadastroVerba" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::25" SHAPE="32,2817,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::25" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroValeTransporte::#pages#rh#cadastro#cadastroValeTransporte.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroValeTransporte.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroValeTransporte.xhtml"
+    TITLE="cadastroValeTransporte" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::26" SHAPE="32,2929,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::26" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="calculoValeRefeicao::#pages#rh#calculos#calculoValeRefeicao.xhtml"
+    NAME="output" PATH="/pages/rh/calculos/calculoValeRefeicao.xhtml"
+    TARGET="rules:#pages#rh#calculos#calculoValeRefeicao.xhtml"
+    TITLE="calculoValeRefeicao" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::27" SHAPE="32,3041,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::27" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroGrauParentesco::#pages#rh#parametros#grauParentesco.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/grauParentesco.xhtml"
+    TARGET="rules:#pages#rh#parametros#grauParentesco.xhtml"
+    TITLE="cadastroGrauParentesco" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::28" SHAPE="32,3153,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::28" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="parametroCidade::#pages#rh#parametros#parametroCidade.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/parametroCidade.xhtml"
+    TARGET="rules:#pages#rh#parametros#parametroCidade.xhtml"
+    TITLE="parametroCidade" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::29" SHAPE="32,3265,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::29" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroFeriado::#pages#rh#cadastro#cadastroFeriado.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroFeriado.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroFeriado.xhtml"
+    TITLE="cadastroFeriado" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::30" SHAPE="32,3377,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::30" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="parametrosRh::#pages#rh#parametros#parametrosRh.xhtml"
+    NAME="output" PATH="/pages/rh/parametros/parametrosRh.xhtml"
+    TARGET="rules:#pages#rh#parametros#parametrosRh.xhtml"
+    TITLE="parametrosRh" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::31" SHAPE="32,3489,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::31" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="relatoriosAdmissionais::#pages#rh#relatorios#relatoriosAdmissionais.xhtml"
+    NAME="output"
+    PATH="/pages/rh/relatorios/relatoriosAdmissionais.xhtml"
+    TARGET="rules:#pages#rh#relatorios#relatoriosAdmissionais.xhtml"
+    TITLE="relatoriosAdmissionais" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::32" SHAPE="32,3601,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::32" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="apontamentosFolha::#pages#rh#lancamentos#apontamentosFolha.xhtml"
+    NAME="output" PATH="/pages/rh/lancamentos/apontamentosFolha.xhtml"
+    TARGET="rules:#pages#rh#lancamentos#apontamentosFolha.xhtml"
+    TITLE="apontamentosFolha" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules::33" SHAPE="32,3713,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::33" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="relatoriosVencimentoExperiencia::#pages#rh#relatorios#relatoriosVencimentoExperiencia.xhtml"
+    NAME="output"
+    PATH="/pages/rh/relatorios/relatoriosVencimentoExperiencia.xhtml"
+    TARGET="rules:#pages#rh#relatorios#relatoriosVencimentoExperiencia.xhtml"
+    TITLE="relatoriosVencimentoExperiencia" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#comercial#cadastroCliente.xhtml"
+  PATH="/pages/comercial/cadastroCliente.xhtml" SHAPE="240,369,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroFuncionario.xhtml"
+  PATH="/pages/rh/cadastro/cadastroFuncionario.xhtml"
+  SHAPE="240,1489,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroValeTransporte.xhtml"
+  PATH="/pages/rh/cadastro/cadastroValeTransporte.xhtml"
+  SHAPE="240,2833,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#adm#configuracoes#cadastroUsuario.xhtml"
+  PATH="/pages/adm/configuracoes/cadastroUsuario.xhtml"
+  SHAPE="240,1265,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#index.xhtml" PATH="/index.xhtml"
+  SHAPE="240,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroFormaPagamento.xhtml"
+  PATH="/pages/rh/cadastro/cadastroFormaPagamento.xhtml"
+  SHAPE="240,1825,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroJornadaTrabalho.xhtml"
+  PATH="/pages/rh/cadastro/cadastroJornadaTrabalho.xhtml"
+  SHAPE="240,593,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#compras#cadastroFornecedor.xhtml"
+  PATH="/pages/compras/cadastroFornecedor.xhtml" SHAPE="240,481,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#adm#configuracoes#cadastroPerfil.xhtml"
+  PATH="/pages/adm/configuracoes/cadastroPerfil.xhtml"
+  SHAPE="240,1377,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroTipoDemissao.xhtml"
+  PATH="/pages/rh/cadastro/cadastroTipoDemissao.xhtml"
+  SHAPE="240,705,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#verba.xhtml"
+  PATH="/pages/rh/parametros/verba.xhtml" SHAPE="240,2721,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroEncargo.xhtml"
+  PATH="/pages/rh/cadastro/cadastroEncargo.xhtml" SHAPE="240,1153,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#calculos#calculoValeRefeicao.xhtml"
+  PATH="/pages/rh/calculos/calculoValeRefeicao.xhtml"
+  SHAPE="240,2945,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroTipoAdmissao.xhtml"
+  PATH="/pages/rh/cadastro/cadastroTipoAdmissao.xhtml"
+  SHAPE="240,1937,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#parametros#tipoValeTransporte.xhtml"
+  PATH="/pages/rh/parametros/tipoValeTransporte.xhtml"
+  SHAPE="240,2385,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#parametrosRh.xhtml"
+  PATH="/pages/rh/parametros/parametrosRh.xhtml" SHAPE="240,3393,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroVinculoEmpregaticio.xhtml"
+  PATH="/pages/rh/cadastro/cadastroVinculoEmpregaticio.xhtml"
+  SHAPE="240,2161,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#relatorios#relatoriosVencimentoExperiencia.xhtml"
+  PATH="/pages/rh/relatorios/relatoriosVencimentoExperiencia.xhtml"
+  SHAPE="240,3729,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroDesconto.xhtml"
+  PATH="/pages/rh/cadastro/cadastroDesconto.xhtml" SHAPE="240,929,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#grauParentesco.xhtml"
+  PATH="/pages/rh/parametros/grauParentesco.xhtml" SHAPE="240,3057,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#adm#configuracoes#cadastroEmpresa.xhtml"
+  PATH="/pages/adm/configuracoes/cadastroEmpresa.xhtml"
+  SHAPE="240,257,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroAdicional.xhtml"
+  PATH="/pages/rh/cadastro/cadastroAdicional.xhtml" SHAPE="240,817,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroDependente.xhtml"
+  PATH="/pages/rh/cadastro/cadastroDependente.xhtml"
+  SHAPE="240,2273,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#tipoCestaBasica.xhtml"
+  PATH="/pages/rh/parametros/tipoCestaBasica.xhtml" SHAPE="240,2609,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroSetor.xhtml"
+  PATH="/pages/rh/cadastro/cadastroSetor.xhtml" SHAPE="240,1713,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroBeneficio.xhtml"
+  PATH="/pages/rh/cadastro/cadastroBeneficio.xhtml" SHAPE="240,1041,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroCargo.xhtml"
+  PATH="/pages/rh/cadastro/cadastroCargo.xhtml" SHAPE="240,1601,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#parametroCidade.xhtml"
+  PATH="/pages/rh/parametros/parametroCidade.xhtml" SHAPE="240,3169,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#lancamentos#apontamentosFolha.xhtml"
+  PATH="/pages/rh/lancamentos/apontamentosFolha.xhtml"
+  SHAPE="240,3617,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#parametros#tipoValeRefeicao.xhtml"
+  PATH="/pages/rh/parametros/tipoValeRefeicao.xhtml"
+  SHAPE="240,2497,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#login.xhtml" PATH="/login.xhtml"
+  SHAPE="240,145,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#cadastro#cadastroSituacaoFuncionario.xhtml"
+  PATH="/pages/rh/cadastro/cadastroSituacaoFuncionario.xhtml"
+  SHAPE="240,2049,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#rh#relatorios#relatoriosAdmissionais.xhtml"
+  PATH="/pages/rh/relatorios/relatoriosAdmissionais.xhtml"
+  SHAPE="240,3505,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroFeriado.xhtml"
+  PATH="/pages/rh/cadastro/cadastroFeriado.xhtml" SHAPE="240,3281,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules::34" SHAPE="32,3825,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules::34" NAME="item" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="cadastroResponsavel::#pages#rh#cadastro#cadastroResponsavel.xhtml"
+    NAME="output" PATH="/pages/rh/cadastro/cadastroResponsavel.xhtml"
+    TARGET="rules:#pages#rh#cadastro#cadastroResponsavel.xhtml"
+    TITLE="cadastroResponsavel" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#rh#cadastro#cadastroResponsavel.xhtml"
+  PATH="/pages/rh/cadastro/cadastroResponsavel.xhtml"
+  SHAPE="240,3841,0,0" model-entity="JSFProcessGroup"/>
+</PROCESS>

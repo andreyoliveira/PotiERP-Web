@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formAlteracaoSalarial" />
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.alteracaoSalarial}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.alteracaoSalarial}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}" 
+					status="statusAguarde"
+					title="#{b.atualizarListagem}"
+					action="#{alteracaoSalarialMB.doConsultar}"
+					reRender="tableAlteracaoSalarial, scrollAlteracaoSalarial, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+				<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					action="#{alteracaoSalarialMB.doExcluirLote}" 
+					reRender="tableAlteracaoSalarial, scrollAlteracaoSalarial, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="alteracaoSalarialMB" />
+			<rich:extendedDataTable
+				noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+				value="#{alteracaoSalarialMB.listAlteracaoSalarial}"
+				id="tableAlteracaoSalarial"
+				var="alteracaoSalarial"
+				height="203px" 
+				width="998px"
+				rows="6"
+				enableContextMenu="false"
+				selectionMode="single"
+				reRender="scrollAlteracaoSalarial"
+				sortMode="single"
+				rendered="#{alteracaoSalarialMB.consultarAlteracaoSalarial}"
+				rowClasses="rowPar, rowImpar"
+				onRowMouseOver="jQuery(this).addClass('activeRow');"
+				onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkAlteracaoSalarialAll"
+							onclick="jqCheckAll(this, 'formAlteracaoSalarial:tableAlteracaoSalarial');"
+							value="#{alteracaoSalarialMB.checkAlteracaoSalarialAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox  id="checkAlteracaoSalarial"
+						value="#{alteracaoSalarial.selecionado}" 
+						onclick="interceptarEvento(event);" />
+				</rich:column>
+				<rich:column width="96px"
+						sortable="true" 
+						sortBy="#{alteracaoSalarial.entity.funcionario.codigoRegistro}" 
+						filterBy="#{alteracaoSalarial.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.re}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.funcionario.codigoRegistro}" />
+           		</rich:column>
+				<rich:column width="253px"
+				 		sortable="true" 
+						sortBy="#{alteracaoSalarial.entity.funcionario.pessoa.nome}"
+						filterBy="#{alteracaoSalarial.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{alteracaoSalarialMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{alteracaoSalarial.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{alteracaoSalarial.entity}"
+							target="#{alteracaoSalarialMB.alteracaoSalarialSelecionado}" />
+					</a4j:commandLink>	
+				</rich:column>
+				<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.data}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.dataAlteracao}">
+           				<f:convertDateTime pattern="dd/MM/yyyy" />
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.salarioAnterior}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.salarioAnterior}" />
+           		</rich:column>
+           		<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.reajuste}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.reajuste}" />
+           		</rich:column>
+           		<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.salarioAtual}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.salarioAtual}" />
+           		</rich:column>
+           		<rich:column width="103px">
+					<f:facet name="header">
+						<h:outputText value="#{b.cargo}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.cargoAtual.cargo}" />
+           		</rich:column>
+           		<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.motivo}"/>
+					</f:facet>
+           			<h:outputText value="#{alteracaoSalarial.entity.motivo.motivo}" />
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollAlteracaoSalarial" 
+				align="center"
+				renderIfSinglePage="false" 
+				boundaryControls="auto"
+				fastControls="auto" 
+				stepControls="auto" 
+				for="tableAlteracaoSalarial"
+				maxPages="50" 
+				page="#{alteracaoSalarialMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+					timing="immediate" query="mask('99/99/9999',{placeholder:' '})" />
+			<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+					selector=".maskMoney" timing="onload" id="maskMoney" />
+			<h:form id="formDetails">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+						<rich:separator height="6" lineType="solid" width="100%"/>
+						</td>
+					</tr>
+				</table>
+				<rich:panel>
+					<table width="100%">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" /> 
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.funcionario.codigoRegistro}"
+									style="width:70px"
+									label="#{b.re}"
+									readonly="#{alteracaoSalarialMB.isDisableRe}"
+									disabled="#{alteracaoSalarialMB.isDisableRe}"
+									onkeyup="somenteNumeros(this);"> 
+								<a4j:support action="#{alteracaoSalarialMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outPutAlteracaoSalarial, txtSalarioAnterior, selCargoAnterior, msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+		           				</h:inputText>
+		           				<rich:spacer width="15px"/>
+		           				<a4j:outputPanel id="outPutAlteracaoSalarial">
+			  						<h:inputText id="txtNomeFuncionario" 
+			  									readonly="#{alteracaoSalarialMB.isDisableNome}"
+			  									disabled="#{alteracaoSalarialMB.isDisableNome}"
+			  									value="#{alteracaoSalarialMB.alteracaoSalarial.funcionario.pessoa.nome}"
+			  									style="width: 310px"
+			  									label="#{b.funcionario}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONARIO FOI ENCONTRADO"
+					                    suggestionAction="#{alteracaoSalarialMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{alteracaoSalarialMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, txtSalarioAnterior, selCargoAnterior, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{alteracaoSalarialMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+				                </a4j:outputPanel>
+		           			</td>
+						</tr>
+					</table>
+					<rich:spacer height="5px"/>
+					<table width="100%">
+						<tr>
+							<td width="30px"><h:outputText value="#{b.data}" /></td>
+							<td>
+								<rich:message id="msgsData"
+									for="calData" errorLabelClass="error" />
+								<div />
+								<rich:calendar id="calData"
+									disabled="#{alteracaoSalarialMB.isDisableNome}"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.dataAlteracao}"
+									datePattern="dd/MM/yyyy" inputStyle="width: 95px;"
+									label="#{b.data}" enableManualInput="true"
+									inputSize="10" inputClass="maskDatePrincipal">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+								</rich:calendar>
+							</td>
+							<td><h:outputText value="#{b.salarioAnterior}" /></td>
+							<td>
+								<rich:message id="msgsSalarioAnterior"
+									for="txtSalarioAnterior" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtSalarioAnterior"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.salarioAnterior}"
+									style="width: 100px" label="#{b.salarioAnterior}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" 
+									converter="MoedaConverter"
+									readonly="true"/>
+							</td>
+							<td><h:outputText value="#{b.reajuste}" /></td>
+							<td>
+								<rich:message id="msgsReajuste"
+									for="txtReajuste" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtReajuste"
+										disabled="#{alteracaoSalarialMB.isDisableNome}"
+											value="#{alteracaoSalarialMB.alteracaoSalarial.reajuste}"
+											label="#{b.reajuste}" 
+											styleClass="maskMoney" 
+											converter="MoedaConverter"/>
+							</td>
+							<td><h:outputText value="#{b.salarioAtual}" /></td>
+							<td>
+								<rich:message id="msgsSalarioAtual"
+									for="txtSalarioAtual" errorLabelClass="error" />
+								<div />
+								<h:inputText id="txtSalarioAtual"
+									disabled="#{alteracaoSalarialMB.isDisableNome}"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.salarioAtual}"
+									style="width: 100px" label="#{b.salarioAtual}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney"
+									converter="MoedaConverter"/>
+							</td>
+						</tr>
+						<tr>
+							<td><h:outputText value="#{b.cargoAnterior}" /></td>
+								<td>
+								<rich:message id="msgsCargoAnterior"
+									for="selCargoAnterior" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selCargoAnterior" 
+									label="#{b.cargoAnterior}"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.cargoAnterior}">
+									<f:selectItems id="itensCargosAnterior"
+										value="#{alteracaoSalarialMB.itensCargoAnterior}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu>
+							</td>
+							<td><h:outputText value="#{b.cargoAtual}" /></td>
+								<td>
+								<rich:message id="msgsCargoAtual"
+									for="selCargoAtual" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selCargoAtual" 
+									disabled="#{alteracaoSalarialMB.isDisableNome}"
+									label="#{b.cargoAtual}"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.cargoAtual}">
+									<f:selectItems id="itensCargosAtual"
+										value="#{alteracaoSalarialMB.itensCargoAtual}" />
+									<f:converter converterId="identifiableConverter" />
+								</h:selectOneMenu>
+							</td>
+							<td><h:outputText value="#{b.motivo}" /></td>
+								
+								<td>
+								<rich:message id="msgsMotivo"
+									for="selMotivo" errorLabelClass="error" />
+								<div />
+								<h:selectOneMenu id="selMotivo"
+									disabled="#{alteracaoSalarialMB.isDisableNome}"
+									label="#{b.motivo}"
+									value="#{alteracaoSalarialMB.alteracaoSalarial.motivo}"
+									style="width: 100px;">
+									<f:selectItems id="itensMotivo"
+										value="#{alteracaoSalarialMB.itensMotivo}" />
+								</h:selectOneMenu></td>
+						</tr>
+					</table>
+				</rich:panel>
+				<rich:spacer height="5px"/>
+				<table width="100%">
+					<tr>
+						<td align="center">
+						<a4j:commandButton value="#{b.salvar}"
+							action="#{alteracaoSalarialMB.doSalvar}"
+							reRender="tableAlteracaoSalarial, scrollAlteracaoSalarial, formDetails, msgsErros"
+							limitToList="true"
+							eventsQueue="queueNoDelay"
+							style="width: 80px; cursor: pointer;cursor: hand;"
+							status="statusAguarde" />
+						<rich:spacer width="10px"/>
+						<a4j:commandButton value="#{b.novo}" status="statusAguarde"
+							eventsQueue="queueNoDelay"
+							reRender="formDetails"
+							limitToList="true"
+							oncomplete="limpaForm('formDetails');"
+							ajaxSingle="true" action="#{alteracaoSalarialMB.doNovo}"
+							style="width: 80px; cursor: pointer;cursor: hand;" /></td>
+					</tr>
+				</table>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

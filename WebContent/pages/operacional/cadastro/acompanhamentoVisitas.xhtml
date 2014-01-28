@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formAcompanhamentoVisitas" />
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.operacionalAcompanhamentoVisitas}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.operacionalAcompanhamentoVisitas}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="acompanhamentoVisitasMB" />
+			<h:form id="formDetailsFiltro">
+				<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+					timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+				<div style="height: 5px;" />
+				<table>
+					<tr>
+						<td>
+							<h:outputText value="#{b.dataProgramada}" />
+						</td>
+						<td>
+							<rich:calendar id="calDataAcompanhamento"
+								value="#{acompanhamentoVisitasMB.dataProgramada}"
+								datePattern="dd/MM/yyyy" inputStyle="width: 95px;"
+								label="#{b.dataProgramada}" enableManualInput="true"
+								inputSize="10" inputClass="maskDatePrincipal">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+							</rich:calendar>
+						</td>
+						<td>
+							<a4j:commandButton value="#{b.ok}"
+								action="#{acompanhamentoVisitasMB.doCarregarResponsaveis}"
+								reRender="formAcompanhamentoVisitas:tableResponsavel, formAcompanhamentoVisitas:scrollResponsavel, formDetails, msgsErros"
+								limitToList="true"
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde" />
+						</td>
+					</tr>
+				</table>
+				<div style="height: 5px;" />
+			</h:form>
+			<rich:extendedDataTable
+					noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+					value="#{acompanhamentoVisitasMB.listResponsavel}"
+					id="tableResponsavel"
+					var="responsavel"
+					height="203px" 
+					width="998px"
+					rows="6"
+					enableContextMenu="false"
+					selectionMode="single"
+					reRender="scrollResponsavel"
+					sortMode="single"
+					rowClasses="rowPar, rowImpar"
+					onRowMouseOver="jQuery(this).addClass('activeRow');"
+					onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="50px" align="center">
+					<f:facet name="header">
+					</f:facet>
+					<h:graphicImage value="/static/images/verde.png"
+						rendered="#{responsavel.isVisitaCompleta and !responsavel.isAguardandoVisita}" />
+					<h:graphicImage value="/static/images/amarelo.png"
+						rendered="#{!responsavel.isVisitaCompleta and responsavel.isAguardandoVisita}" />
+					<h:graphicImage value="/static/images/vermelho.png"
+						rendered="#{!responsavel.isVisitaCompleta and !responsavel.isAguardandoVisita}" />
+				</rich:column>
+				<rich:column width="125px"
+						filterBy="#{responsavel.responsavel.funcionario.codigoRegistro}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.re}"/>
+					</f:facet>
+           			<h:outputText value="#{responsavel.responsavel.funcionario.codigoRegistro}" />
+           		</rich:column>
+				<rich:column width="823px"
+						filterBy="#{responsavel.responsavel.funcionario.pessoa.nome}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+							status="statusAguarde" title="#{b.cliqueExibirClientes}" reRender="formDetails"
+							action="#{acompanhamentoVisitasMB.doExibirClientes}" eventsQueue="queueNoDelay"
+							value="#{responsavel.responsavel.funcionario.pessoa.nome}"
+							style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{responsavel}"
+							target="#{acompanhamentoVisitasMB.responsavelSelecionado}" />
+					</a4j:commandLink>
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollResponsavel" 
+					align="center"
+					renderIfSinglePage="false" 
+					boundaryControls="auto"
+					fastControls="auto" 
+					stepControls="auto" 
+					for="tableResponsavel"
+					maxPages="50" 
+					page="#{acompanhamentoVisistasMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+							<rich:separator height="6" lineType="solid" width="100%"/>
+						</td>
+					</tr>
+				</table>
+				<rich:panel>
+					<table width="80%">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}: " />
+								<h:outputText value="#{acompanhamentoVisitasMB.responsavel.funcionario.codigoRegistro}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.nome}: " />
+								<h:outputText value="#{acompanhamentoVisitasMB.responsavel.funcionario.pessoa.nome}" />
+							</td>
+						</tr>
+					</table>
+					<rich:spacer height="5px"/>
+					<rich:extendedDataTable value="#{acompanhamentoVisitasMB.listCliente}"
+						noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+						width="980px"
+						height="180px" 
+						var="cliente" 
+						id="tableCliente"
+						rows="5"
+						enableContextMenu="false"
+						selectionMode="single"
+						reRender="scrollCliente"
+						sortMode="single"
+						rowClasses="rowPar, rowImpar"
+						onRowMouseOver="jQuery(this).addClass('activeRow');"
+						onRowMouseOut="jQuery(this).removeClass('activeRow');"
+						style="text-transform: uppercase;">
+						<rich:column width="50px" align="center">
+							<f:facet name="header">
+							</f:facet>
+							<h:graphicImage value="/static/images/verde.png"
+								rendered="#{cliente.dataProgramacaoVisita.isVisitado and !cliente.dataProgramacaoVisita.isAguardando}" />
+							<h:graphicImage value="/static/images/amarelo.png"
+								rendered="#{!cliente.dataProgramacaoVisita.isVisitado and cliente.dataProgramacaoVisita.isAguardando}" />
+							<h:graphicImage value="/static/images/vermelho.png"
+								rendered="#{!cliente.dataProgramacaoVisita.isVisitado and !cliente.dataProgramacaoVisita.isAguardando}" />
+						</rich:column>
+						<rich:column width="830">
+							<f:facet name="header">
+								<h:outputText value="#{b.cliente}" />
+							</f:facet>
+							<h:outputText value="#{cliente.cliente.codigo}" />
+							<h:outputText value=" - " />
+							<h:outputText value="#{cliente.cliente.nomeFantasia}" />
+						</rich:column>
+						<rich:column width="100px">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.acao}" />
+		           			</f:facet>
+		           			<a4j:commandButton title="#{b.visitou}"
+      							reRender="tableCliente, tableResponsavel" 
+      							status="statusAguarde"
+      							image="/static/images/good.png"
+       							action="#{acompanhamentoVisitasMB.doVisitou}"
+           						style="cursor: pointer;cursor: hand;">
+								<f:setPropertyActionListener value="#{cliente}" target="#{acompanhamentoVisitasMB.clienteSelecionado}" />
+							</a4j:commandButton>
+							<a4j:commandButton title="#{b.naoVisitou}"
+								status="statusAguarde" 
+								reRender="tableCliente, tableResponsavel" 
+								image="/static/images/bad.png"
+								action="#{acompanhamentoVisitasMB.doNaoVisitou}"
+								style="cursor: pointer;cursor: hand;">
+								<f:setPropertyActionListener value="#{cliente}" target="#{acompanhamentoVisitasMB.clienteSelecionado}" />
+							</a4j:commandButton>
+							<a4j:commandButton title="#{b.aguardando}"
+								status="statusAguarde" 
+								reRender="tableCliente, tableResponsavel" 
+								image="/static/images/flag.png"
+								action="#{acompanhamentoVisitasMB.doAguardando}"
+								style="cursor: pointer;cursor: hand;">
+								<f:setPropertyActionListener value="#{cliente}" target="#{acompanhamentoVisitasMB.clienteSelecionado}" />
+							</a4j:commandButton>
+		           		</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollCliente" 
+							align="center"
+							renderIfSinglePage="false" 
+							boundaryControls="auto"
+							fastControls="auto" 
+							stepControls="auto" for="tableCliente"
+							maxPages="50" 
+							page="#{acompanhamentoVisitasMB.scrollerPageCliente}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}" />
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}" />
+						</f:facet>
+					</rich:datascroller>
+				</rich:panel>
+				<rich:spacer height="5px"/>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

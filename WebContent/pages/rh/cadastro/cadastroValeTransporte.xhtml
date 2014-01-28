@@ -1,0 +1,578 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formValeTransporte"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.calculoDeValeTransporte}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.calculoDeValeTransporte}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup itemSeparator="line">
+				<a4j:commandButton value="#{b.excluir}"
+								rendered="#{valeTransporteMB.excluirValeTransporte}"
+								reRender="formValeTransporte"
+								eventsQueue="queueNoDelay"
+								onclick="if(!confirmarExclusao(this))return false;"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeTransporteMB.doExcluir}"/>
+				<a4j:commandButton value="#{b.recibo}"
+								rendered="#{valeTransporteMB.incluirValeTransporte}"
+								reRender="formValeTransporte"
+								eventsQueue="queueNoDelay"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeTransporteMB.doListaRecibo}"/>
+				<a4j:commandButton value="#{b.mapa}"
+								rendered="#{valeTransporteMB.incluirValeTransporte}"
+								reRender="formValeTransporte"
+								eventsQueue="queueNoDelay"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								action="#{valeTransporteMB.doListaMapa}"/>
+				<a4j:commandButton value="#{b.calculo}"
+								action="#{valeTransporteMB.doNovo}"
+								onclick="limpaForm('formDetails');"
+								rendered="#{valeTransporteMB.consultarValeTransporte}"
+								status="statusAguarde"
+								eventsQueue="queueNoDelay"
+								reRender="formDetails"
+								oncomplete="Richfaces.showModalPanel('mpDetails');"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup itemSeparator="line">
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="valeTransporteMB"/>
+			<poti:download mbean="#{valeTransporteMB}" />
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+									value="#{valeTransporteMB.listCalculoValeTransporte}" 
+									id="tableValeTransporte"
+									var="calculoValeTransporte" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollValeTransporte"
+									selectionMode="none"
+									rendered="#{valeTransporteMB.consultarValeTransporte}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.mesAno}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.dataInicioCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.dataFimCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.quantidadeTotal}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.valorTotal}"/>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.usuario}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.situacao}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.tipoCalculo}" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.acao}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="35px" rendered="#{valeTransporteMB.excluirValeTransporte}" style="align: center;">
+					<h:selectBooleanCheckbox id="checkValeTransporte" value="#{calculoValeTransporte.selecionado}" onclick="jqCheckOnlyOne(this, 'formValeTransporte:tableValeTransporte');"/>
+				</rich:column>
+				<rich:column width="128px" filterMethod="#{valeTransporteMB.filtraMesAno}">
+					<f:facet name="header" >
+           				<h:inputText value="#{valeTransporteMB.filtraMesAno}" id="txtFiltroMesAno">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.referencia}" />
+           		</rich:column>
+				<rich:column width="130px" filterMethod="#{valeTransporteMB.filtraDataInicio}">
+					<f:facet name="header" >
+           				<h:inputText value="#{valeTransporteMB.filtroDataInicio}" id="txtFiltroDataInicio">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.dataInicio}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="130px" filterMethod="#{valeTransporteMB.filtraDataFim}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroDataFim}" id="txtFiltroDataFim">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.dataFim}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="115px" filterMethod="#{valeTransporteMB.filtraQuantidadeTotal}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroQuantidadeTotal}" id="txtFiltroQuantidadeTotal">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.quantidadeTotal}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeTransporteMB.filtraValorTotal}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroValorTotal}" id="txtFiltroValorTotal">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.valorTotal}" converter="MoedaConverter"/>
+           		</rich:column>
+           		<rich:column width="110px" filterMethod="#{valeTransporteMB.filtraUsername}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroUsername}" id="txtFiltroUsername">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.usuario.username}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeTransporteMB.filtraSituacao}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroSituacao}" id="txtFiltroSituacao">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="100px" filterMethod="#{valeTransporteMB.filtraTipoCalculo}">
+           			<f:facet name="header">
+           				<h:inputText value="#{valeTransporteMB.filtroTipoCalculo}" id="txtFiltroTipoCalculo">
+           					<a4j:support event="onkeyup" reRender="tableValeTransporte"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{calculoValeTransporte.entity.tipoCalculoEnum.tipoCalculo}" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');"
+           							status="statusAguarde" 
+           							title="#{b.alterar}"
+           							rendered="#{valeTransporteMB.consultarValeTransporte}"
+           							reRender="formDetails"
+           							action="#{valeTransporteMB.doDetalhar}"
+           							eventsQueue="queueNoDelay" 
+           							image="/static/images/preview.png"
+           							style="cursor: pointer;cursor: hand;">
+					<f:setPropertyActionListener value="#{calculoValeTransporte.entity}" target="#{valeTransporteMB.calculoValeTransporteSelecionado}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollValeTransporte" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableValeTransporte" maxPages="10" page="#{valeTransporteMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.calculoDeValeTransporte}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 		</f:facet>
+		 		<a4j:outputPanel id="outputDownload">
+		 			<poti:download mbean="#{valeTransporteMB}" />
+		 		</a4j:outputPanel>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery id="maskDate" selector=".maskDate" timing="immediate"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+					<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="immediate"
+						id="maskMoney" />
+		 			<table width="800px" cellspacing="5px">
+		 				<tr>
+		 					<td width="80px">
+        						<h:outputText value="#{b.tipoCalculo}" />
+        					</td>
+		 					<td>
+		 						<h:selectOneMenu id="selTipoCalculo" style="width:150px;"
+									label="#{b.tipoCalculo}"
+									value="#{valeTransporteMB.calculoValeTransporte.tipoCalculoEnum}">
+									<f:selectItems id="itensTipoCalculo"
+										value="#{valeTransporteMB.itensTipoCalculo}" />
+									<a4j:support event="onchange" 
+										action="#{valeTransporteMB.doExibirFuncionario}"
+										ajaxSingle="true"
+										process="selTipoCalculo, outPutLabelRe, outPutRe, outPutFuncionario"
+										reRender="outPutLabelRe, outPutRe, outPutFuncionario"/>
+								</h:selectOneMenu>
+		 					</td>
+		 				</tr>
+		 				<tr>
+		 					<td>
+		 						<a4j:outputPanel id="outPutLabelRe">
+		 							<h:outputText id="lblRe" value="#{b.re}" rendered="#{valeTransporteMB.isExibeFuncionario}"/>
+		 						</a4j:outputPanel>
+		 					</td>
+		 					<td colspan="5">
+		 						<a4j:outputPanel id="outPutRe">
+									<rich:message id="msgsRE" for="txtRE" errorLabelClass="error" /><div />
+									<h:inputText id="txtRE"
+										value="#{valeTransporteMB.funcionario.codigoRegistro}"
+										style="width:70px"
+										label="#{b.re}"
+										rendered="#{valeTransporteMB.isExibeFuncionario}"
+										onkeyup="somenteNumeros(this);"> 
+									<a4j:support action="#{valeTransporteMB.buscarFuncionarios}"
+										 event="onblur" 
+										 reRender="outPutFuncionario, msgsErros"
+										 limitToList="true"
+										 ajaxSingle="true"
+										 process="txtRE"
+										 eventsQueue="queueNoDelay"
+										 status="statusAguarde"/>
+			           				</h:inputText>
+		           				</a4j:outputPanel>
+		           				<rich:spacer width="15px"/>
+		           				<a4j:outputPanel id="outPutFuncionario">
+			  						<h:inputText id="txtNomeFuncionario"
+			  							rendered="#{valeTransporteMB.isExibeFuncionario}" 
+	  									value="#{valeTransporteMB.funcionario.pessoa.nome}" 
+	  									style="width: 300px"
+	  									label="#{b.funcionario}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="func"
+			  						 	width="300"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONARIO FOI ENCONTRADO"
+					                    suggestionAction="#{valeTransporteMB.sugestoesFuncionarios}">
+					                    <h:column>
+											<h:outputText value="#{func.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{valeTransporteMB.selecionarFuncionario}"
+									 			  	 reRender="outPutRe, msgsErros"
+									 			  	 ajaxSingle="true"
+									 			  	 process="outPutRe, msgsErros, outPutFuncionario"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{func}" 
+									        							 target="#{valeTransporteMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+				                </a4j:outputPanel>
+		           			</td>
+		 				</tr>
+		 				<tr>
+		 					<td width="80px">
+        						<h:outputText value="#{b.dataInicial}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataInicioCalculo" 
+        							for="calDataInicioCalculo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataInicioCalculo"
+           							value="#{valeTransporteMB.dataInicio}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataInicial}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+        					<td width="80px">
+        						<h:outputText value="#{b.dataFinal}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataFimCalculo" 
+        							for="calDataFimCalculo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataFimCalculo"
+           							value="#{valeTransporteMB.dataFim}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataFinal}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+            				<td>
+            					<a4j:commandButton value="#{b.calcular}"
+												action="#{valeTransporteMB.doCalcular}" 
+												reRender="formValeTransporte, formDetails, tableValeTransporteResumo, scrollValeTransporteResumo, msgsErros"
+												process="calDataInicioCalculo, calDataFimCalculo"
+												ajaxSingle="true"
+												eventsQueue="queueNoDelay"
+												status="statusAguarde"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            			<tr>
+            				<td colspan="5">
+            					<rich:separator height="2" lineType="solid"/>
+            				</td>
+            			</tr>
+            			<tr>
+            				<td width="80px">
+        						<h:outputText value="#{b.dataRecibo}" />
+        					</td>
+        					<td width="130px">
+        						<rich:message id="msgsDataRecibo" 
+        							for="calDataRecibo"
+        							errorLabelClass="error"/><div />
+           						<rich:calendar id="calDataRecibo"
+           							value="#{valeTransporteMB.calculoValeTransporte.dataRecibo}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 95px;"
+									label="#{b.dataRecibo}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+        					</td>
+            			</tr>
+            		</table>
+		 			<div style="height: 10px;"/>
+ 					<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{valeTransporteMB.listFuncionarioValeTransporteHelper}"
+									id="tableValeTransporteResumo"
+									var="funcionarioValeTransporteHelper"
+									height="205px"
+									rows="6"
+									enableContextMenu="false"
+									reRender="scrollValeTransporteResumo"
+									selectionMode="none"
+									rendered="#{valeTransporteMB.consultarValeTransporte}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+						<rich:column width="75px" filterBy="#{funcionarioValeTransporteHelper.entity.funcionario.codigoRegistro}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeTransporteHelper.entity.funcionario.codigoRegistro}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.re}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeTransporteHelper.entity.funcionario.codigoRegistro}" />
+		           		</rich:column>
+						<rich:column width="350px" filterBy="#{funcionarioValeTransporteHelper.entity.funcionario.pessoa.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeTransporteHelper.entity.funcionario.pessoa.nome}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.funcionario}" />
+		           			</f:facet>
+		           			<a4j:commandLink status="statusAguarde" 
+           							reRender="tableValeTransporteDetalhe, scrollValeTransporteDetalhe, txtFuncionarioSelecionado"
+           							limitToList="true"
+           							action="#{valeTransporteMB.doDetalharFuncionario}"
+           							eventsQueue="queueNoDelay"
+           							value="#{funcionarioValeTransporteHelper.entity.funcionario.pessoa.nome}" 
+           							style="cursor: pointer;cursor: hand;"
+           							styleClass="linkAbreModal">
+								<f:setPropertyActionListener value="#{funcionarioValeTransporteHelper.entity}" target="#{valeTransporteMB.funcionarioValeTransporteHelperSelecionado}" />
+							</a4j:commandLink>
+		           		</rich:column>
+		           		<rich:column width="155px" filterBy="#{funcionarioValeTransporteHelper.entity.quantidade}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeTransporteHelper.entity.quantidade}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.quantidade}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeTransporteHelper.entity.quantidade}" />
+		           		</rich:column>
+		           		<rich:column width="172px" filterBy="#{funcionarioValeTransporteHelper.entity.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{funcionarioValeTransporteHelper.entity.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.total}" />
+		           			</f:facet>
+		           			<h:outputText value="#{funcionarioValeTransporteHelper.entity.valor}" styleClass="maskMoney" converter="MoedaConverter" />
+		           		</rich:column>
+		           		<rich:column width="50px">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.acao}" />
+		           			</f:facet>
+		           			<a4j:commandButton status="statusAguarde" 
+		           							rendered="#{valeTransporteMB.consultarValeTransporte}"
+		           							reRender="outputDownload, calDataRecibo, tableValeTransporteResumo"
+		           							action="#{valeTransporteMB.doRecibo}"
+		           							title="#{b.recibo}"
+		           							eventsQueue="queueNoDelay" 
+		           							image="/static/images/report.png"
+		           							style="cursor: pointer;cursor: hand;">
+								<f:setPropertyActionListener value="#{funcionarioValeTransporteHelper.entity}" target="#{valeTransporteMB.funcionarioValeTransporteHelperSelecionado}" />
+							</a4j:commandButton>
+		           		</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollValeTransporteResumo" align="center" renderIfSinglePage="false" 
+						boundaryControls="auto" fastControls="auto" stepControls="auto"
+						for="tableValeTransporteResumo" maxPages="10" page="#{valeTransporteMB.scrollerPageResumo}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}"/>
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}"/>
+						</f:facet>
+					</rich:datascroller>
+					<div style="height: 5px;"/>
+					<h:outputText value="#{b.funcionarioSelecionado}" style="font-weight : bold;"/><h:outputText id="txtFuncionarioSelecionado" value="#{valeTransporteMB.funcionarioValeTransporteHelperSelecionado.funcionario.pessoa.nome}" />
+					<div style="height: 10px;"/>
+					<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{valeTransporteMB.listTipoValeTransporteHelper}" 
+									id="tableValeTransporteDetalhe"
+									var="tipoValeTransporteHelper" 
+									height="143px"
+									rows="4"
+									enableContextMenu="false"
+									reRender="scrollValeTransporteDetalhe"
+									selectionMode="none"
+									rendered="#{valeTransporteMB.consultarValeTransporte}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+		           		<rich:column width="155px" filterBy="#{tipoValeTransporteHelper.entity.tipoValeTransporte.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.tipoValeTransporte.nome}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.valeTransporte}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.tipoValeTransporte.nome}" />
+		           		</rich:column>
+		           		<rich:column width="100px" filterBy="#{tipoValeTransporteHelper.entity.tipoValeTransporte.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.tipoValeTransporte.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.passagem}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.tipoValeTransporte.valor}" converter="MoedaConverter"/>
+		           		</rich:column>
+		           		<rich:column width="100px" filterBy="#{tipoValeTransporteHelper.entity.rumo}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.rumo}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.rumo}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.rumo}" />
+		           		</rich:column>
+		           		<rich:column width="280px" filterBy="#{tipoValeTransporteHelper.entity.cliente.nomeFantasia}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.cliente.nomeFantasia}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.cliente}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.cliente.nomeFantasia}" />
+		           		</rich:column>
+		           		<rich:column width="85px" filterBy="#{tipoValeTransporteHelper.entity.quantidade}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.quantidade}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.quantidade}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.quantidade}" />
+		           		</rich:column>
+		           		<rich:column width="80px" filterBy="#{tipoValeTransporteHelper.entity.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporteHelper.entity.valor}">
+		           			<f:facet name="header">
+		           				<h:outputText value="#{b.total}" />
+		           			</f:facet>
+		           			<h:outputText value="#{tipoValeTransporteHelper.entity.valor}" converter="MoedaConverter"/>
+		           		</rich:column>
+					</rich:extendedDataTable>
+					<rich:datascroller id="scrollValeTransporteDetalhe" align="center" renderIfSinglePage="false" 
+						boundaryControls="auto" fastControls="auto" stepControls="auto"
+						for="tableValeTransporteDetalhe" maxPages="10" page="#{valeTransporteMB.scrollerPageDetalhe}">
+						<f:facet name="first">
+							<h:outputText value="#{b.primeiro}"/>
+						</f:facet>
+						<f:facet name="last">
+							<h:outputText value="#{b.ultimo}"/>
+						</f:facet>
+					</rich:datascroller>
+					<div style="height: 15px;"/>
+					<table width="800px">
+						<tr>
+							<td width="65px">
+								<h:outputText value="#{b.valorTotalPontos}" style="font-weight : bold;"/>
+							</td>
+							<td width="50px">
+								<h:outputText value="#{valeTransporteMB.calculoValeTransporte.valorTotal}" converter="MoedaConverter"/>
+							</td>
+							<td width="100px">
+								<h:outputText value="#{b.quantidadeTotalPontos}" style="font-weight : bold;"/>
+							</td>
+							<td>
+								<h:outputText value="#{valeTransporteMB.calculoValeTransporte.quantidadeTotal}"/>
+							</td>
+						</tr>
+            			<tr>
+            				<td align="center" colspan="4">
+            					<a4j:commandButton value="#{b.gravar}"
+												action="#{valeTransporteMB.doGravar}" 
+												reRender="formValeTransporte, formDetails, msgsErros"
+												onclick="if(!confirmarOperacaoAjax(this))return false;"
+												status="statusAguarde"
+												eventsQueue="queueNoDelay"
+												oncomplete="windowclose('formDetails', 'mpDetails');"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.mapa}"
+									rendered="#{valeTransporteMB.incluirValeTransporte}"
+									reRender="outputDownload, msgsErros"
+									eventsQueue="queueNoDelay"
+									status="statusAguarde"
+									style="width: 80px; cursor: pointer;cursor: hand;"
+									action="#{valeTransporteMB.doMapa}"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.fechar}"
+									eventsQueue="queueNoDelay"
+									oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0});limpaForm('formDetails');"
+									limitToList="true"
+									immediate="true"
+									ajaxSingle="true"
+									action="#{valeTransporteMB.limparForm}"
+									style="width: 80px; cursor: pointer;cursor: hand;"/>
+									
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<head>
+		<title>#{b['sistema.titulo']}</title>
+		<link href="#{facesContext.externalContext.request.contextPath}/static/css/styles.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body onload="document.getElementById('formLogin:txtUsername').focus()">
+		<h:form id="formLogin">
+			<div id="login">
+				<rich:panel header="#{b['sistema.titulo']}" style="text-align: center; align: center; width: 400px" 
+					bodyClass="alinhaCentro">
+					<h:messages globalOnly="true"/>
+					<h:panelGrid columns="2" style="margin: 0 auto;" >
+						<h:outputLabel value="#{b['login.username']}:" title="#{b['login.username']}" for="txtUsername"/>
+						<h:inputText id="txtUsername" value="#{acessoMB.username}" required="true" label="#{b['login.username']}" />
+						<h:panelGroup/>
+						<h:message for="txtUsername"/>						
+						<h:outputLabel value="#{b['login.password']}:" title="#{b['login.password']}" for="txtPassword"/>
+						<h:inputSecret id="txtPassword" value="#{acessoMB.password}" required="true" label="#{b['login.password']}"/>
+						<h:panelGroup/>
+						<h:message for="txtPassword"/>
+					</h:panelGrid>
+					<rich:spacer height="25px"/><br/>
+					<h:commandButton value="#{b['login.doLogin']}" title="#{b['login.doLogin']}" action="#{acessoMB.doEfetuarLogin}"/>
+				</rich:panel>
+			</div>
+		</h:form>
+	</body>
+</html>

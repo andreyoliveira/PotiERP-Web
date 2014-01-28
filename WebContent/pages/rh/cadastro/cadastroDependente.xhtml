@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formDependente"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeDependentes}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeDependentes}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{dependenteMB.doConsultar}"
+								rendered="#{dependenteMB.consultarDependente}"
+								reRender="formDependente"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{dependenteMB.doNovo}"
+								rendered="#{dependenteMB.incluirDependente}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formDependente" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{dependenteMB.excluirDependente}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{dependenteMB.doExcluirLote}"
+								reRender="formDetails, formDependente" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="dependenteMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{dependenteMB.listDependente}" 
+									id="tableDependente"
+									var="dependente" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollDependente"
+									selectionMode="none"
+									rendered="#{dependenteMB.consultarDependente}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{dependenteMB.excluirDependente}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkDependenteAll"
+							onclick="jqCheckAll(this, 'formDependente:tableDependente');"
+							value="#{dependenteMB.checkDependenteAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkDependente" value="#{dependente.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="100px" filterBy="#{dependente.entity.funcionario.codigoRegistro}" filterEvent="onkeyup" >
+           			<f:facet name="header">
+           				<h:outputText value="#{b.re}" />
+           			</f:facet>
+           			<h:outputText value="#{dependente.entity.funcionario.codigoRegistro}" />
+           		</rich:column>
+           		<rich:column width="280px" filterBy="#{dependente.entity.funcionario.pessoa.nome}" filterEvent="onkeyup" >
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nomeFuncionario}" />
+           			</f:facet>
+           			<h:outputText value="#{dependente.entity.funcionario.pessoa.nome}" />
+           		</rich:column>
+				<rich:column width="280px" filterBy="#{dependente.entity.nome}" filterEvent="onkeyup" >
+           			<f:facet name="header">
+           				<h:outputText value="#{b.dependente}" />
+           			</f:facet>
+           			<h:outputText value="#{dependente.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="120px" filterBy="#{dependente.entity.dataNascimento}" filterEvent="onkeyup">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.dataNascimento}" />
+           			</f:facet>
+           			<h:outputText value="#{dependente.entity.dataNascimento}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="120px" filterBy="#{dependente.entity.dataInclusao}" filterEvent="onkeyup">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.dataInclusao}" />
+           			</f:facet>
+           			<h:outputText value="#{dependente.entity.dataInclusao}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{dependenteMB.consultarDependente}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{dependente.entity}" target="#{dependenteMB.dependente}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{dependenteMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formDependente" 
+									rendered="#{dependenteMB.excluirDependente}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{dependente.entity}" target="#{dependenteMB.dependente}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollDependente" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableDependente" maxPages="10" page="#{dependenteMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeDependentes}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{dependenteMB.dependente.id}"/>
+		 			<rich:jQuery id="maskDate" selector=".maskDate" timing="onload"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+				 	<table width="500px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.re}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsRe" for="txtRe"/><div />
+           						<h:inputText id="txtRe" 
+           									value="#{dependenteMB.dependente.funcionario.codigoRegistro}" 
+           									style="width: 100px" 
+           									label="#{b.re}"
+           									onkeyup="somenteNumeros(this);">
+           							<a4j:support action="#{dependenteMB.buscarFuncionario}"
+           										 event="onblur" 
+           										 reRender="txtNomeFuncionario, msgsErros"
+           										 limitToList="true"
+           										 ajaxSingle="true"
+           										 process="txtNomeFuncionario"/>
+           						</h:inputText>
+           						<rich:spacer width="15px"/>
+           						<h:inputText id="txtNomeFuncionario" 
+           									value="#{dependenteMB.dependente.funcionario.pessoa.nome}" 
+           									style="width: 235px"
+           									disabled="true" 
+           									label="#{b.nome}"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.nome}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsNome" for="txtNome"/> <div />
+           						<h:inputText id="txtNome" 
+           									value="#{dependenteMB.dependente.nome}" 
+           									style="width: 350px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.dataNascimento}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsDataNascimento" for="calDataNascimento"/><div />
+           						<rich:calendar id="calDataNascimento"
+           							value="#{dependenteMB.dependente.dataNascimento}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 100px;"
+									label="#{b.dataNascimento}"
+									enableManualInput="true"
+									inputSize="10"
+									inputClass="maskDate" 
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.dataInclusao}"/>
+           					</td>
+           					<td>
+           						<rich:calendar id="calDataInclusao"
+           							value="#{dependenteMB.dependente.dataInclusao}" 
+           							datePattern="dd/MM/yyyy"
+           							inputStyle="width: 100px;"
+           							enableManualInput="true"
+									inputSize="10"
+									label="#{b.dataInclusao}"
+									inputClass="maskDate"
+									required="true">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="500px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{dependenteMB.doSalvar}" 
+												reRender="formDependente, formDetails"
+												rendered="#{dependenteMB.manterDependente}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{dependenteMB.doSalvar}"
+												rendered="#{dependenteMB.incluirDependente}"
+												reRender="formDependente, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

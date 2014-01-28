@@ -1,0 +1,160 @@
+@CHARSET "ISO-8859-1";
+
+*{
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+}
+
+#all {
+	position: relative;
+	z-index: inherit;
+	zoom: 1; /* For IE6 */
+	padding: 0px;
+	margin: 0px;
+	
+}
+
+#pageHeader {
+	height: 68px; /*80*/
+	background-color: #ECF4FE;
+}
+
+#headerTop{
+	width: 1000px;
+	margin: 0 auto;
+	padding: 0 5px;
+	position: relative;
+	height: 41px;
+	line-height: 41px;
+	vertical-align: middle;
+	text-align: right;
+}
+
+#mainNavigation{
+	width: 1000px;
+	margin: 0 auto;
+	padding: 0 5px;
+	z-index: 50;
+	position: relative;
+	/*height: 36px;
+	line-height: 36px;*/
+}
+#container{
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+}
+
+#content {
+	width: 1000px;
+	margin: 0 auto;
+	padding: 0 5px;
+	position: relative;
+	text-align: left;
+	background-color: white;
+}
+
+#footerContainer{
+	text-align: center;
+}
+
+#footer {
+	width: 1000px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	margin: 0 auto;
+	padding: 0px 5px;
+	border: 1px solid #d7d7d7;
+	background-color:#ECF4FE;
+}
+
+.rounded{
+	-moz-border-radius: 13px; 
+	-webkit-border-radius: 13px;
+	border-radius: 13px;
+	behavior: url(border-radius.htc);
+}
+
+.noMarginNoPadding{
+	padding: 0;
+	margin:0;
+}
+
+#login { 
+	position: absolute; 
+	top: 50%; 
+	left: 50%; 
+	width: 400px; 
+	height: 250px;
+	margin-top: -125px;
+	margin-left: -200px;
+}
+
+.error {
+	font-family: "Trebuchet MS",Sans-Serif,serif;
+	font-size: 13px;
+	color: #FF0033 ;
+	font-weight : bold;
+}
+
+.cursor-hand{
+	cursor: pointer;
+	cursor: hand;
+}
+
+.rowPar {
+	background-color: #FFFFFF;
+}
+
+.rowImpar {
+	background-color: #EBEBEB;
+}
+
+.activeTab{
+	color: #FF0033;
+	font-weight : bold;
+}
+
+.activeRow {
+	background-color: #ADC3FF;
+	cursor: pointer;
+	cursor: hand;
+}
+
+a:link.linkAbreModal {
+	color: #4F42FF;
+	text-decoration: none;
+	font-size: 13px;
+}
+
+a:visited.linkAbreModal {
+	color: #4F42FF;
+	text-decoration: none;
+	font-size: 13px;
+}
+
+a:active.linkAbreModal {
+	color: #4F42FF;
+	text-decoration: none;
+	font-size: 13px;
+}
+
+a:hover.linkAbreModal {
+	color: #4F42FF;
+	text-decoration: none;
+	font-size: 13px;
+}
+
+.tabStyle {
+	vertical-align: middle;
+	color: #000000;
+	font-size: 13px;
+	font-weight: bold;
+}

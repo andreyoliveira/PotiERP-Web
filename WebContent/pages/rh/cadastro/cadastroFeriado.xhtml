@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formFeriado"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroFeriado}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroFeriado}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								eventsQueue="queueNoDelay"
+								title="#{b.atualizarListagem}" 
+								action="#{feriadoMB.doConsultar}"
+								rendered="#{feriadoMB.consultarFeriado}"
+								reRender="formFeriado"
+								status="statusAguarde"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}"
+								eventsQueue="queueNoDelay" 
+								action="#{feriadoMB.doNovo}"
+								rendered="#{feriadoMB.incluirFeriado}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formFeriado"
+								status="statusAguarde" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								status="statusAguarde"
+								eventsQueue="queueNoDelay"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{feriadoMB.excluirFeriado}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{feriadoMB.doExcluirLote}"
+								reRender="formDetails, formFeriado" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="feriadoMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{feriadoMB.listFeriado}" 
+									id="tableFeriado"
+									var="feriado" 
+									height="440px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollFeriado"
+									selectionMode="single"
+									rendered="#{feriadoMB.consultarFeriado}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column>
+							<h:panelGroup/>
+							<h:selectBooleanCheckbox id="checkFeriadoAll"
+								onclick="jqCheckAll(this, 'formFeriado:tableFeriado');"
+								value="#{feriadoMB.checkFeriadoAll}"/>
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{feriado.entity.nome}">
+							<h:outputText value="#{b.feriado}" />
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{feriado.entity.data}">
+							<h:outputText value="#{b.data}"/>
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{feriado.entity.cidade.nome}">
+							<h:outputText value="#{b.cidade}"/>
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{feriado.entity.estado.nome}">
+							<h:outputText value="#{b.estado}"/>
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{feriado.entity.pais.nome}">
+							<h:outputText value="#{b.pais}"/>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.acao}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="35px" rendered="#{feriadoMB.excluirFeriado}">
+					<h:selectBooleanCheckbox id="checkFeriado" value="#{feriado.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="200px" filterMethod="#{feriadoMB.filtraNome}">
+					<f:facet name="header">
+						<h:inputText value="#{feriadoMB.filtroNome}" id="txtFiltroNome">
+	                        <a4j:support event="onkeyup" reRender="tableFeriado"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+	                    </h:inputText>
+					</f:facet>
+           			<h:outputText value="#{feriado.entity.nome}" />
+           		</rich:column>
+				<rich:column width="190px" filterMethod="#{feriadoMB.filtraData}">
+           			<f:facet name="header" >
+           				<h:inputText value="#{feriadoMB.filtroData}" id="txtFiltro">
+           					<a4j:support event="onkeyup" reRender="tableFeriado"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{feriado.entity.data}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="240px" filterMethod="#{feriadoMB.filtraCidade}">
+           			<f:facet name="header">
+						<h:inputText value="#{feriadoMB.filtroCidade}" id="txtFiltroCidade">
+	                        <a4j:support event="onkeyup" reRender="tableFeriado"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+	                    </h:inputText>
+					</f:facet>
+           			<h:outputText value="#{feriado.entity.cidade.nome}" />
+           		</rich:column>
+           		<rich:column width="180px" filterMethod="#{feriadoMB.filtraEstado}">
+           			<f:facet name="header">
+						<h:inputText value="#{feriadoMB.filtroEstado}" id="txtFiltroEstado">
+	                        <a4j:support event="onkeyup" reRender="tableFeriado"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+	                    </h:inputText>
+					</f:facet>
+           			<h:outputText value="#{feriado.entity.estado.sigla}" />
+           		</rich:column>
+           		<rich:column width="85px" filterMethod="#{feriadoMB.filtraPais}">
+           			<f:facet name="header">
+						<h:inputText value="#{feriadoMB.filtroPais}" id="txtFiltroPais" size="10">
+	                        <a4j:support event="onkeyup" reRender="tableFeriado"
+	                            ignoreDupResponses="true" requestDelay="300"
+	                            oncomplete="setCaretToEnd(event);"/>
+	                    </h:inputText>
+					</f:facet>
+           			<h:outputText value="#{feriado.entity.pais.nome}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');"
+           							status="statusAguarde" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							action="#{feriadoMB.doAlterar}"
+           							image="/static/images/edit.png"
+           							eventsQueue="queueNoDelay"
+           							rendered="#{feriadoMB.consultarFeriado}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{feriado.entity}" target="#{feriadoMB.feriadoSelecionado}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{feriadoMB.doExcluir}"
+									status="statusAguarde" 
+									eventsQueue="queueNoDelay"
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formFeriado" 
+									rendered="#{feriadoMB.excluirFeriado}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{feriado.entity}" target="#{feriadoMB.feriado}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollFeriado" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableFeriado" maxPages="10" page="#{feriadoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroFeriado}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery id="maskDate" selector=".maskDate" timing="onload"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+				 	<table width="600px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.feriado}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsFeriado" for="txtFeriado" errorLabelClass="error"/><div />
+           						<h:inputText id="txtFeriado" 
+           									value="#{feriadoMB.feriado.nome}"
+           									maxlength="255" 
+           									style="width: 350px" 
+           									label="#{b.feriado}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.data}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsData" for="calData" errorLabelClass="error"/><div />
+           						<rich:calendar id="calData" 
+           									   value="#{feriadoMB.feriado.data}" 
+           									   datePattern="dd/MM/yyyy"
+											   enableManualInput="true"
+											   inputStyle="width: 110px;"
+											   label="#{b.data}" 
+											   required="true"
+											   inputClass="maskDate">
+									<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+								</rich:calendar>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.tipoFeriado}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsTipoFeriado" for="selTipoFeriado" errorLabelClass="error"/><div />
+           						<h:selectOneMenu id="selTipoFeriado" 
+           										label="${b.tipoFeriado}" 
+           										style="width:110px;"
+												value="#{feriadoMB.feriado.tipoFeriado}"
+												required="true">
+											<f:selectItems id="itensTipoFeriado" value="#{feriadoMB.itensTipoFeriado}"/>
+											<a4j:support event="onchange" reRender="selEstado, selCidade" limitToList="true" ajaxSingle="true" />
+								</h:selectOneMenu>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.pais}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsPais" for="selPais" errorLabelClass="error"/> <div />
+           						<h:selectOneMenu id="selPais" 
+           										label="${b.pais}" 
+           										style="width:110px;"
+           										required="true"
+												value="#{feriadoMB.feriado.pais}">
+											<f:selectItems id="itensPais" value="#{feriadoMB.itensPais}"/>
+											<f:converter converterId="identifiableConverter"/>
+								</h:selectOneMenu>	
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.estado}"/>
+           					</td>
+           					<td>
+           						<rich:message id="msgsEstado" for="selEstado" errorLabelClass="error"/><div />
+           						<h:selectOneMenu id="selEstado" 
+           										label="${b.estado}" 
+           										style="width:110px;"
+           										disabled="#{!(feriadoMB.feriado.tipoFeriado == 'ESTADUAL' || feriadoMB.feriado.tipoFeriado == 'MUNICIPAL')}"
+           										required="#{(feriadoMB.feriado.tipoFeriado == 'ESTADUAL' || feriadoMB.feriado.tipoFeriado == 'MUNICIPAL')}"
+												value="#{feriadoMB.feriado.estado}">
+											<f:selectItems id="itensEstado" value="#{feriadoMB.itensEstado}"/>
+											<f:converter converterId="identifiableConverter"/>
+											<a4j:support event="onchange" 
+												action="#{feriadoMB.popularCidade}" 
+												reRender="selCidade"
+												ajaxSingle="true"/>
+								</h:selectOneMenu>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.cidade}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsCidade" for="selCidade" errorLabelClass="error"/> <div />
+           						<h:selectOneMenu id="selCidade" 
+           										label="${b.cidade}" 
+           										style="width:110px;"
+           										disabled="#{!(feriadoMB.feriado.tipoFeriado == 'MUNICIPAL')}"
+           										required="#{(feriadoMB.feriado.tipoFeriado == 'MUNICIPAL')}"
+												value="#{feriadoMB.feriado.cidade}">
+											<f:selectItems id="itensCidade" value="#{feriadoMB.itensCidade}"/>
+											<f:converter converterId="identifiableConverter"/>
+								</h:selectOneMenu>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.expira}" />
+           					</td>
+           					<td>
+           						<h:selectBooleanCheckbox value="#{feriadoMB.feriado.isExpira}" id="chkExpira" />
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+            									status="statusAguarde"
+            									eventsQueue="queueNoDelay"
+												action="#{feriadoMB.doSalvar}" 
+												reRender="formFeriado, formDetails"
+												rendered="#{feriadoMB.manterFeriado}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												status="statusAguarde"
+												eventsQueue="queueNoDelay"
+												action="#{feriadoMB.doSalvar}"
+												rendered="#{feriadoMB.incluirFeriado}"
+												reRender="formFeriado, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.fechar}"
+									status="statusAguarde"
+									eventsQueue="queueNoDelay"
+									oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0});limpaForm('formDetails');"
+									ajaxSingle="true"
+									action="#{feriadoMB.limparForm}"
+									style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

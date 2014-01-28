@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<head>
+		<title>
+			<ui:insert name="title">
+				${b['sistema.titulo']}
+			</ui:insert>
+		</title>
+		<link href="#{facesContext.externalContext.request.contextPath}/static/css/styles.css" rel="stylesheet" type="text/css" />
+		
+		<ui:insert name="script">
+		</ui:insert>
+		
+		<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/jquery-1.2.3.js"></script>
+	  	<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/jquery.maskMoney.0.2.js"></script>
+	  	<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/jquery.maskedinput-1.2.2.js"></script>
+	  	<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/jquery.form.js"></script>
+	  	<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/jquery.numeric.js"></script>
+	  	<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/effects.js"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/static/js/potiErp.js"></script>
+		<script type="text/javascript"> window.RICH_FACES_EXTENDED_SKINNING_ON = true; </script>
+		
+		<script type="text/javascript">
+	  	function confirmarOperacaoAjax(formulario){
+			return confirm('#{b.confirmarOperacao}');
+		}
+	  	function confirmarExclusao(formulario){
+			return confirm('#{b.confirmarExclusao}');
+		}
+		</script>
+	</head>
+	<body>
+		<poti:modalCenter text="#{b.carregando}"/>
+		<div id="all">
+			<div id="pageHeader">
+				<font size="3">
+				<ui:insert name="header">
+					<ui:include src="header.xhtml" />
+				</ui:insert>
+				</font>
+			</div>
+			<div id="container">
+				<div id="content" class="rounded">
+					<font size="3">
+					<a4j:queue name="queueNoDelay" />
+					<h:form id="${formName}">
+						<a4j:status id="statusAguarde" 
+							forceId="true"
+							onstop="Richfaces.hideModalPanel('mp'); highlightMessage();"
+							onstart="Richfaces.showModalPanel('mp');" />
+						<a4j:queue ignoreDupResponses="true" requestDelay="300" />
+						<poti:modalMessages formAtual="${formName}"/>
+						<rich:toolBar itemSeparator="grid">
+							<ui:insert name="botoesContexto">
+							</ui:insert>
+						</rich:toolBar>
+						<ui:insert name="grid">
+						</ui:insert>
+					</h:form>
+					<ui:insert name="details">
+					</ui:insert>
+					</font>
+				</div>
+			</div>
+			<div id="footerContainer">
+				<div id="footer" class="rounded">
+					<ui:insert name="footer">
+						<ui:include src="footer.xhtml" />
+					</ui:insert>
+				</div>
+			</div>
+		</div>
+		<a4j:outputPanel ajaxRendered="true">
+		   <h:form style="display:none" prependId="false">
+		        <h:inputHidden id="contemErro" value="#{erroMB.errorMessage}"/>
+		        <h:inputHidden id="contemInfo" value="#{erroMB.infoMessage}"/>
+		        <h:inputHidden id="contemField" value="#{erroMB.fieldMessage}"/>
+		    </h:form>
+		</a4j:outputPanel>
+	</body>
+</ui:composition>

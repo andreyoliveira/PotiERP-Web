@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formTipoValeTransporte"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeTipoValeTransporte}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeTipoValeTransporte}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{tipoValeTransporteMB.doConsultar}"
+								rendered="#{tipoValeTransporteMB.consultarTipoValeTransporte}"
+								reRender="formTipoValeTransporte"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{tipoValeTransporteMB.doNovo}"
+								rendered="#{tipoValeTransporteMB.incluirTipoValeTransporte}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formTipoValeTransporte" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{tipoValeTransporteMB.excluirTipoValeTransporte}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{tipoValeTransporteMB.doExcluirLote}"
+								reRender="formDetails, formTipoValeTransporte" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="tipoValeTransporteMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{tipoValeTransporteMB.listTipoValeTransporte}" 
+									id="tableTipoValeTransporte"
+									var="tipoValeTransporte" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollTipoValeTransporte"
+									selectionMode="single"
+									rendered="#{tipoValeTransporteMB.consultarTipoValeTransporte}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{tipoValeTransporteMB.excluirTipoValeTransporte}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkTipoValeTransporteAll"
+							onclick="jqCheckAll(this, 'formTipoValeTransporte:tableTipoValeTransporte');"
+							value="#{tipoValeTransporteMB.checkTipoValeTransporteAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkTipoValeTransporte" value="#{tipoValeTransporte.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="100px" filterBy="#{tipoValeTransporte.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporte.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.codigo}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoValeTransporte.entity.codigo}" />
+           		</rich:column>
+				<rich:column width="290px" filterBy="#{tipoValeTransporte.entity.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporte.entity.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nome}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoValeTransporte.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="140px" filterBy="#{tipoValeTransporte.entity.valor}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporte.entity.valor}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.valor}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoValeTransporte.entity.valor}" />
+           		</rich:column>
+           		<rich:column width="300px" filterBy="#{tipoValeTransporte.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporte.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoValeTransporte.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="65px" filterBy="#{tipoValeTransporte.entity.situacao}" filterEvent="onkeyup" sortable="true" sortBy="#{tipoValeTransporte.entity.situacao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.situacao}" />
+           			</f:facet>
+           			<h:outputText value="#{tipoValeTransporte.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{tipoValeTransporteMB.consultarTipoValeTransporte}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoValeTransporte.entity}" target="#{tipoValeTransporteMB.tipoValeTransporte}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{tipoValeTransporteMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formTipoValeTransporte" 
+									rendered="#{tipoValeTransporteMB.excluirTipoValeTransporte}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{tipoValeTransporte.entity}" target="#{tipoValeTransporteMB.tipoValeTransporte}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollTipoValeTransporte" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableTipoValeTransporte" maxPages="10" page="#{tipoValeTransporteMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeTipoValeTransporte}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="onload"
+						id="maskMoney" />
+		 			<h:inputHidden value="#{tipoValeTransporteMB.tipoValeTransporte.id}"/>
+				 	<table width="600px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.codigo}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsCodigo" for="txtCodigo" errorLabelClass="error"/><div />
+           						<h:inputText id="txtCodigo" 
+           									value="#{tipoValeTransporteMB.tipoValeTransporte.codigo}" 
+           									style="width: 100px" 
+           									label="#{b.codigo}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.nome}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsNome" for="txtNome" errorLabelClass="error"/><div />
+           						<h:inputText id="txtNome" 
+           									value="#{tipoValeTransporteMB.tipoValeTransporte.nome}" 
+           									style="width: 350px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.valor}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsValor" for="txtValor" errorLabelClass="error"/> <div />
+           						<h:inputText id="txtValor" 
+           									value="#{tipoValeTransporteMB.tipoValeTransporte.valor}" 
+           									style="width: 100px" 
+           									maxlength="18"
+           									label="#{b.valor}"
+           									onkeyup="somenteNumerosPontosVirgulas(this);"
+	           								onblur="somenteNumerosPontosVirgulas(this);"
+               								styleClass="maskMoney"
+           									converter="MoedaConverter"
+           									required="true" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td>
+           						<rich:message id="msgsDescricao" for="txtDescricao"/> <div />
+           						<h:inputText id="txtDescricao" 
+           									value="#{tipoValeTransporteMB.tipoValeTransporte.descricao}" 
+           									style="width: 350px" 
+           									label="#{b.Descricao}" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.situacao}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsSituacao" for="selSituacao"/> <div />
+	           					<h:selectOneRadio id="selSituacao" label="#{b.situacao}"
+									value="#{tipoValeTransporteMB.tipoValeTransporte.situacao}" style="width: 100px;"
+									required="true">
+									<f:selectItem itemLabel="#{b.ativo}" itemValue="ATIVO" />
+							    	<f:selectItem itemLabel="#{b.inativo}" itemValue="INATIVO" />
+								</h:selectOneRadio>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{tipoValeTransporteMB.doSalvar}" 
+												reRender="formTipoValeTransporte, formDetails"
+												rendered="#{tipoValeTransporteMB.manterTipoValeTransporte}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{tipoValeTransporteMB.doSalvar}"
+												rendered="#{tipoValeTransporteMB.incluirTipoValeTransporte}"
+												reRender="formTipoValeTransporte, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

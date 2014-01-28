@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formHistoricoComercial"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.historicoComercial}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeHistoricoComercial}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{historicoComercialMB.doConsultar}"
+								rendered="#{historicoComercialMB.consultarHistoricoComercial}"
+								reRender="formHistoricoComercial"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{historicoComercialMB.excluirHistoricoComercial}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{historicoComercialMB.doExcluirLote}"
+								reRender="formDetails, formHistoricoComercial" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<style>
+				.hide-days tr[id]{
+	                display:none; 
+				}
+			</style>
+			<a4j:keepAlive beanName="historicoComercialMB" />
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{historicoComercialMB.listHistoricoComercial}" 
+									id="tableHistoricoComercial"
+									var="historicoComercial" 
+									height="203px"
+									rows="6" 
+									width="998px"
+									enableContextMenu="false"
+									reRender="scrollHistoricoComercial"
+									selectionMode="none"
+									rendered="#{historicoComercialMB.consultarHistoricoComercial}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{historicoComercialMB.excluirHistoricoComercial}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkHistoricoComercialAll"
+							onclick="jqCheckAll(this, 'formHistoricoComercial:tableHistoricoComercial');"
+							value="#{historicoComercialMB.checkHistoricoComercialAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkHistoricoComercial" value="#{historicoComercial.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="80px"
+						sortable="true"
+						sortBy="#{historicoComercial.entity.cliente.codigo}"
+						filterBy="#{historicoComercial.entity.cliente.codigo}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.codigo}" />
+					</f:facet>
+					<h:outputText value="#{historicoComercial.entity.cliente.codigo}" />
+				</rich:column>
+				<rich:column width="404px"
+						sortable="true"
+						sortBy="#{historicoComercial.entity.cliente.nomeFantasia}"
+						filterBy="#{historicoComercial.entity.cliente.nomeFantasia}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.nomeFantasia}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{historicoComercialMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{historicoComercial.entity.cliente.nomeFantasia}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{historicoComercial.entity}"
+							target="#{historicoComercialMB.historicoComercial}" />
+					</a4j:commandLink>
+				</rich:column>
+           		<rich:column width="120px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.mes}" />
+           			</f:facet>
+           			<h:outputText value="#{historicoComercial.entity.mes}" />
+           		</rich:column>
+           		<rich:column width="119px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.ano}" />
+           			</f:facet>
+           			<h:outputText value="#{historicoComercial.entity.ano}" />
+           		</rich:column>
+           		<rich:column width="120px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.valorNFe}" />
+           			</f:facet>
+           			<h:outputText value="#{historicoComercial.entity.valorNFe}" />
+           		</rich:column>
+           		<rich:column width="120px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.totalLiquidoNFe}" />
+           			</f:facet>
+           			<h:outputText value="#{historicoComercial.entity.totalLiquidoNFe}" />
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollHistoricoComercial" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableHistoricoComercial" maxPages="10" page="#{historicoComercialMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+			<h:form id="formDetails">
+				<rich:jQuery query="maskMoney({decimal:',',thousands:'.',allowZero:true,showSymbol:false})"
+						selector=".maskMoney"
+						timing="onload"
+						id="maskMoney" />
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.codigo}" />
+							</td>
+							<td>
+								<rich:message id="msgsCodigo" for="txtNomeFantasia" errorLabelClass="error" /><div />
+								<h:inputText id="txtCodigo"
+									value="#{historicoComercialMB.historicoComercial.cliente.codigo}" 
+									style="width:70px"
+									label="#{b.codigo}"
+									onkeyup="somenteNumeros(this);">
+									<a4j:support action="#{historicoComercialMB.buscarCliente}"
+												 event="onblur" 
+												 reRender="outputProgramacaoServico,msgsErros"
+												 limitToList="true"
+												 eventsQueue="queueNoDelay"
+												 status="statusAguarde"
+												 focus="selMes"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputProgramacaoServico">
+									<h:inputText id="txtNomeFantasia" 
+			  									value="#{historicoComercialMB.historicoComercial.cliente.nomeFantasia}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFantasia"
+			  						 	var="cliente"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM CLIENTE FOI ENCONTRADO"
+					                    suggestionAction="#{historicoComercialMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{cliente.nomeFantasia}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{historicoComercialMB.selecionarCliente}"
+									 			  	 reRender="txtCodigo, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{cliente}" 
+									        							 target="#{historicoComercialMB.clienteSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.mes}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selMes" label="${b.mes}" value="#{historicoComercialMB.historicoComercial.mes}">
+									<f:selectItems id="itensMes" value="#{historicoComercialMB.itensMes}" />
+								</h:selectOneMenu>
+							</td>
+							<td>
+								<h:outputText value="#{b.ano}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.ano}"
+									label="#{b.ano}"
+									id="txtAno" 
+									style="width: 110px;"
+									maxlength="4"
+									onkeyup="somenteNumeros(this);" 
+									onblur="somenteNumeros(this);"/>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.valorNFe}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.valorNFe}"
+									id="txtValorNFe" 
+									label="#{b.valorNFe}"
+									style="width: 110px;"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"
+									/>
+							</td>
+							<td>
+								<h:outputText value="#{b.retencao}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.retencao}"
+									id="txtRetencao" 
+									style="width: 110px;"
+									label="#{b.retencao}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h:outputText value="#{b.retencaoISS}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.retencaoISS}"
+									id="txtRetencaoISS" 
+									style="width: 110px;"
+									label="#{b.retencaoISS}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/>
+							</td>
+							<td>
+								<h:outputText value="#{b.abatimentos}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.abatimentos}"
+									id="txtAbatimentos" 
+									label="#{b.abatimentos}"
+									style="width: 110px;"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h:outputText value="#{b.totalDeducoes}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.totalDeducoes}"
+									id="txtTotalDeducoes" 
+									label="#{b.totalDeducoes}"
+									style="width: 110px;"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/>
+							</td>
+							<td>
+								<h:outputText value="#{b.totalLiquidoNFe}" />
+							</td>
+							<td>
+								<h:inputText value="#{historicoComercialMB.historicoComercial.totalLiquidoNFe}"
+									id="txtTotalLiquidoNFe" 
+									style="width: 110px;"
+									label="#{b.totalLiquidoNFe}"
+									onkeyup="somenteNumerosPontosVirgulas(this);"
+									onblur="somenteNumerosPontosVirgulas(this);"
+									styleClass="maskMoney" converter="MoedaConverter"/>
+							</td>
+						</tr>
+					</table>
+					<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{historicoComercialMB.doSalvar}"
+												reRender="formHistoricoComercial, formDetails, msgsErros"
+												status="statusAguarde" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.limpar}"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{historicoComercialMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+	        	</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

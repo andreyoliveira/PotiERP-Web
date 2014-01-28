@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formFormaPagamento"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeFormaPagamento}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeFormaPagamento}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{formaPagamentoMB.doConsultar}"
+								rendered="#{formaPagamentoMB.consultarFormaPagamento}"
+								reRender="formFormaPagamento"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{formaPagamentoMB.doNovo}"
+								rendered="#{formaPagamentoMB.incluirFormaPagamento}"
+								title="#{b.incluirNovoRegistro}"
+								onclick="limpaForm('formDetails');"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formFormaPagamento" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{formaPagamentoMB.excluirFormaPagamento}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{formaPagamentoMB.doExcluirLote}"
+								reRender="formDetails, formFormaPagamento" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="adicionalMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{formaPagamentoMB.listFormaPagamento}"
+									id="tableFormaPagamento"
+									var="formaPagamento"
+									height="455px"
+									rows="16"
+									enableContextMenu="false"
+									selectionMode="none"
+									rendered="#{formaPagamentoMB.consultarFormaPagamento}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{formaPagamentoMB.excluirFormaPagamento}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkFormaPagamentoAll"
+							onclick="jqCheckAll(this, 'formFormaPagamento:tableFormaPagamento');"
+							value="#{formaPagamentoMB.checkFormaPagamentoAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkFormaPagamento" value="#{formaPagamento.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="386px" filterBy="#{formaPagamento.entity.nome}" filterEvent="onkeyup" >
+           			<f:facet name="header">
+           				<h:outputText value="#{b.formaPagamento}" />
+           			</f:facet>
+           			<h:outputText value="#{formaPagamento.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="509px" filterBy="#{formaPagamento.entity.descricao}" filterEvent="onkeyup">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{formaPagamento.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="70px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton onclick="limpaForm('formDetails'); Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{formaPagamentoMB.consultarFormaPagamento}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{formaPagamento.entity}" target="#{formaPagamentoMB.formaPagamento}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{formaPagamentoMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formFormaPagamento" 
+									rendered="#{formaPagamentoMB.excluirFormaPagamento}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{formaPagamento.entity}" target="#{formaPagamentoMB.formaPagamento}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollFormaPagamento" align="center"
+				for="tableFormaPagamento" maxPages="10" page="#{formaPagamentoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeFormaPagamento}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif"
+										style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{formaPagamentoMB.formaPagamento.id}"/>
+				 	<table width="974px" cellspacing="10px">
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.formaPagamento}" />
+           					</td>
+           					<td>
+           						<h:inputText id="txtFormaPagamento" 
+           									value="#{formaPagamentoMB.formaPagamento.nome}" 
+           									style="width: 350px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           						<rich:message id="msgsFormaPagamento" for="txtFormaPagamento"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td>
+           						<h:inputText id="txtDescricao" 
+           									value="#{formaPagamentoMB.formaPagamento.descricao}" 
+           									style="width: 650px" 
+           									label="#{b.Descricao}" />
+           						<rich:message id="msgsDescricao" for="txtDescricao"/>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="974px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{formaPagamentoMB.doSalvar}" 
+												reRender="formFormaPagamento, formDetails"
+												rendered="#{formaPagamentoMB.manterFormaPagamento}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{formaPagamentoMB.doSalvar}"
+												rendered="#{formaPagamentoMB.incluirFormaPagamento}"
+												reRender="formFormaPagamento, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

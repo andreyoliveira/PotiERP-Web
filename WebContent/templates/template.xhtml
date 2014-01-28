@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+	<head>
+		<title>
+			<ui:insert name="title">
+				${b['sistema.titulo']}
+			</ui:insert>
+		</title>
+		<link href="#{facesContext.externalContext.request.contextPath}/static/css/styles.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="container"> 
+			<div id="pageHeader">
+				<ui:insert name="header">
+					<ui:include src="header.xhtml" />
+				</ui:insert>
+			</div>
+			<ui:insert name="body">
+				Body
+			</ui:insert>	
+			<div id="footer" class="rounded">
+				<ui:insert name="footer">
+					<ui:include src="footer.xhtml" />
+				</ui:insert>
+			</div>	
+		</div>		
+	</body>	
+</ui:composition>

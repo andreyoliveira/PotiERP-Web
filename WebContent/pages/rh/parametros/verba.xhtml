@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formVerba"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeVerba}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeVerba}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{verbaMB.doConsultar}"
+								rendered="#{verbaMB.consultarVerba}"
+								reRender="formVerba"
+								eventsQueue="queueNoDelay" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}" 
+								action="#{verbaMB.doNovo}"
+								oncomplete="Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formVerba"
+								rendered="#{verbaMB.incluirVerba}"
+								title="#{b.incluirNovoRegistro}"
+								eventsQueue="queueNoDelay" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								rendered="#{verbaMB.excluirVerba}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								action="#{verbaMB.doExcluirLote}"
+								eventsQueue="queueNoDelay" 
+								reRender="formDetails, formVerba" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="verbaMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{verbaMB.listVerba}" 
+									id="tableVerba"
+									var="verba" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									reRender="scrollVerba"
+									selectionMode="none"
+									rendered="#{verbaMB.consultarVerba}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{verbaMB.excluirVerba}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkVerbaAll"
+							onclick="jqCheckAll(this, 'formVerba:tableVerba');"
+							value="#{verbaMB.checkVerbaAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkVerba" value="#{verba.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="100px" filterBy="#{verba.entity.codigo}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.codigo}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.codigo}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.codigo}" />
+           		</rich:column>
+				<rich:column width="215px" filterBy="#{verba.entity.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nome}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="140px" filterBy="#{verba.entity.baseVerbas.base}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.baseVerbas.base}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.baseVerbas}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.baseVerbas.base}" />
+           		</rich:column>
+           		<rich:column width="90px" filterBy="#{verba.entity.tipo.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.tipo.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.verbaDe}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.tipo.nome}" />
+           		</rich:column>
+           		<rich:column width="180px" filterBy="#{verba.entity.verbasSobre.sobre}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.verbasSobre.sobre}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.verbasSobre}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.verbasSobre.sobre}" />
+           		</rich:column>
+           		<rich:column width="130px" filterBy="#{verba.entity.percentual}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.percentual}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.percentual}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.percentual}">
+           				<f:convertNumber type="percentage" maxFractionDigits="4" />
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="75px" filterBy="#{verba.entity.situacao}" filterEvent="onkeyup" sortable="true" sortBy="#{verba.entity.situacao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.situacao}" />
+           			</f:facet>
+           			<h:outputText value="#{verba.entity.situacao}" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton oncomplete="Richfaces.showModalPanel('mpDetails');" 
+           							title="#{b.alterar}"
+           							reRender="formDetails" 
+           							image="/static/images/edit.png"
+           							rendered="#{verbaMB.consultarVerba}"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{verba.entity}" target="#{verbaMB.verba}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{verbaMB.doExcluir}" 
+									title="#{b.excluir}" 
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									reRender="formVerba" 
+									rendered="#{verbaMB.excluirVerba}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{verba.entity}" target="#{verbaMB.verba}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollVerba" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableVerba" maxPages="10" page="#{verbaMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeVerba}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery
+						query="mask('999,99%',{placeholder:' '})"
+						selector=".maskPercent" timing="onload" id="maskPercent" />
+		 			<h:inputHidden value="#{verbaMB.verba.id}"/>
+				 	<table width="600px" cellspacing="10px">
+				 		<tr>
+           					<td>
+           						<h:outputText value="#{b.codigo}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsCodigo" for="txtCodigo" errorLabelClass="error"/><div />
+           						<h:inputText id="txtCodigo" 
+           									value="#{verbaMB.verba.codigo}" 
+           									style="width: 100px" 
+           									label="#{b.codigo}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.nome}" />
+           					</td>
+           					<td colspan="3">
+           						<rich:message id="msgsNome" for="txtNome" errorLabelClass="error"/><div />
+           						<h:inputText id="txtNome" 
+           									value="#{verbaMB.verba.nome}" 
+           									style="width: 300px" 
+           									label="#{b.nome}"
+           									required="true"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td colspan="3">
+           						<rich:message id="msgsDescricao" for="txtDescricao"/> <div />
+           						<h:inputText id="txtDescricao" 
+           									value="#{verbaMB.verba.descricao}" 
+           									style="width: 440px" 
+           									label="#{b.Descricao}" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.baseVerbas}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsBase" for="selBase" errorLabelClass="error" /> <div />
+	           					<h:selectOneMenu id="selBase" label="#{b.baseVerbas}"
+									value="#{verbaMB.verba.baseVerbas}" style="width: 150px;"
+									required="true">
+									<f:selectItems id="itensBaseVerbas"
+										value="#{verbaMB.itensBaseVerbas}" />
+								</h:selectOneMenu>
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.verbaDe}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsVerbaDe" for="selVerbaDe" errorLabelClass="error"/> <div />
+	           					<h:selectOneMenu id="selVerbaDe" label="#{b.verbaDe}"
+									value="#{verbaMB.verba.tipo}" style="width: 130px;">
+									<f:selectItems id="itensVerbasDe"
+										value="#{verbaMB.itensTipo}" />
+								</h:selectOneMenu>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.verbasSobre}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsVerbasSobre" for="selVerbasSobre" errorLabelClass="error"/> <div />
+	           					<h:selectOneMenu id="selVerbasSobre" label="#{b.verbasSobre}"
+									value="#{verbaMB.verba.verbasSobre}" style="width: 150px;">
+									<f:selectItems id="itensVerbasSobre"
+										value="#{verbaMB.itensVerbasSobre}" />
+								</h:selectOneMenu>
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.aplicarPercentualDe}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsPercentual" for="txtPercentual" errorLabelClass="error"/><div />
+           						<h:inputText id="txtPercentual" 
+           									value="#{verbaMB.verba.percentual}" 
+           									styleClass="maskPercent"
+           									style="width: 130px"
+           									label="#{b.percentual}">
+           						</h:inputText>
+           					</td>
+           				</tr>
+           			</table>
+           			<table width="600px" cellspacing="10px">
+           				<tr>
+           					<td width="97px">
+           						<h:outputText value="#{b.atestado}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isAtestado}" id="chkAtestado" />
+           					</td>
+           					<td width="80px">
+           						<h:outputText value="#{b.abono}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isAbono}" id="chkAbono" />
+           					</td>
+           					<td width="80px">
+           						<h:outputText value="#{b.dsr}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isDsr}" id="chkDsr" />
+           					</td>
+           					<td width="80px">
+           						<h:outputText value="#{b.emprestimo}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isEmprestimo}" id="chkEmprestimo" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.valeTransporte}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isValeTransporte}" id="chkValeTransporte" />
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.valeRefeicao}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isValeRefeicao}" id="chkValeRefeicao" />
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.cestaBasica}" />
+           					</td>
+           					<td>
+	           					<h:selectBooleanCheckbox value="#{verbaMB.verba.isCestaBasica}" id="chkCestaBasica" />
+           					</td>
+           				</tr>
+           			</table>
+           			<table width="600px" cellspacing="10px">
+           				<tr>
+           					<td width="97px">
+           						<h:outputText value="#{b.situacao}" />
+           					</td>
+           					<td>
+           						<rich:message id="msgsSituacao" for="selSituacao"/> <div />
+	           					<h:selectOneRadio id="selSituacao" label="#{b.situacao}"
+									value="#{verbaMB.verba.situacao}" style="width: 100px;"
+									required="true">
+									<f:selectItem itemLabel="#{b.ativo}" itemValue="ATIVO" />
+							    	<f:selectItem itemLabel="#{b.inativo}" itemValue="INATIVO" />
+								</h:selectOneRadio>
+           					</td>
+           				</tr>
+            		</table>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{verbaMB.doSalvar}" 
+												reRender="formVerba, formDetails"
+												rendered="#{verbaMB.manterVerba}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{verbaMB.doSalvar}"
+												rendered="#{verbaMB.incluirVerba}"
+												reRender="formVerba, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"
+												/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

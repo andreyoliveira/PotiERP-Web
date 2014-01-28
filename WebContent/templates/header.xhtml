@@ -1,0 +1,208 @@
+<ui:composition
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+	<h:form id="formHeader">
+		<div id="headerTop">
+			<table>
+				<tr>
+					<td>
+						<h:graphicImage value="/static/images/logoCliente.jpg" style="border: 0px; padding: 0px; height: 40px"/>
+					</td>
+					<td>
+						<rich:spacer width="800px"/>
+					</td>
+					<td>
+						<h:outputText value="#{b.ola}, #{acessoMB.usuario.username}"/>
+						<rich:spacer width="15px"/>
+						<h:commandLink value="#{b.logout}" title="#{b.logoutLabel}" action="#{acessoMB.doLogout}" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="mainNavigation" class="rounded">
+			<rich:toolBar id="toolbar">
+				<rich:dropDownMenu id="ddmRH">
+					<f:facet name="label">
+						<h:outputText value="#{b.rh}" id="lblRH"/>
+					</f:facet>
+					<rich:menuGroup value="#{b.cadastros}" id="groupCadastrosRH" >
+						<rich:menuItem value="#{b.cargo}" action="#{cargoMB.doCadastroDeCargo}"
+							rendered="#{cargoMB.consultarCargo}" id="miCargo"/>
+						<rich:menuItem value="#{b.funcionarios}" action="#{funcionarioMB.doCadastroDeFuncionario}"
+							rendered="#{funcionarioMB.consultarFuncionario}" id="miFuncionario"/>
+						<rich:menuItem value="#{b.jornadaDeTrabalho}" action="#{jornadaTrabalhoMB.doCadastroDeJornadaDeTrabalho}"
+							rendered="#{jornadaTrabalhoMB.consultarJornada}" id="miJornada"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.parametros}" id="groupParametrosRH">
+						<!-- <rich:menuItem value="#{b.tipoAdicional}" action="#{adicionalMB.doCadastroDeTipoAdicional}"
+							rendered="#{adicionalMB.consultarAdicional}" id="miAdicional"/>
+						<rich:menuItem value="#{b.tipoBeneficio}" action="#{beneficioMB.doCadastroDeTipoBeneficio}"
+							rendered="#{beneficioMB.consultarBeneficio}" id="miBeneficio"/> -->
+						<rich:menuItem value="#{b.cestaBasica}" action="#{tipoCestaBasicaMB.doCadastroDeTipoCestaBasica}"
+							rendered="#{tipoCestaBasicaMB.consultarTipoCestaBasica}" id="miTipoCestaBasica"/>
+						<rich:menuItem value="#{b.cidades}" action="#{cidadeMB.doCadastroDeTipoCidade}"
+							rendered="#{cidadeMB.consultarCidade}" id="miCidade"/>
+						<!-- <rich:menuItem value="#{b.tipoDesconto}" action="#{descontoMB.doCadastroDeTipoDesconto}"
+							rendered="#{descontoMB.consultarDesconto}" id="miDesconto"/>
+						<rich:menuItem value="#{b.tipoEncargo}" action="#{encargoMB.doCadastroDeTipoEncargo}"
+							rendered="#{encargoMB.consultarEncargo}" id="miEncargo"/> -->
+						<rich:menuItem value="#{b.feriados}" action="#{feriadoMB.doCadastroDeFeriado}" 
+							rendered="#{feriadoMB.consultarFeriado}" id="miFeriado"/>
+						<rich:menuItem value="#{b.formaPagamento}" action="#{formaPagamentoMB.doCadastroDeFormaPagamento}" 
+							rendered="#{formaPagamentoMB.consultarFormaPagamento}" id="miFormaPagamento"/>
+						<rich:menuItem value="#{b.grauParentesco}" action="#{grauParentescoMB.doCadastroDeGrauParentesco}" 
+							rendered="#{grauParentescoMB.consultarGrauParentesco}" id="miGrauParentesco"/>
+						<rich:menuItem value="#{b.parametros}" action="#{parametrosRhMB.doParametrosRh}" id="miParametrosRh"/>
+						<rich:menuItem value="#{b.setor}" action="#{setorMB.doCadastroDeSetor}"
+							rendered="#{setorMB.consultarSetor}" id="miSetor"/>
+						<rich:menuItem value="#{b.situacaoFuncionario}" action="#{situacaoFuncionarioMB.doCadastroDeSituacaoFuncionario}"
+							rendered="#{situacaoFuncionarioMB.consultarSituacaoFuncionario}" id="miSituacaoFuncionario"/>
+						<rich:menuItem value="#{b.tipoAdmissao}" action="#{tipoAdmissaoMB.doCadastroDeTipoAdmissao}"
+							rendered="#{tipoAdmissaoMB.consultarTipoAdmissao}" id="miTipoAdmissao"/>
+						<rich:menuItem value="#{b.tipoDemissao}" action="#{tipoDemissaoMB.doCadastroDeTipoDemissao}"
+							rendered="#{tipoDemissaoMB.consultarTipoDemissao}" id="miTipoDemissao"/>
+						<rich:menuItem value="#{b.tipoValeTransporte}" action="#{tipoValeTransporteMB.doCadastroDeTipoValeTransporte}"
+							rendered="#{tipoValeTransporteMB.consultarTipoValeTransporte}" id="miTipoValeTransporte"/>
+						<rich:menuItem value="#{b.tipoValeRefeicao}" action="#{tipoValeRefeicaoMB.doCadastroDeTipoValeRefeicao}"
+							rendered="#{tipoValeRefeicaoMB.consultarTipoValeRefeicao}" id="miTipoValeRefeicao"/>
+						<rich:menuItem value="#{b.verbas}" action="#{verbaMB.doCadastroDeVerba}"
+							rendered="#{verbaMB.consultarVerba}" id="miVerba"/>
+						<rich:menuItem value="#{b.vinculoEmpregaticio}" action="#{vinculoEmpregaticioMB.doCadastroDeVinculoEmpregaticio}"
+							rendered="#{vinculoEmpregaticioMB.consultarVinculoEmpregaticio}" id="miVInculoEmpregaticio"/>
+						<rich:menuItem value="#{b.responsaveis}" action="#{responsavelMB.doCadastroDeResponsavel}"
+							rendered="#{responsavelMB.consultarResponsavel}" id="miResponsavel"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.lancamentos}" id="groupLancamentosRH" >
+						<rich:menuItem value="#{b.apontamentosFolha}" action="#{apontamentosFolhaMB.doApontamentosFolha}"
+							rendered="#{apontamentosFolhaMB.consultarApontamentosFolha}" id="miApontamentosFolha"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.historico}" id="groupHistoricoRH" >
+						<rich:menuItem value="#{b.alteracoesSalariais}"
+							action="#{alteracaoSalarialMB.doAlteracaoSalarial}"
+							id="miAlteracaoSalarial" />
+						<rich:menuItem value="#{b.ferias}" action="#{feriasMB.doFerias}" 
+							rendered="#{feriasMB.consultarFerias}" id="miFerias" />
+						<rich:menuItem value="#{b.alteracoesClientes}"
+							action="#{alteracaoClienteMB.doAlteracaoCliente}"
+							id="miAlteracaoSetor" />
+						<rich:menuItem value="#{b.demissao}"
+							action="#{historicoDemissaoMB.doHistoricoDemissao}"
+							id="miHistoricoDemissao" />
+						<rich:menuItem value="#{b.afastamento}" action="#{historicoAfastamentoMB.doHistoricoAfastamento}"
+							rendered="#{historicoAfastamentoMB.consultarHistoricoAfastamento}" id="miHistoricoAfastamento"/>
+						<rich:menuItem value="#{b.medidaDisciplinar}" action="#{medidaDisciplinarMB.doMedidaDisciplinar}"
+							rendered="#{medidaDisciplinarMB.consultarMedidaDisciplinar}" id="miMedidaDisciplinar"/>	
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.calculos}" id="groupCalculosRH">
+						<rich:menuItem value="#{b.valeRefeicao}" action="#{valeRefeicaoMB.doCadastroDeValeRefeicao}"
+							rendered="#{valeRefeicaoMB.consultarValeRefeicao}" id="miValeRefeicao"/>
+						<rich:menuItem value="#{b.valeTransporte}" action="#{valeTransporteMB.doCadastroDeValeTransporte}"
+							rendered="#{valeTransporteMB.consultarValeTransporte}" id="miValeTransporte"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.folhaDePagamento}" id="groupFolhaDePagamentoRH" >
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.relatorios}" id="groupRelatoriosRH" >
+						<rich:menuItem value="#{b.relatoriosAdmissionais}" action="#{relatoriosAdmissionaisMB.doRelatoriosAdmissionais}"
+							rendered="#{relatoriosAdmissionaisMB.consultarRelatoriosAdmissionais}" id="miRelatoriosAdmissionais" />
+						<rich:menuItem value="#{b.relatoriosDiversos}" 
+								action="#{relatoriosDiversosMB.doRelatoriosDiversos}"
+								rendered="#{relatoriosDiversosMB.consultarRelatoriosDiversos}" 
+								id="miRelatoriosDiversos" />
+						<rich:menuGroup value="#{b.relatoriosMensais}" id="groupRelatoriosMensaisRH" >
+							<rich:menuItem value="#{b.cartaoPonto}"
+								action="#{cartaoPontoMB.doCartaoPonto}"
+								rendered="#{cartaoPontoMB.consultarCartaoPonto}"
+								id="miCartaoPonto" />
+							<rich:menuItem value="#{b.vencimentoExperiencia}" 
+								action="#{relatoriosVencimentoExperienciaMB.doRelatoriosVencimentoExperiencia}"
+								rendered="#{relatoriosVencimentoExperienciaMB.consultarRelatoriosVencimentoExperiencia}" 
+								id="miRelatoriosVencimentoExperiencia" />
+						</rich:menuGroup>
+						<rich:menuItem value="#{b.relatorioFuncionarios}" action="#{relatorioFuncionariosMB.doRelatorioFuncionarios}"
+							rendered="#{relatorioFuncionariosMB.consultarRelatorioFuncionarios}" id="miRelatorioFuncionarios" />
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.magneticos}" id="groupMagneticosRH" >
+					</rich:menuGroup>
+				</rich:dropDownMenu>
+				<rich:dropDownMenu id="ddmComercial">
+					<f:facet name="label">
+						<h:outputText value="#{b.comercial}" id="lblComercial"/>
+					</f:facet>
+					<rich:menuGroup value="#{b.cadastros}" id="groupCadastrosComercial" >
+						<rich:menuItem value="#{b.clientes}" action="#{clienteMB.doCadastroDeCliente}"
+							rendered="#{clienteMB.consultarCliente}" id="miCliente"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.parametros}" id="groupParametrosComercial">
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.historico}" id="groupHistoricoComercial" >
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.relatorios}" id="groupRelatoriosComercial">
+					</rich:menuGroup>
+				</rich:dropDownMenu>
+				<rich:dropDownMenu id="ddmCompras">
+					<f:facet name="label">
+						<h:outputText value="#{b.compras}" id="lblCompras"/>
+					</f:facet>
+					<rich:menuItem value="#{b.fornecedores}" action="#{fornecedorMB.doCadastroDeFornecedor}"
+						rendered="#{fornecedorMB.consultarFornecedor}" id="miFornecedor"/>
+				</rich:dropDownMenu>
+				<rich:dropDownMenu id="ddmFinanceiro">
+					<f:facet name="label">
+						<h:outputText value="#{b.financeiro}" id="lblFinanceiro"/>
+					</f:facet>
+					<rich:menuGroup value="#{b.cadastros}" id="groupCadastrosFinanceiro" >
+						<rich:menuItem value="#{b.solicitacaoPagamento}" 
+						rendered="#{solicitacaoPagamentoMB.consultarSolicitacaoDePagamento}" id="miSolicitacaoPagto"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.parametros}" id="groupParametrosFinanceiro">
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.historico}" id="groupHistoricoFinanceiro" >
+						<rich:menuItem value="#{b.historicoComercial}" action="#{historicoComercialMB.doCadastroDeHistoricoComercial}"
+								rendered="#{historicoComercialMB.consultarHistoricoComercial}" id="miHistoricoComercial"/>
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.relatorios}" id="groupRelatoriosFinanceiro">
+					</rich:menuGroup>
+				</rich:dropDownMenu>
+				<rich:dropDownMenu  id="ddOperacional">
+					<f:facet name="label">
+						<h:outputText value="#{b.operacional}" id="lblOperacional"/>
+					</f:facet>
+					<rich:menuGroup value="#{b.cadastros}" id="groupCadastrosOperacional" >
+						<rich:menuItem id="miOrdemServico" value="#{b.operacionalOrdemServicos}" />
+						<rich:menuItem id="miProgramacaoVisitas" value="#{b.operacionalProgramacaoVisitas}" action="#{programacaoVisitasMB.doCadastroProgramacaoVisitasSupervisoras}" />
+						<rich:menuItem id="miAcompanhamentoVisitas" value="#{b.operacionalAcompanhamentoVisitas}" action="#{acompanhamentoVisitasMB.doAcompanhamentoVisitas}" />
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.parametros}" id="groupParametrosOperacional">
+						<rich:menuItem id="miTipoServico" value="#{b.operacionalTipoServicos}" action="#{tipoServicoMB.doCadastroDeTipoServico}" />
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.historico}" id="groupHistoricoOperacional" >
+						<rich:menuItem id="miHistoricoServicos" value="#{b.operacionalHistoricoServicosRealizados}"
+							action="#{programacaoServicoMB.doProgramacaoServico}" rendered="#{programacaoServicoMB.consultarProgramacaoServico}" />
+					</rich:menuGroup>
+					<rich:menuGroup value="#{b.operacionalRelatorios}" id="groupRelatoriosOperacional">
+						<rich:menuItem id="miRelatorioProgramacaoVisitas" value="#{b.operacionalRelatorioProgramacaoVisitas}"
+							action="#{relatorioProgramacaoVisitasMB.doRelatorioProgramacaoVisitas}" rendered="#{relatorioProgramacaoVisitasMB.consultarRelatorioProgramacaoVisitas}" />
+						<rich:menuItem id="miRelatorioAcompanhamentoVisitas" value="#{b.operacionalRelatorioAcompanhamentoVisitas}"
+							action="#{relatorioAcompanhamentoVisitasMB.doRelatorioAcompanhamentoVisitas}" rendered="#{relatorioAcompanhamentoVisitasMB.consultarRelatorioAcompanhamentoVisitas}" />
+					</rich:menuGroup>
+				</rich:dropDownMenu>
+				<rich:dropDownMenu id="ddmConfiguracoes">
+					<f:facet name="label">
+						<h:outputText value="#{b.configuracoes}" id="lblConfiguracoes"/>
+					</f:facet>
+					<rich:menuGroup value="#{b.cadastros}" id="groupCadastrosConfiguracoes">
+						<rich:menuItem value="#{b.usuario}" action="#{usuarioMB.doCadastroDeUsuario}"
+							rendered="#{usuarioMB.consultarUsuario}" id="miUsuario"/>
+						<rich:menuItem value="#{b.perfil}" action="#{perfilMB.doCadastroDePerfil}"
+							rendered="#{perfilMB.consultarPerfil}" id="miPerfil"/>
+						<rich:menuItem value="#{b.empresa}" action="#{empresaMB.doCadastroDeEmpresa}"
+							rendered="#{empresaMB.consultarEmpresa}" id="miEmpresa"/>
+					</rich:menuGroup>
+				</rich:dropDownMenu>
+			</rich:toolBar>
+		</div>
+	</h:form>
+</ui:composition>

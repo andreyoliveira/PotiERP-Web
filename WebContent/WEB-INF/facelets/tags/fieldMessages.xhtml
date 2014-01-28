@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a4j="http://richfaces.org/a4j">
+	<rich:modalPanel
+		onshow="showModalPanelWithEffect('${formAtual}:msgsErrosFields', appear, {delay: 0.1, duration: 1.0});"
+		id="msgsErrosFields"
+		showWhenRendered="#{erroMB.fieldMessage}" autosized="true" moveable="false" resizeable="false">
+		<f:facet name="header">
+			<h:outputText value="#{b['sistema.titulo']}"/>
+		</f:facet>
+		<h:panelGroup style="text-align: center; width: 100%;white-space:nowrap;" layout="block" styleClass="error">
+			#{b.erroEhNecessarioInformarOsCamposObrigatorios}
+			<br/>
+			<br/>
+			<a4j:commandButton image="/static/images/btOk.gif" 
+				oncomplete="Richfaces.hideModalPanel('${formAtual}:msgsErrosFields')"
+				action="${mbean[action]}"
+				eventsQueue="queueNoDelay"/>
+			<br/>
+		</h:panelGroup>
+	</rich:modalPanel>
+	<rich:effect type="Appear" name="appear"/>
+	<rich:effect type="Fade" name="fade"/>
+</ui:composition>

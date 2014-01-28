@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formFerias"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.ferias}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroFerias}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+					status="statusAguarde"
+								title="#{b.atualizarListagem}" 
+								action="#{feriasMB.doConsultar}"
+								reRender="formFerias"
+								eventsQueue="queueNoDelay" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+					status="statusAguarde"
+								title="#{b.excluirRegistrosSelecionados}"
+								action="#{feriasMB.doExcluirLote}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								eventsQueue="queueNoDelay" 
+								reRender="formFerias" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="feriasMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{feriasMB.listFerias}" 
+									id="tableFerias"
+									var="ferias" 
+									height="203px"
+									rows="6" 
+									enableContextMenu="false"
+									reRender="scrollFerias"
+									selectionMode="none"
+									rendered="#{feriasMB.consultarFerias}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkFeriasAll"
+							onclick="jqCheckAll(this, 'formFerias:tableFerias');" value="#{feriasMB.checkFeriasAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkFerias" value="#{ferias.selecionado}"
+						onclick="interceptarEvento(event)" />
+				</rich:column>
+				<rich:column width="62px"
+						sortable="true"
+						sortBy="#{ferias.entity.funcionario.codigoRegistro}"
+						filterBy="#{ferias.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.re}"/>
+					</f:facet>
+					<h:outputText value="#{ferias.entity.funcionario.codigoRegistro}" />
+				</rich:column>
+				<rich:column width="290px"
+						sortable="true"
+						sortBy="#{ferias.entity.funcionario.pessoa.nome}"
+						filterBy="#{ferias.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup">
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{feriasMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{ferias.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{ferias.entity}"
+							target="#{feriasMB.feriasSelecionada}" />
+					</a4j:commandLink>
+				</rich:column>
+				<rich:column width="108px">
+					<f:facet name="header">
+						<h:outputText value="#{b.perInAquisitivo}" />
+					</f:facet>
+					<h:outputText value="#{ferias.entity.periodoInicialAquisitivo}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="105px">
+					<f:facet name="header">
+						<h:outputText value="#{b.perFinAquisitivo}" />
+					</f:facet>
+					<h:outputText value="#{ferias.entity.periodoFinalAquisitivo}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="101px">
+					<f:facet name="header">
+						<h:outputText value="#{b.feriasColetivas}" />
+					</f:facet>
+					<h:outputText value="#{b.sim}" rendered="#{ferias.entity.feriasColetivas}" />
+					<h:outputText value="#{b.nao}" rendered="#{!ferias.entity.feriasColetivas}" />
+				</rich:column>
+				<rich:column width="89px">
+					<f:facet name="header">
+						<h:outputText value="#{b.perInGozo}" />
+					</f:facet>
+					<h:outputText value="#{ferias.entity.periodoInicialGozo}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="91px">
+					<f:facet name="header">
+						<h:outputText value="#{b.perFinGozo}" />
+					</f:facet>
+					<h:outputText value="#{ferias.entity.periodoFinalGozo}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="115px">
+					<f:facet name="header">
+						<h:outputText value="#{b.dataRetTrabalho}" />
+					</f:facet>
+					<h:outputText value="#{ferias.entity.retornoTrabalho}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollFerias" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableFerias" maxPages="10" page="#{feriasMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+					<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" />
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{feriasMB.ferias.funcionario.codigoRegistro}" 
+									style="width:70px"
+									label="#{b.re}"
+									onkeyup="somenteNumeros(this);" 
+									disabled="#{feriasMB.disableEdicao}"
+									readonly="#{feriasMB.disableEdicao}">
+									<a4j:support action="#{feriasMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outputFerias,msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputFerias">
+									<h:inputText id="txtNomeFuncionario" 
+			  									value="#{feriasMB.ferias.funcionario.pessoa.nome}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}"
+			  									disabled="#{feriasMB.disableEdicao}"
+												readonly="#{feriasMB.disableEdicao}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONÁRIO FOI ENCONTRADO"
+					                    suggestionAction="#{feriasMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{feriasMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{feriasMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.periodoInicialAquisitivo}" />
+							</td>
+							<td>
+								<rich:calendar id="calPerInicialAquisitivo" datePattern="dd/MM/yyyy" 
+									value="#{feriasMB.ferias.periodoInicialAquisitivo}"
+									enableManualInput="true"
+									styleClass="maskDatePrincipal"
+									disabled="#{feriasMB.disableEdicao}"
+									readonly="#{feriasMB.disableEdicao}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.periodoFinalAquisitivo}" />
+							</td>
+							<td>
+								<rich:calendar id="calPerFinalAquisitivo" datePattern="dd/MM/yyyy"
+								styleClass="maskDatePrincipal" 
+									value="#{feriasMB.ferias.periodoFinalAquisitivo}"
+									enableManualInput="true"
+									disabled="#{feriasMB.disableEdicao}"
+									readonly="#{feriasMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.periodoInicialGozo}" />
+							</td>
+							<td>
+								<rich:calendar id="calPerInicialGozo" datePattern="dd/MM/yyyy"
+								styleClass="maskDatePrincipal" 
+									value="#{feriasMB.ferias.periodoInicialGozo}"
+									enableManualInput="true"
+									disabled="#{feriasMB.disableEdicao}"
+									readonly="#{feriasMB.disableEdicao}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.periodoFinalGozo}" />
+							</td>
+							<td>
+								<rich:calendar id="calPerFinalGozo" datePattern="dd/MM/yyyy"
+								styleClass="maskDatePrincipal" 
+									value="#{feriasMB.ferias.periodoFinalGozo}"
+									enableManualInput="true"
+									disabled="#{feriasMB.disableEdicao}"
+									readonly="#{feriasMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.feriasColetivas}" />
+							</td>
+							<td>
+								<h:selectOneRadio id="selFeriasColetivas" 
+										value="#{feriasMB.ferias.feriasColetivas}"
+										disabled="#{feriasMB.disableEdicao}"
+										readonly="#{feriasMB.disableEdicao}">
+									<f:selectItem itemLabel="#{b.sim}" itemValue="true" />
+									<f:selectItem itemLabel="#{b.nao}" itemValue="false"/>
+								</h:selectOneRadio>
+							</td>
+							<td>
+								<h:outputText value="#{b.dataRetornoTrabalho}" />
+							</td>
+							<td>
+								<rich:calendar id="calRetornoTrabalho" datePattern="dd/MM/yyyy"
+								styleClass="maskDatePrincipal" 
+									value="#{feriasMB.ferias.retornoTrabalho}"
+									enableManualInput="true"
+									 />
+							</td>
+						</tr>
+					</table>
+					<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{feriasMB.doSalvar}"
+												status="statusAguarde"
+												reRender="formDetails, formFerias" 
+												oncomplete="limpaForm('formDetails')"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.novo}"
+									status="statusAguarde"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{feriasMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+				</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

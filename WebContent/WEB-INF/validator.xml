@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+	<validator>
+  		<validator-id>CnpjValidator</validator-id>
+  		<validator-class>br.com.potierp.faces.validator.CnpjValidator</validator-class>
+ 	</validator>
+ 		<validator>
+  		<validator-id>CpfValidator</validator-id>
+  		<validator-class>br.com.potierp.faces.validator.CpfValidator</validator-class>
+ 	</validator>
+ 	<validator>
+  		<validator-id>EmailValidator</validator-id>
+  		<validator-class>br.com.potierp.faces.validator.EmailValidator</validator-class>
+ 	</validator>
+ 	<validator>
+  		<validator-id>DiaDoMesValidator</validator-id>
+  		<validator-class>br.com.potierp.faces.validator.DiaDoMesValidator</validator-class>
+ 	</validator>
+</faces-config>

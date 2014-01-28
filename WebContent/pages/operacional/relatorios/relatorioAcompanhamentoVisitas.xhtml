@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formRelAcompVisita"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.relatorioAcompanhamentoVisitas}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.relatorioAcompanhamentoVisitas}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.gerar}" 
+								action="#{relatorioAcompanhamentoVisitasMB.doGerar}"
+								title="#{b.gerar}"
+								reRender="executaDownload, txtRE, txtNomeFuncionario, suggestionBoxId, msgsErros" 
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde"/>
+				<a4j:commandButton value="#{b.limpar}"
+								title="#{b.limpar}"
+								onclick="limpaForm('formDetails');"
+								action="#{relatorioAcompanhamentoVisitasMB.doLimpar}"
+								reRender="formAdmissao" 
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<poti:download mbean="#{relatorioAcompanhamentoVisitasMB}" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="relatorioAcompanhamentoVisitasMB" />
+			<rich:spacer height="1px"/>
+			<rich:panel>
+				<table cellspacing="10" style="height:445px" width="70%">
+					<tr valign="top">
+						<td>
+							<h:outputText value="#{b.re}" /> 
+						</td>
+						<td>
+							<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+							<h:inputText id="txtRE"
+								value="#{relatorioAcompanhamentoVisitasMB.responsavel.funcionario.codigoRegistro}"
+								style="width:70px"
+								label="#{b.re}"
+								onkeyup="somenteNumeros(this);"> 
+							<a4j:support action="#{relatorioAcompanhamentoVisitasMB.buscarResponsavel}"
+	           										 event="onblur" 
+	           										 reRender="outPutFuncionario, msgsErros"
+	           										 limitToList="true"
+	           										 eventsQueue="queueNoDelay"
+	           										 status="statusAguarde"/>
+	           				</h:inputText>
+	           				<rich:spacer width="15px"/>
+	           				<a4j:outputPanel id="outPutFuncionario">
+		  						<h:inputText id="txtNomeFuncionario" 
+		  									value="#{relatorioAcompanhamentoVisitasMB.responsavel.funcionario.pessoa.nome}" 
+		  									style="width: 300px"
+		  									label="#{b.funcionario}" />  
+		  						 <rich:suggestionbox id="suggestionBoxId" 
+		  						 	for="txtNomeFuncionario"
+		  						 	var="responsavel"
+		  						 	width="300"
+				                    height="200"
+				                    nothingLabel="NENHUM RESPONSAVEL FOI ENCONTRADO"
+				                    suggestionAction="#{relatorioAcompanhamentoVisitasMB.sugestaoResponsaveis}">
+				                    <h:column>
+										<h:outputText value="#{responsavel.funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+				                    </h:column>
+				                    <a4j:support event="onselect" 
+							 			 	     action="#{relatorioAcompanhamentoVisitasMB.selecionarResponsavel}"
+								 			  	 reRender="txtRE, msgsErros"
+								 			  	 limitToList="true"
+								 			  	 status="statusAguarde">  
+								        <f:setPropertyActionListener value="#{responsavel}" 
+								        							 target="#{relatorioAcompanhamentoVisitasMB.responsavelSelecionado}" />  
+								  </a4j:support>
+				                </rich:suggestionbox>
+			                </a4j:outputPanel>
+	           			</td>
+	           			<td>
+							<h:outputText value="#{b.mes}" /> 
+						</td>
+	           			<td>
+							<h:selectOneMenu id="selMes" label="${b.mes}" value="#{relatorioAcompanhamentoVisitasMB.mesSelecionado}">
+								<f:selectItems id="itensMes" value="#{relatorioAcompanhamentoVisitasMB.itensMeses}" />
+							</h:selectOneMenu>
+	           			</td>
+					</tr>
+				</table>
+			</rich:panel>	
+			<rich:spacer height="1px"/>
+		</ui:define>	
+	</ui:decorate>
+</html>	

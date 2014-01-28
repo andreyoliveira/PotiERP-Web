@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formVencimentoExperiencia"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.relatorioVencimentoExperiencia}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.relatorioVencimentoExperiencia}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.gerar}" 
+								action="#{relatoriosVencimentoExperienciaMB.doGerar}"
+								title="#{b.gerar}"
+								reRender="executaDownload, msgsErros"
+								limitToList="true"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde"/>
+				<a4j:commandButton value="#{b.limpar}"
+								title="#{b.limpar}"
+								onclick="limpaForm('formDetails');"
+								action="#{relatoriosVencimentoExperienciaMB.doLimpar}"
+								reRender="formVencimentoExperiencia" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<poti:download mbean="#{relatoriosVencimentoExperienciaMB}" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<rich:jQuery id="mskDate" selector=".maskDate" timing="onload"
+						query="mask('99/99/9999',{placeholder:' '})"/>
+			<a4j:keepAlive beanName="relatoriosVencimentoExperienciaMB" />
+			<rich:spacer height="1px"/>
+			<rich:panel>
+				<table cellspacing="10" style="height:445px" width="100%">
+					<tr valign="top" style="height:20px">
+						<td width="80px">
+       						<h:outputText value="#{b.periodoVencimentoInicial}" />
+       					</td>
+       					<td width="130px">
+       						<rich:message id="msgsDataInicioAdmissao" 
+       							for="calDataInicioAdmissao"
+       							errorLabelClass="error"/><div />
+          						<rich:calendar id="calDataInicioAdmissao"
+          							value="#{relatoriosVencimentoExperienciaMB.dataInicio}" 
+          							datePattern="dd/MM/yyyy"
+          							inputStyle="width: 95px;"
+								label="#{b.dataInicial}"
+								enableManualInput="true"
+								inputSize="10"
+								inputClass="maskDate"
+								required="true">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</rich:calendar>
+       					</td>
+       					<td width="80px">
+       						<h:outputText value="#{b.periodoVencimentoFinal}" />
+       					</td>
+       					<td width="130px">
+       						<rich:message id="msgsDataFimAdmissao" 
+       							for="calDataFimAdmissao"
+       							errorLabelClass="error"/><div />
+          						<rich:calendar id="calDataFimAdmissao"
+          							value="#{relatoriosVencimentoExperienciaMB.dataFim}" 
+          							datePattern="dd/MM/yyyy"
+          							inputStyle="width: 95px;"
+								label="#{b.dataFinal}"
+								enableManualInput="true"
+								inputSize="10"
+								inputClass="maskDate"
+								required="true">
+								<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+							</rich:calendar>
+       					</td>
+					</tr>
+					<tr valign="top" style="height:20px">
+						<td width="80px">
+       						<h:outputText value="#{b.responsavel}" />
+       					</td>
+       					<td width="300px" colspan="3">
+       							<h:selectOneMenu 
+       								id="selResponsavel"
+       								value="#{relatoriosVencimentoExperienciaMB.responsavel}"
+       								label="#{b.responsavel}"
+       								style="width:250px;" >
+       								<f:selectItems id="itensResponsavel" value="#{relatoriosVencimentoExperienciaMB.itensResponsavel}"/>
+       								<f:converter converterId="identifiableConverter" />
+       							</h:selectOneMenu>
+       					</td>
+					</tr>
+					<tr valign="top">
+						<td width="80px">
+							<h:outputText value="#{b.cidade}" />
+						</td>
+						<td width="300px" colspan="3">
+       							<h:selectOneMenu 
+       								id="selCidade"
+       								value="#{relatoriosVencimentoExperienciaMB.cidade}"
+       								label="#{b.cidade}"
+       								style="width:250px;">
+       								<f:selectItems value="#{relatoriosVencimentoExperienciaMB.itensCidade}"/>
+       								<f:converter converterId="identifiableConverter" />
+       							</h:selectOneMenu>
+       					</td>
+					</tr>
+				</table>
+			</rich:panel>	
+			<rich:spacer height="1px"/>
+		</ui:define>	
+	</ui:decorate>
+</html>	

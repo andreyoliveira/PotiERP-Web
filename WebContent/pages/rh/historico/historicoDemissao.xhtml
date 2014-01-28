@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formHistoricoDemissao"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.historicoDemissao}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.historicoDemissao}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{historicoDemissaoMB.doConsultar}"
+								reRender="formHistoricoDemissao"
+								eventsQueue="queueNoDelay" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								action="#{historicoDemissaoMB.doExcluirLote}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;"
+								eventsQueue="queueNoDelay" 
+								reRender="formHistoricoDemissao" 
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="historicoDemissaoMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{historicoDemissaoMB.listHistoricoDemissao}" 
+									id="tableHistoricoDemissao"
+									var="historicoDemissao" 
+									height="203px"
+									rows="6" 
+									enableContextMenu="false"
+									reRender="scrollHistoricoDemissao"
+									selectionMode="none"
+									rendered="#{historicoDemissaoMB.consultarHistoricoDemissao}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="30px" style="text-align:left;">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkHistoricoAll"
+							onclick="jqCheckAll(this, 'formHistoricoDemissao:tableHistoricoDemissao')"
+							value="#{historicoDemissaoMB.checkHistoricoAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkHistoricoDemissao" 
+						value="#{historicoDemissao.selecionado}"
+						onclick="interceptarEvento(event)" />
+				</rich:column>
+				<rich:column width="100px"
+						sortable="true"
+						sortBy="#{historicoDemissao.entity.funcionario.codigoRegistro}"
+						filterBy="#{historicoDemissao.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.re}" />
+					</f:facet>
+					<h:outputText value="#{historicoDemissao.entity.funcionario.codigoRegistro}" />
+				</rich:column>
+				<rich:column width="285px"
+						sortable="true"
+						sortBy="#{historicoDemissao.entity.funcionario.pessoa.nome}"
+						filterBy="#{historicoDemissao.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{historicoDemissaoMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{historicoDemissao.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{historicoDemissao.entity}"
+							target="#{historicoDemissaoMB.historicoDemissaoSelecionado}" />
+					</a4j:commandLink>
+				</rich:column>
+				<rich:column width="137px">
+					<f:facet name="header">
+						<h:outputText value="#{b.dataDemissao}" />
+					</f:facet>
+					<h:outputText value="#{historicoDemissao.entity.dataDemissao}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</rich:column>
+				<rich:column width="247px">
+					<f:facet name="header">
+						<h:outputText value="#{b.motivoDemissao}" />
+					</f:facet>
+					<h:outputText value="#{historicoDemissao.entity.motivo.motivo}" />
+				</rich:column>
+				<rich:column width="200px">
+					<f:facet name="header">
+						<h:outputText value="#{b.tipoAvisoPrevio}" />
+					</f:facet>
+					<h:outputText value="#{historicoDemissao.entity.tipoAvisoPrevio.tipo}" />
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollHistoricoDemissao" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableHistoricoDemissao" maxPages="10" page="#{historicoDemissaoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+					<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" />
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{historicoDemissaoMB.historicoDemissao.funcionario.codigoRegistro}" 
+									style="width:70px"
+									label="#{b.re}"
+									onkeyup="somenteNumeros(this);"
+									disabled="#{historicoDemissaoMB.disableEdicao}"
+									readonly="#{historicoDemissaoMB.disableEdicao}" >
+									<a4j:support action="#{historicoDemissaoMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outputHistoricoDemissao,msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputHistoricoDemissao">
+									<h:inputText id="txtNomeFuncionario" 
+			  									value="#{historicoDemissaoMB.historicoDemissao.funcionario.pessoa.nome}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}"
+			  									disabled="#{historicoDemissaoMB.disableEdicao}"
+			  									readonly="#{historicoDemissaoMB.disableEdicao}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONÁRIO FOI ENCONTRADO"
+					                    suggestionAction="#{historicoDemissaoMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{historicoDemissaoMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{historicoDemissaoMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.dataDemissao}" />
+							</td>
+							<td>
+								<rich:calendar id="calDataDemissao" datePattern="dd/MM/yyyy"
+									value="#{historicoDemissaoMB.historicoDemissao.dataDemissao}"
+									enableManualInput="true"
+									disabled="#{historicoDemissaoMB.disableEdicao}"
+									readonly="#{historicoDemissaoMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.motivoDemissao}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selMotivoDemissao" 
+									value="#{historicoDemissaoMB.historicoDemissao.motivo}"
+									label="#{b.motivoDemissao}"
+									style="width: 250px;"
+									disabled="#{historicoDemissaoMB.disableEdicao}"
+									readonly="#{historicoDemissaoMB.disableEdicao}" >
+									<f:selectItems id="itensMotivoDemissao"
+										value="#{historicoDemissaoMB.itensMotivoDemissao}" />
+								</h:selectOneMenu>
+							</td>
+							<td>
+								<h:outputText value="#{b.tipoAvisoPrevio}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selTipoAvisoPrevio"
+									value="#{historicoDemissaoMB.historicoDemissao.tipoAvisoPrevio}"
+									label="#{b.tipoAvisoPrevio}"
+									style="width: 200px;"
+									disabled="#{historicoDemissaoMB.disableEdicao}"
+									readonly="#{historicoDemissaoMB.disableEdicao}" >
+									<f:selectItems id="itensTipoAvisoPrevio"
+										value="#{historicoDemissaoMB.itensTipoAvisoPrevio}" />
+								</h:selectOneMenu>
+							</td>
+						</tr>
+					</table>
+					<div style="height:15px;" />
+					<table width="100%">
+						<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{historicoDemissaoMB.doSalvar}"
+												reRender="tableHistoricoDemissao, scrollHistoricoDemissao, formDetails, msgsErros" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.novo}"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{historicoDemissaoMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+					</table>
+				</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>
+</html>

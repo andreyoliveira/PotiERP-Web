@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="/templates/listagem.xhtml">
+		<ui:param name="formName" value="formJornadaTrabalho"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.cadastroDeJornadaTrabalho}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeJornadaTrabalho}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}"
+								title="#{b.atualizarListagem}" 
+								action="#{jornadaTrabalhoMB.doConsultar}"
+								reRender="formJornadaTrabalho"
+								rendered="#{jornadaTrabalhoMB.consultarJornada}"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.novo}"
+								title="#{b.incluirNovoRegistro}"
+								action="#{jornadaTrabalhoMB.doNovo}"
+								oncomplete="limpaForm('formDetails');Richfaces.showModalPanel('mpDetails');" 
+								reRender="formDetails, formJornadaTrabalho"
+								rendered="#{jornadaTrabalhoMB.incluirJornada}"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}"
+								title="#{b.excluirRegistrosSelecionados}"
+								onclick="if(!confirmarOperacaoAjax(this))return false;" 
+								action="#{jornadaTrabalhoMB.doExcluirLote}"
+								reRender="formDetails, formJornadaTrabalho"
+								rendered="#{jornadaTrabalhoMB.excluirJornada}"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="jornadaTrabalhoMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{jornadaTrabalhoMB.listJornadaTrabalho}" 
+									id="tableJornadaTrabalho"
+									var="jornadaTrabalho" 
+									height="455px"
+									rows="16" 
+									enableContextMenu="false"
+									selectionMode="none"
+									reRender="scrollJornadaTrabalho"
+									rendered="#{jornadaTrabalhoMB.consultarJornada}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<rich:column width="35px" rendered="#{jornadaTrabalhoMB.excluirJornada}">
+	            	<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkJornadaTrabalhoAll"
+							onclick="jqCheckAll(this, 'formJornadaTrabalho:tableJornadaTrabalho');"
+							value="#{jornadaTrabalhoMB.checkJornadaTrabalhoAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkJornadaTrabalho" value="#{jornadaTrabalho.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column width="246px" filterBy="#{jornadaTrabalho.entity.nome}" filterEvent="onkeyup" sortable="true" sortBy="#{jornadaTrabalho.entity.nome}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.nome}" />
+           			</f:facet>
+           			<h:outputText value="#{jornadaTrabalho.entity.nome}" />
+           		</rich:column>
+           		<rich:column width="349px" filterBy="#{jornadaTrabalho.entity.descricao}" filterEvent="onkeyup" sortable="true" sortBy="#{jornadaTrabalho.entity.descricao}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.descricao}" />
+           			</f:facet>
+           			<h:outputText value="#{jornadaTrabalho.entity.descricao}" />
+           		</rich:column>
+           		<rich:column width="110px" filterBy="#{jornadaTrabalho.entity.horarioInicial}" filterEvent="onkeyup" sortable="true" sortBy="#{jornadaTrabalho.entity.horarioInicial}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.horarioInicial}" />
+           			</f:facet>
+           			<h:outputText value="#{jornadaTrabalho.entity.horarioInicial}" converter="HorarioConverter"/>
+           		</rich:column>
+           		<rich:column width="110px" filterBy="#{jornadaTrabalho.entity.horarioFinal}" filterEvent="onkeyup" sortable="true" sortBy="#{jornadaTrabalho.entity.horarioFinal}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.horarioFinal}" />
+           			</f:facet>
+           			<h:outputText value="#{jornadaTrabalho.entity.horarioFinal}" converter="HorarioConverter" />
+           		</rich:column>
+           		<rich:column width="100px" filterBy="#{jornadaTrabalho.entity.diaSeguinte}" filterEvent="onkeyup" sortable="true" sortBy="#{jornadaTrabalho.entity.diaSeguinte}">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.diaSeguinte}" />
+           			</f:facet>
+           			<h:outputText value="#{jornadaTrabalho.entity.diaSeguinte}" converter="BooleanConverter" />
+           		</rich:column>
+           		<rich:column width="50px">
+           			<f:facet name="header">
+           				<h:outputText value="#{b.acao}" />
+           			</f:facet>
+           			<a4j:commandButton onclick="Richfaces.showModalPanel('mpDetails');"
+           							title="#{b.alterar}"
+           							action="#{jornadaTrabalhoMB.doAlterar}" 
+           							reRender="formDetails"
+           							rendered="#{jornadaTrabalhoMB.consultarJornada}"
+           							image="/static/images/edit.png"
+           							style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{jornadaTrabalho.entity}" target="#{jornadaTrabalhoMB.jornadaTrabalhoSelecionado}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{jornadaTrabalhoMB.doExcluir}"
+									onclick="if(!confirmarOperacaoAjax(this))return false;" 
+									title="#{b.excluir}" 
+									reRender="formJornadaTrabalho"
+									rendered="#{jornadaTrabalhoMB.excluirJornada}"
+									image="/static/images/delete.png"
+									style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{jornadaTrabalho.entity}" target="#{jornadaTrabalhoMB.jornadaTrabalho}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollJornadaTrabalho" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableJornadaTrabalho" maxPages="10" page="#{jornadaTrabalhoMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeJornadaTrabalho}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<rich:jQuery id="mskHora" selector=".maskHora" timing="onload"
+						query="mask('99:99',{placeholder:' '})"/>
+		 			<h:inputHidden value="#{jornadaTrabalhoMB.jornadaTrabalho.id}"/>
+				 	<table width="600px" cellspacing="10px">
+           				<tr>
+           					<td width="100px">
+           						<h:outputText value="#{b.nome}"/>
+           					</td>
+           					<td colspan="2">
+           						<rich:message id="msgsNome" for="txtNome"/><div />
+           						<h:inputText id="txtNome"
+           									value="#{jornadaTrabalhoMB.jornadaTrabalho.nome}" 
+           									style="width: 400px"
+           									disabled="#{jornadaTrabalhoMB.bloquearHorarios}"
+           									required="true"
+           									label="#{b.nome}"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.descricao}"/>
+           					</td>
+           					<td colspan="2">
+           						<rich:message id="msgsDescricao" for="txtDescricao"/> <div />
+           						<h:inputText id="txtDescricao"
+           									value="#{jornadaTrabalhoMB.jornadaTrabalho.descricao}" 
+           									style="width: 400px"
+           									label="#{b.Descricao}" />
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.horarioInicial}" />
+           					</td>
+           					<td colspan="2">
+           						<rich:message id="msgsHoraInicial" for="txtHorarioInicial" /> <div />
+           						<h:inputText id="txtHorarioInicial" 
+           									 value="#{jornadaTrabalhoMB.jornadaTrabalho.horarioInicial}"
+           									 style="width: 70px"
+           									 label="#{b.horarioInicial}"
+           									 styleClass="maskHora" >
+           							<f:converter converterId="HorarioConverter" />
+           						</h:inputText>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.horarioFinal}" />
+           					</td>
+           					<td colspan="2">
+           						<rich:message id="msgsHoraFinal" for="txtHorarioFinal" /> <div />
+           						<h:inputText id="txtHorarioFinal" 
+           									 value="#{jornadaTrabalhoMB.jornadaTrabalho.horarioFinal}"
+           									 style="width: 70px"
+           									 label="#{b.horarioFinal}"
+           									 styleClass="maskHora" >
+           							<f:converter converterId="HorarioConverter" />
+           						</h:inputText>
+           						<rich:spacer width="5px" /> 
+           						<h:selectBooleanCheckbox value="#{jornadaTrabalhoMB.jornadaTrabalho.diaSeguinte}" id="chkDiaSeguinte" />
+           						<rich:spacer width="5px" />
+           						<h:outputText value="#{b.diaSeguinte}" />
+           					</td>
+           				</tr>
+           			</table>
+           			
+           			<table width="600px" cellspacing="10px">
+           				<tr>
+           					<td colspan="4" align="left">
+           						<h:outputText value="#{b.intervalosJornada}" style="font-weight: bold"/>
+           					</td>
+           				</tr>
+           				<tr>
+           					<td>
+           						<h:outputText value="#{b.tipoRefeicao}" />
+           					</td>
+           					<td align="left">
+           						<h:selectOneMenu id="selTipoRefeicao" style="width:150px;"
+           										 value="#{jornadaTrabalhoMB.intervaloJornada.tipoRefeicao}" >
+           							<f:selectItems id="itensTipoRefeicao" value="#{jornadaTrabalhoMB.itensTipoRefeicao}"/>
+           						</h:selectOneMenu>
+           					</td>
+           					<td>
+           						<h:outputText value="#{b.tempoEmMinutos}" />
+           					</td>
+           					<td align="left">
+           						<rich:message id="msgsTempo" for="txtTempo" /> <div />
+           						<h:inputText id="txtTempo" 
+           							style="width:80px;" 
+           							value="#{jornadaTrabalhoMB.intervaloJornada.tempo}"
+           							onkeyup="somenteNumeros(this);"
+               						maxlength="4" />
+           					</td>
+           				</tr>
+           			</table>
+           			<table cellspacing="10px" align="right">
+							<tr>
+								<td><a4j:commandButton value="#{b.adicionar}"
+									status="statusAguarde"
+									action="#{jornadaTrabalhoMB.doAdicionarIntervaloJornada}"
+									reRender="tableIntervaloJornada, selTipoRefeicao, txtTempo, msgsErros"
+									process="selTipoRefeicao, txtTempo"
+									limitToList="true" ajaxSingle="true"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> <rich:spacer
+									width="5px" /> 
+									<a4j:commandButton value="#{b.alterar}"
+									status="statusAguarde"
+									action="#{jornadaTrabalhoMB.doAlterarIntervaloJornada}"
+									reRender="tableIntervaloJornada, selTipoRefeicao, txtTempo, msgsErros"
+									process="tableIntervaloJornada, selTipoRefeicao, txtTempo"
+									limitToList="true" ajaxSingle="true"
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> 
+									<rich:spacer width="5px" /> 
+									<a4j:commandButton value="#{b.remover}"
+									reRender="tableIntervaloJornada, msgsErros"
+									process="tableIntervaloJornada"
+									status="statusAguarde"
+									action="#{jornadaTrabalhoMB.doRemoverIntervaloJornada}"
+									limitToList="true"
+									ajaxSingle="true" 
+									eventsQueue="queueNoDelay"
+									onclick="if(!confirmarOperacaoAjax(this))return false;"
+									style="width: 70px; cursor: pointer;cursor: hand;" /> 
+									<rich:spacer width="5px" /> 
+									<a4j:commandButton value="#{b.limpar}"
+									action="#{jornadaTrabalhoMB.doLimparIntervaloJornada}"
+									reRender="selTipoRefeicao, txtTempo"
+									limitToList="true"
+									ajaxSingle="true" 
+									eventsQueue="queueNoDelay"
+									style="width: 70px; cursor: pointer;cursor: hand;" /></td>
+							</tr>
+						</table>
+						<rich:dataTable value="#{jornadaTrabalhoMB.listIntervaloJornada}"
+							width="700px" var="intervaloJornada" id="tableIntervaloJornada"
+							rowClasses="rowPar, rowImpar"
+							onRowMouseOver="jQuery(this).addClass('activeRow')"
+							onRowMouseOut="jQuery(this).removeClass('activeRow')">
+							<rich:column width="15px" align="center">
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="checkIntervaloJornadaAll"
+										onclick="jqCheckAll(this, 'formDetails:tableIntervaloJornada');"
+										value="#{jornadaTrabalhoMB.checkIntervaloJornadaAll}" />
+								</f:facet>
+								<h:selectBooleanCheckbox id="checkIntervaloJornada"
+									value="#{intervaloJornada.selecionado}"
+									onclick="interceptarEvento(event);" />
+							</rich:column>
+							<rich:column width="70px">
+								<f:facet name="header">
+									<h:outputText value="#{b.tipoIntervalo}" />
+								</f:facet>
+								<a4j:commandLink status="statusAguarde"
+									process="selTipoRefeicao, txtTempo" reRender="selTipoRefeicao, txtTempo"
+									limitToList="true" ajaxSingle="true" eventsQueue="queueNoDelay"
+									value="#{intervaloJornada.entity.tipoRefeicao.tipoRefeicao}"
+									action="#{jornadaTrabalhoMB.doSelecionarIntervaloJornada}"
+									style="cursor: pointer;cursor: hand;"
+									styleClass="linkAbreModal">
+									<f:setPropertyActionListener value="#{intervaloJornada.entity}"
+										target="#{jornadaTrabalhoMB.intervaloJornadaSelecionado}" />
+								</a4j:commandLink>
+							</rich:column>
+							<rich:column width="100px">
+								<f:facet name="header">
+									<h:outputText value="#{b.tempoEmMinutos}" />
+								</f:facet>
+								<h:outputText
+									value="#{intervaloJornada.entity.tempo}" />
+							</rich:column>
+						</rich:dataTable>
+            		<div style="height: 15px;"/>
+            		<table width="600px">
+            			<tr>
+            				<td align="center">
+            					<a4j:commandButton value="#{b.salvar}"
+												action="#{jornadaTrabalhoMB.doSalvar}" 
+												reRender="formJornadaTrabalho, formDetails"
+												rendered="#{jornadaTrabalhoMB.manterJornada}"
+												style="width: 80px; cursor: pointer;cursor: hand;"
+												oncomplete="windowclose('formDetails', 'mpDetails');"/>
+								<rich:spacer width="15px"/>				
+								<a4j:commandButton value="#{b.salvarEIncluirOutro}"
+												action="#{jornadaTrabalhoMB.doSalvarEIncluirOutro}"
+												rendered="#{jornadaTrabalhoMB.incluirJornada}"
+												reRender="formJornadaTrabalho, formDetails" 
+												style="width: 140px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.cancelar}"
+												action="#{jornadaTrabalhoMB.limparForm}"
+												immediate="true"
+												oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+            				</td>
+            			</tr>
+            		</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

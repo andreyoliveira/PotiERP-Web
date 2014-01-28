@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formCadastroUsuario"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - #{b.cadastroDeUsuario}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.cadastroDeUsuario}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.novo}" 
+					action="#{usuarioMB.doNovo}"
+					title="#{b.incluirNovoRegistro}"
+					oncomplete="limpaForm('formDetails');Richfaces.showModalPanel('mpDetails');" 
+					reRender="formDetails, formCadastroUsuario"
+					rendered="#{usuarioMB.incluirUsuario}"
+					style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<a4j:commandButton value="#{b.excluir}" 
+					action="#{usuarioMB.doExcluirLote}"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					reRender="formDetails, formCadastroUsuario"
+					rendered="#{usuarioMB.excluirUsuario}"
+					style="width: 80px; cursor: pointer;cursor: hand;"
+					title="#{b.excluirRegistrosSelecionados}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="usuarioMB"/>
+			<rich:extendedDataTable noDataLabel="#{b.cadastrosDatatableSemRegistros}" 
+									value="#{usuarioMB.listUsuario}" 
+									var="usuario" 
+									height="455px"
+									enableContextMenu="false"
+									selectionMode="none"
+									id="tableUsuario"
+									rows="16"
+									reRender="scrollUsuario"
+									rendered="#{usuarioMB.consultarUsuario}"
+									sortMode="single"
+									rowClasses="rowPar, rowImpar"
+									onRowMouseOver="jQuery(this).addClass('activeRow')"
+									onRowMouseOut="jQuery(this).removeClass('activeRow')">
+				<f:facet name="header">
+					<rich:columnGroup>
+						<rich:column>
+							<h:panelGroup/>
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{usuario.entity.username}">
+							<h:outputText value="#{b.cadastroUsuarioUsername}" />
+						</rich:column>
+						<rich:column sortable="true" sortBy="#{usuario.entity.dataExpiraSenha}">
+							<h:outputText value="#{b.cadastroUsuarioDataExpiracaoSenha}"/>
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{b.acao}" />
+						</rich:column>
+					</rich:columnGroup>
+				</f:facet>
+				<rich:column width="35px" rendered="#{usuarioMB.excluirUsuario}">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkUsuarioAll"
+								onclick="jqCheckAll(this, 'formCadastroUsuario:tableUsuario');"
+								value="#{usuarioMB.checkUsuarioAll}"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="checkEmpresa" value="#{usuario.selecionado}" onclick="interceptarEvento(event);"/>
+				</rich:column>
+				<rich:column filterMethod="#{usuarioMB.filtraUsername}" width="450px">
+					<f:facet name="header">
+						<h:inputText value="#{usuarioMB.filtroUsername}" id="txtFiltroUsername">
+	                        <a4j:support event="onkeyup" reRender="tableUsuario"
+	                            ignoreDupResponses="true" requestDelay="500"
+	                            oncomplete="setCaretToEnd(event);"/>
+	                    </h:inputText>
+					</f:facet>
+           			<h:outputText value="#{usuario.entity.username}"/>
+           		</rich:column>
+           		<rich:column width="450px" filterMethod="#{usuarioMB.filtraDataExpiraSenha}" filterEvent="onchanged">
+           			<f:facet name="header">
+           				<h:inputText value="#{usuarioMB.filtroDataExpiraSenha}" id="txtFiltroDataExpiraSenha">
+           					<a4j:support event="onkeyup" reRender="tableUsuario"
+	                            ignoreDupResponses="true" requestDelay="500"
+	                            oncomplete="setCaretToEnd(event);"/>
+           				</h:inputText>
+           			</f:facet>
+           			<h:outputText value="#{usuario.entity.dataExpiraSenha}">
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="70px">
+           			<a4j:commandButton onclick="Richfaces.showModalPanel('mpDetails');" 
+						title="#{b.alterar}"
+						reRender="formDetails" 
+						image="/static/images/edit.png"
+						rendered="#{usuarioMB.consultarUsuario}"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{usuario.entity}" target="#{usuarioMB.usuario}" />
+					</a4j:commandButton>
+					<a4j:commandButton action="#{usuarioMB.doExcluir}" 
+						title="#{b.excluir}" 
+						reRender="formCadastroUsuario" 
+						onclick="if(!confirmarOperacaoAjax(this))return false;"
+						image="/static/images/delete.png"
+						rendered="#{usuarioMB.excluirUsuario}"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{usuario.entity}" target="#{usuarioMB.usuario}" />
+					</a4j:commandButton>
+					<a4j:commandButton onclick="Richfaces.showModalPanel('mpPassword');" 
+						title="#{b.cadastroUsuarioAlterarSenha}"
+						reRender="formPassword" 
+						image="/static/images/cadeado.gif"
+						rendered="#{usuarioMB.alterarSenhaUsuario}"
+						style="cursor: pointer;cursor: hand;">
+						<f:setPropertyActionListener value="#{usuario.entity}" target="#{usuarioMB.usuario}" />
+					</a4j:commandButton>
+           		</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollUsuario" align="center" renderIfSinglePage="false" 
+				boundaryControls="auto" fastControls="auto" stepControls="auto"
+				for="tableUsuario" maxPages="10" page="#{usuarioMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}"/>
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}"/>
+				</f:facet>
+			</rich:datascroller>
+		 </ui:define>
+		 <ui:define name="details">
+		 	<rich:modalPanel id="mpDetails" autosized="true" resizeable="false"
+		 		onshow="showModalPanelWithEffect('mpDetails', blindFunc, {delay: 0.1, duration: 1.0, afterFinish: function(){document.getElementById('formDetails:txtUsername').focus();}})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroDeUsuario}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif" style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formDetails">
+		 			<h:inputHidden value="#{usuarioMB.usuario.id}"/>
+		         	<h:panelGrid columns="3" id="grid">
+						<h:outputLabel value="#{b.cadastroUsuarioUsername}:" title="#{b.cadastroUsuarioUsername}" for="txtUsername"/>
+						<h:inputText id="txtUsername" value="#{usuarioMB.usuario.username}" required="true" label="#{b.cadastroUsuarioUsername}"/>
+						<rich:message for="txtUsername"/>
+						<h:outputLabel value="#{b.cadastroUsuarioPassword}:" title="#{b.cadastroUsuarioPassword}" for="txtPassword" rendered="#{usuarioMB.usuario.new}"/>
+						<h:inputSecret id="txtPassword" value="#{usuarioMB.usuario.password}" required="true" label="#{b.cadastroUsuarioPassword}"
+							rendered="#{usuarioMB.usuario.new}"/>
+						<rich:message for="txtPassword" rendered="#{usuarioMB.usuario.new}"/>
+						<h:outputLabel value="#{b.cadastroUsuarioRetypePassword}:" title="#{b.cadastroUsuarioRetypePassword}" for="txtRetypePassword"
+							rendered="#{usuarioMB.usuario.new}"/>
+						<h:inputSecret id="txtRetypePassword" value="#{usuarioMB.usuario.retypePassword}" required="true" label="#{b.cadastroUsuarioRetypePassword}"
+							rendered="#{usuarioMB.usuario.new}"/>
+						<rich:message for="txtRetypePassword" rendered="#{usuarioMB.usuario.new}"/>
+						<h:outputLabel value="#{b.cadastroUsuarioDataExpiracaoSenha}:" title="#{b.cadastroUsuarioDataExpiracaoSenha}" 
+							for="calExpiraSenha" id="lblDataExpiraSenha"/>
+						<rich:calendar id="calExpiraSenha" value="#{usuarioMB.usuario.dataExpiraSenha}" datePattern="dd/MM/yyyy"
+							enableManualInput="false" label="#{b.cadastroUsuarioDataExpiracaoSenha}">
+						</rich:calendar>
+						<rich:message for="calExpiraSenha"/>
+					</h:panelGrid>
+					<h:panelGrid columns="3">
+						<h:outputLabel value="#{b.cadastroUsuarioPerfis}:" title="#{b.cadastroUsuarioPerfis}" 
+							for="pickPerfis" id="lblPerfis"/>
+						<rich:pickList value="#{usuarioMB.usuario.perfis}" converter="identifiableConverter"
+							id="pickPerfis" showButtonsLabel="false">
+							<f:selectItems value="#{usuarioMB.listaTipoPerfilDisponiveisSI}"/>
+						</rich:pickList>
+						<rich:message for="pickPerfis"/>
+					</h:panelGrid>
+					<table width="100%">
+            			<tr>
+            				<td align="center">
+								<h:panelGrid style="text-align:center;" columns="5">
+									<a4j:commandButton action="#{usuarioMB.doSalvar}" value="#{b.salvar}" 
+										reRender="formCadastroUsuario, formDetails" oncomplete="windowclose('formDetails', 'mpDetails');"
+										style="width: 80px;cursor: pointer;cursor: hand;"
+										rendered="#{usuarioMB.manterUsuario}"/>
+									<rich:spacer width="15px"/>
+									<a4j:commandButton action="#{usuarioMB.doSalvar}" value="#{b.salvarEIncluirOutro}" 
+										reRender="formCadastroUsuario, formDetails" oncomplete="document.getElementById('formDetails:txtUsername').focus();"
+										rendered="#{usuarioMB.incluirUsuario}"/>
+									<rich:spacer width="15px"/>
+									<a4j:commandButton value="#{b.cancelar}"
+										immediate="true"
+										oncomplete="hideModalPanelWithEffect('mpDetails', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+										style="width: 80px;cursor: pointer;cursor: hand;"/>
+								</h:panelGrid>
+							</td>
+						</tr>
+					</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:modalPanel id="mpPassword" autosized="true" resizeable="false" width="300"
+		 		onshow="showModalPanelWithEffect('mpPassword', blindFunc, {delay: 0.1, duration: 1.0, afterFinish: function(){document.getElementById('formPassword:txtPasswordAtual').focus();}})">
+		 		<f:facet name="header">
+		 			<h:outputText value="#{b.cadastroUsuarioAlteracaoDeSenha}"/>
+		 		</f:facet>
+		 		<f:facet name="controls">
+		 			<h:outputLink onclick="hideModalPanelWithEffect('mpPassword', blindUpFunc, {delay: 0.1, duration: 1.0})" value="#">
+		 				<h:graphicImage url="/static/images/close.gif" style="cursor: pointer; margin:0px; border:0px"/>
+		 			</h:outputLink>
+		 		</f:facet>
+		 		<h:form id="formPassword">
+		 			<h:inputHidden value="#{usuarioMB.usuario.id}"/>
+		         	<h:panelGrid columns="3" id="grid">
+		         		<h:outputLabel value="#{b.cadastroUsuarioUsername}:" title="#{b.cadastroUsuarioUsername}" for="outputUsername"/>
+						<h:outputText id="outputUsername" value="#{usuarioMB.usuario.username}"/>
+						<h:panelGroup/>
+						<h:outputLabel value="#{b.cadastroUsuarioPassword}:" title="#{b.cadastroUsuarioPassword}" for="txtPassword"/>
+						<h:inputSecret id="txtPassword" value="#{usuarioMB.usuario.password}" required="true" label="#{b.cadastroUsuarioPassword}"/>
+						<rich:message for="txtPassword"/>
+						<h:outputLabel value="#{b.cadastroUsuarioRetypePassword}:" title="#{b.cadastroUsuarioRetypePassword}" for="txtRetypePassword"/>
+						<h:inputSecret id="txtRetypePassword" value="#{usuarioMB.usuario.retypePassword}" required="true" label="#{b.cadastroUsuarioRetypePassword}"/>
+						<rich:message for="txtRetypePassword"/>
+					</h:panelGrid>
+					<table width="100%">
+            			<tr>
+            				<td align="center">
+								<h:panelGrid style="text-align:center;" columns="5">
+									<a4j:commandButton action="#{usuarioMB.doAlterarSenha}" value="#{b.cadastroUsuarioAlterarSenha}" 
+										reRender="formCadastroUsuario, formPassword" oncomplete="windowclose('formPassword', 'mpPassword');"
+										rendered="#{usuarioMB.alterarSenhaUsuario}"/>
+									<rich:spacer width="15px"/>
+									<a4j:commandButton value="#{b.cancelar}"
+										immediate="true"
+										oncomplete="hideModalPanelWithEffect('mpPassword', blindUpFunc, {delay: 0.1, duration: 1.0})" 
+										style="width: 80px; cursor: pointer;cursor: hand;"/>
+								</h:panelGrid>
+							</td>
+						</tr>
+					</table>
+				</h:form>
+			</rich:modalPanel>
+			<rich:effect type="BlindDown" name="blindFunc"/>
+			<rich:effect type="BlindUp" name="blindUpFunc"/>
+		</ui:define>
+	</ui:decorate>
+</html>

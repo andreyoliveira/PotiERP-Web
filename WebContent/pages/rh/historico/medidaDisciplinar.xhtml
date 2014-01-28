@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formMedidaDisciplinar"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.medidaDisciplinar}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png" />
+				<h:outputText value="#{b.medidaDisciplinar}" />
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.atualizar}" 
+					status="statusAguarde"
+					title="#{b.atualizarListagem}"
+					action="#{medidaDisciplinarMB.doConsultar}"
+					reRender="tableMedidaDisciplinar, scrollMedidaDisciplinar, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+				<a4j:commandButton value="#{b.excluir}" status="statusAguarde"
+					onclick="if(!confirmarOperacaoAjax(this))return false;"
+					action="#{medidaDisciplinarMB.doExcluirLote}" 
+					reRender="tableMedidaDisciplinar, scrollMedidaDisciplinar, formDetails, msgsErros"
+					limitToList="true"
+					eventsQueue="queueNoDelay"
+					style="width: 80px; cursor: pointer;cursor: hand;" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="medidaDisciplinarMB" />
+			<rich:extendedDataTable
+				noDataLabel="#{b.cadastrosDatatableSemRegistros}"
+				value="#{medidaDisciplinarMB.listMedidaDisciplinar}"
+				id="tableMedidaDisciplinar"
+				var="medida"
+				height="203px" 
+				width="998px"
+				rows="6"
+				enableContextMenu="false"
+				selectionMode="single"
+				reRender="scrollMedidaDisciplinar"
+				sortMode="single"
+				rendered="#{medidaDisciplinarMB.consultarMedidaDisciplinar}"
+				rowClasses="rowPar, rowImpar"
+				onRowMouseOver="jQuery(this).addClass('activeRow');"
+				onRowMouseOut="jQuery(this).removeClass('activeRow');">
+				<rich:column width="39px" style="text-align: left" sortable="false">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox id="checkMedidaDisciplinarAll"
+							onclick="jqCheckAll(this, 'formMedidaDisciplinar:tableMedidaDisciplinar');"
+							value="#{medidaDisciplinarMB.checkMedidaDisciplinarAll}" />
+					</f:facet>
+					<h:selectBooleanCheckbox  id="checkMedidaDisciplinar"
+						value="#{medida.selecionado}" 
+						onclick="interceptarEvento(event);" />
+				</rich:column>
+				<rich:column width="80px"
+						sortable="true"
+						sortBy="#{medida.entity.funcionario.codigoRegistro}"
+						filterBy="#{medida.entity.funcionario.codigoRegistro}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.re}" />
+					</f:facet>
+					<h:outputText value="#{medida.entity.funcionario.codigoRegistro}" />
+				</rich:column>
+				<rich:column width="235px"
+						sortable="true"
+						sortBy="#{medida.entity.funcionario.pessoa.nome}"
+						filterBy="#{medida.entity.funcionario.pessoa.nome}"
+						filterEvent="onkeyup" >
+					<f:facet name="header">
+						<h:outputText value="#{b.nome}" />
+					</f:facet>
+					<a4j:commandLink
+						status="statusAguarde" title="#{b.alterar}" reRender="formDetails"
+						action="#{medidaDisciplinarMB.doAlterar}" eventsQueue="queueNoDelay"
+						value="#{medida.entity.funcionario.pessoa.nome}"
+						style="cursor: pointer;cursor: hand;" styleClass="linkAbreModal">
+						<f:setPropertyActionListener value="#{medida.entity}"
+							target="#{medidaDisciplinarMB.medidaDisciplinarSelecionada}" />
+					</a4j:commandLink>
+				</rich:column>
+				<rich:column width="140px"
+						sortable="true" 
+						sortBy="#{medida.entity.dataInicialOcorrencia}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.dataInicialOcorrencia}"/>
+					</f:facet>
+           			<h:outputText value="#{medida.entity.dataInicialOcorrencia}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="140px"
+						sortable="true" 
+						sortBy="#{medida.entity.dataFinalOcorrencia}" >
+					<f:facet name="header">
+						<h:outputText value="#{b.dataFinalOcorrencia}"/>
+					</f:facet>
+           			<h:outputText value="#{medida.entity.dataFinalOcorrencia}" >
+           				<f:convertDateTime pattern="dd/MM/yyyy"/>
+           			</h:outputText>
+           		</rich:column>
+           		<rich:column width="174px"
+				 		sortable="true" 
+						sortBy="#{medida.entity.motivo.motivo}">
+					<f:facet name="header">
+						<h:outputText value="#{b.motivoMedidaDisciplinar}" />
+					</f:facet>
+					<h:outputText value="#{medida.entity.motivo.motivo}" />
+				</rich:column>
+				<rich:column width="174px"
+				 		sortable="true" 
+						sortBy="#{medida.entity.medidaAdotada.medidaDisciplinar}">
+					<f:facet name="header">
+						<h:outputText value="#{b.medidaDisciplinarAdotada}" />
+					</f:facet>
+					<h:outputText value="#{medida.entity.medidaAdotada.medidaDisciplinar}" />
+				</rich:column>
+			</rich:extendedDataTable>
+			<rich:datascroller id="scrollMedidaDisciplinar" 
+				align="center"
+				renderIfSinglePage="false" 
+				boundaryControls="auto"
+				fastControls="auto" 
+				stepControls="auto" 
+				for="tableMedidaDisciplinar"
+				maxPages="50" 
+				page="#{medidaDisciplinarMB.scrollerPage}">
+				<f:facet name="first">
+					<h:outputText value="#{b.primeiro}" />
+				</f:facet>
+				<f:facet name="last">
+					<h:outputText value="#{b.ultimo}" />
+				</f:facet>
+			</rich:datascroller>
+		</ui:define>
+		<ui:define name="details">
+			<h:form id="formDetails">
+				<rich:panel>
+					<f:facet name="header">
+	            		<rich:spacer height="3" />
+	        		</f:facet>
+	        		<rich:jQuery id="maskDatePrincipal" selector=".maskDatePrincipal"
+						timing="onload" query="mask('99/99/9999',{placeholder:' '})" />
+					<table width="100%" cellspacing="5px">
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.re}" />
+							</td>
+							<td>
+								<rich:message id="msgsRE" for="txtNomeFuncionario" errorLabelClass="error" /><div />
+								<h:inputText id="txtRE"
+									value="#{medidaDisciplinarMB.medidaDisciplinar.funcionario.codigoRegistro}" 
+									style="width:70px"
+									label="#{b.re}"
+									onkeyup="somenteNumeros(this);" 
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}">
+									<a4j:support action="#{medidaDisciplinarMB.buscarFuncionario}"
+		           										 event="onblur" 
+		           										 reRender="outputMedidaDisciplinar,msgsErros"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:inputText>
+								<rich:spacer width="15px"/>
+								<a4j:outputPanel id="outputMedidaDisciplinar">
+									<h:inputText id="txtNomeFuncionario" 
+			  									value="#{medidaDisciplinarMB.medidaDisciplinar.funcionario.pessoa.nome}" 
+			  									style="width: 310px"
+			  									label="#{b.funcionario}"
+			  									disabled="#{medidaDisciplinarMB.disableEdicao}"
+												readonly="#{medidaDisciplinarMB.disableEdicao}" />  
+			  						 <rich:suggestionbox id="suggestionBoxId" 
+			  						 	for="txtNomeFuncionario"
+			  						 	var="funcionario"
+			  						 	width="310"
+					                    height="200"
+					                    nothingLabel="NENHUM FUNCIONÁRIO FOI ENCONTRADO"
+					                    suggestionAction="#{medidaDisciplinarMB.sugestao}">
+					                    <h:column>
+											<h:outputText value="#{funcionario.pessoa.nome}" style="text-transform: uppercase;"/>
+					                    </h:column>
+					                    <a4j:support event="onselect" 
+								 			 	     action="#{medidaDisciplinarMB.selecionarFuncionario}"
+									 			  	 reRender="txtRE, msgsErros"
+									 			  	 limitToList="true"
+									 			  	 status="statusAguarde">  
+									        <f:setPropertyActionListener value="#{funcionario}" 
+									        							 target="#{medidaDisciplinarMB.funcionarioSelecionado}" />  
+									  </a4j:support>
+					                </rich:suggestionbox>
+								</a4j:outputPanel>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.dataInicialOcorrencia}" />
+							</td>
+							<td>
+								<rich:calendar id="calDataInicialOcorrencia" datePattern="dd/MM/yyyy" 
+									value="#{medidaDisciplinarMB.medidaDisciplinar.dataInicialOcorrencia}"
+									enableManualInput="true"
+									inputClass="maskDatePrincipal"
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}" />
+							</td>
+							<td>
+								<h:outputText value="#{b.dataFinalOcorrencia}" />
+							</td>
+							<td>
+								<rich:calendar id="calDataFinalOcorrencia" datePattern="dd/MM/yyyy" 
+									value="#{medidaDisciplinarMB.medidaDisciplinar.dataFinalOcorrencia}"
+									enableManualInput="true"
+									inputClass="maskDatePrincipal"
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText value="#{b.motivoMedidaDisciplinar}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selMotivoMedidaDisciplinar"
+									label="#{b.motivoMedidaDisciplinar}"
+									value="#{medidaDisciplinarMB.medidaDisciplinar.motivo}"
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}"
+									style="width: 250px;">
+									<f:selectItems id="itensMotivoMedidaDisciplinar"
+										value="#{medidaDisciplinarMB.itensMotivoMedidaDisciplinar}" />
+									<a4j:support action="#{medidaDisciplinarMB.doEnableObservacao}"
+		           										 event="onchange" 
+		           										 reRender="formDetails"
+		           										 limitToList="true"
+		           										 eventsQueue="queueNoDelay"
+		           										 status="statusAguarde"/>
+								</h:selectOneMenu>
+							</td>
+							<td>
+								<h:outputText value="#{b.medidaDisciplinarAdotada}" />
+							</td>
+							<td>
+								<h:selectOneMenu id="selMedidaDisciplinarAdotada"
+									label="#{b.medidaDisciplinarAdotada}"
+									value="#{medidaDisciplinarMB.medidaDisciplinar.medidaAdotada}"
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}"
+									style="width: 250px;">
+									<f:selectItems id="itensMedidaDisciplinarAdotada"
+										value="#{medidaDisciplinarMB.itensMedidaDisciplinarAdotada}" />
+								</h:selectOneMenu>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<h:outputText id="lblObservacao" value="#{b.observacao}" 
+									rendered="#{medidaDisciplinarMB.enableObservacao}" />
+							</td>
+							<td>
+								<h:inputText id="txtObservacao" label="#{b.observacao}"
+									value="#{medidaDisciplinarMB.medidaDisciplinar.observacao}"
+									disabled="#{medidaDisciplinarMB.disableEdicao}"
+									readonly="#{medidaDisciplinarMB.disableEdicao}"
+									rendered="#{medidaDisciplinarMB.enableObservacao}"
+									style="width: 250px;" />
+							</td>
+						</tr>
+					</table>
+					<div style="height: 15px;"/>
+	           		<table width="100%">
+	           			<tr>
+	           				<td align="center">
+								<a4j:commandButton value="#{b.salvar}"
+												action="#{medidaDisciplinarMB.doSalvar}"
+												reRender="formMedidaDisciplinar, formDetails, msgsErros"
+												status="statusAguarde" 
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+								<rich:spacer width="15px"/>
+								<a4j:commandButton value="#{b.limpar}"
+												reRender="formDetails"
+												limitToList="true"
+												oncomplete="limpaForm('formDetails')"
+												ajaxSingle="true" action="#{medidaDisciplinarMB.doNovo}"
+												style="width: 80px; cursor: pointer;cursor: hand;"/>
+	           				</td>
+	           			</tr>
+	           		</table>
+				</rich:panel>
+			</h:form>
+		</ui:define>
+	</ui:decorate>	
+</html>		

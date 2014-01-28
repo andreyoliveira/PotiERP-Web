@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a4j="http://richfaces.org/a4j">
+      
+	<rich:modalPanel
+		onshow="showModalPanelWithEffect('${formAtual}:msgsErros', appear, {delay: 0.1, duration: 1.0});"
+		id="msgsErros"
+		showWhenRendered="#{erroMB.globalErrorMessage}" autosized="true" moveable="false" resizeable="false">
+		<f:facet name="header">
+			<h:outputText value="#{b['sistema.titulo']}"/>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage url="/static/images/close.gif"
+					style="cursor: pointer; margin:0px; border:0px" id="closeErro" />
+				<rich:componentControl for="msgsErros" attachTo="closeErro"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+		<h:panelGroup style="text-align: center; width: 100%;" layout="block">
+			<rich:messages ajaxRendered="true" errorClass="error" style="white-space:nowrap;"
+				warnClass="warning" infoClass="info" id="msgErroModal" globalOnly="true"
+				binding="#{erroMB.erroGlobalComponent}" level="error"/>
+			<br/>
+			<h:graphicImage value="/static/images/btOk.gif" onclick="Richfaces.hideModalPanel('${formAtual}:msgsErros')"/>
+			<br/>
+		</h:panelGroup>
+	</rich:modalPanel>
+	<rich:modalPanel
+		onshow="showModalPanelWithEffect('${formAtual}:msgsInfo', appear, {delay: 0.1, duration: 1.0, afterFinish: function(){hideModalPanelWithEffect('${formAtual}:msgsInfo', fade , {delay: 2.0, duration: 1.0});}})"
+		id="msgsInfo"
+		showWhenRendered="#{erroMB.globalInfoMessage}" autosized="true" moveable="false" resizeable="false">
+		<f:facet name="header">
+			<h:outputText value="#{b['sistema.titulo']}"/>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage url="/static/images/close.gif"
+					style="cursor: pointer; margin:0px; border:0px" id="closeInfo" />
+				<rich:componentControl for="msgsErros" attachTo="closeInfo"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+		<rich:messages ajaxRendered="true" errorClass="error" style="white-space:nowrap;"
+			warnClass="warning" infoClass="info" id="msgInfoModal" globalOnly="true"
+			binding="#{erroMB.infoGlobalComponent}" level="info"/>
+	</rich:modalPanel>
+	<rich:effect type="Appear" name="appear"/>
+	<rich:effect type="Fade" name="fade"/>
+</ui:composition>

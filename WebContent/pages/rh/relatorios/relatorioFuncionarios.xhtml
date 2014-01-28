@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:poti="http://www.potierp.com.br/jsf">
+	<ui:decorate template="../../../templates/listagem.xhtml">
+		<ui:param name="formName" value="formRelatorioFuncionarios"/>
+		<ui:define name="title">
+			${b['sistema.titulo']} - ${b.relatorioDeFuncionarios}
+		</ui:define>
+		<ui:define name="botoesContexto">
+			<rich:toolBarGroup>
+				<h:graphicImage value="/static/images/poti.png"/>
+				<h:outputText value="#{b.relatorioDeFuncionarios}"/>
+			</rich:toolBarGroup>
+			<rich:toolBarGroup>
+				<a4j:commandButton value="#{b.gerar}" 
+								action="#{relatorioFuncionariosMB.doGerar}"
+								title="#{b.gerar}"
+								reRender="executaDownload, txtRE, txtNomeFuncionario, suggestionBoxId, selRelatorio, msgsErros" 
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"
+								status="statusAguarde"/>
+				<a4j:commandButton value="#{b.limpar}"
+								title="#{b.limpar}"
+								onclick="limpaForm('formDetails');"
+								action="#{relatorioFuncionariosMB.doLimpar}"
+								reRender="formRelatorioFuncionarios" 
+								eventsQueue="queueNoDelay"
+								style="width: 80px; cursor: pointer;cursor: hand;"/>
+				<poti:download mbean="#{relatorioFuncionariosMB}" />
+			</rich:toolBarGroup>
+		</ui:define>
+		<ui:define name="grid">
+			<a4j:keepAlive beanName="relatorioFuncionariosMB" />
+			<rich:spacer height="1px"/>
+			<rich:panel>
+				<table cellspacing="10" style="height:445px" width="100%">
+					<tr valign="top">
+						<td>
+							<rich:message id="msgsProjecoes" for="pickProjecoesFuncionario" errorLabelClass="error" /><div />
+							<rich:pickList value="#{relatorioFuncionariosMB.projecoesFuncionarioSelecionadas}"
+								id="pickProjecoesFuncionario" showButtonsLabel="false" listsHeight="300px" sourceListWidth="200px" targetListWidth="200px" >
+								<f:selectItems value="#{relatorioFuncionariosMB.projecoesFuncionario}"/>
+							</rich:pickList>
+	           			</td>
+	           			<td>
+							<h:outputText value="#{b.relatorio}" />
+						</td>
+						<td>
+							<rich:message id="msgsSelRelatorio" for="selRelatorio" errorLabelClass="error" /><div />
+							<h:selectOneMenu id="selRelatorio" 
+	         								label="${b.relatorio}" 
+	         								style="width:300px;"
+											value="#{relatorioFuncionariosMB.relatorio}">
+									<f:selectItems id="itensRelatorios" value="#{relatorioFuncionariosMB.itensRelatorios}"/>
+							</h:selectOneMenu>
+						</td>
+					</tr>
+				</table>
+			</rich:panel>	
+			<rich:spacer height="1px"/>
+		</ui:define>	
+	</ui:decorate>
+</html>	
